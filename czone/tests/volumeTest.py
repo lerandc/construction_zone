@@ -1,5 +1,5 @@
 import unittest
-from ..modules import Volume
+from ..volume import Volume
 import numpy as np
 
 
@@ -39,5 +39,5 @@ class Volume_Test(unittest.TestCase):
         testVolume = Volume(points=points)
         testVolume.createHull()
         testVolume.addPoints(np.array([0,0,1]))
-
-        self.assertTrue(testVolume.hull)
+    
+        self.assertTrue(testVolume.hull.points.shape==testVolume.points.shape)
