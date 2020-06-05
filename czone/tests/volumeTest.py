@@ -95,3 +95,5 @@ class Volume_Test(unittest.TestCase):
         colliding = checkCollisionHulls(volumeA, volumeB) or checkCollisionHulls(volumeB, volumeA)
         self.assertFalse(colliding, msg="Collision detected between disjoint volumes that share a face.")
 
+if __name__ == '__main__':
+    unittest.main()

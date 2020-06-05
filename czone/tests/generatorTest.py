@@ -28,3 +28,9 @@ class Generator_Test(unittest.TestCase):
 
         print(volume)
         testGenerator.BasicStructure()
+
+        # self.assertTrue(len(testGenerator.atoms) == )
+
+
+if __name__ == '__main__':
+    unittest.main()
