@@ -3,7 +3,6 @@ Voxel Class
 Luis Rangel DaCosta June 5, 2020
 
 defines a voxel in 3D cartesian space based on a linear basis set
-TODO: check for collinear basis set
 TODO: polar coordinates/curvilinear forms/etc.
 """
 import numpy as np
@@ -78,7 +77,7 @@ class Voxel():
     @property
     def corners(self):
         """
-        returns 8 corners comprising all single unit linear combination of basis set
+        returns 8 corners comprising all single unit linear combinations of basis set
         """
         corners = np.array([[0,0,0],[1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,0,1],[0,1,1],[1,1,1]])
         return self.origin + np.array([np.sum(self.sbases*i,axis=0) for i in corners])
@@ -96,3 +95,22 @@ class Voxel():
         """
         return np.abs((np.dot(vec1, vec2) / (np.linalg.norm(vec1)*np.linalg.norm(vec2)))) == 1.0
 
+
+    def get_extents(self, box):
+        """
+        determine minimum contiguous block of voxels that fully covers a space 
+
+        solves for vector extents to corners of a simple rectangular bounding box
+
+        box is 8x3 np array
+        """
+        extents = []
+        for point in box:
+            extent = np.linalg.solve(self.bases,np.array(point))
+            extents.append(extent)
+
+        extents = np.array(extents)
+        min_extent = np.min(extents,axis=0)
+        max_extent = np.max(extents,axis=0)
+
+        return min_extent, max_extent

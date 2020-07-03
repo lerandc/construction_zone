@@ -57,5 +57,15 @@ class Voxel_Test(unittest.TestCase):
         with self.assertRaises(AssertionError):
             testVoxel = Voxel(origin=np.array([0,0]))
 
+    def test_extend(self):
+        #define a volume that the voxel exists within
+        testVoxel = Voxel()
+        box = np.array([[0,0,0],[1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,0,1],[0,1,1],[1,1,1]])
+        box *= 10
+        box -= np.array([5,5,5])
+        min_extent, max_extent = testVoxel.get_extents(box)
+        self.assertTrue(np.array_equal(min_extent,np.array([-5,-5,-5])))
+        self.assertTrue(np.array_equal(max_extent,np.array([5,5,5])))
+
 if __name__ == '__main__':
     unittest.main()
