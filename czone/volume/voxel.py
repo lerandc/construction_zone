@@ -114,3 +114,23 @@ class Voxel():
         max_extent = np.max(extents,axis=0)
 
         return min_extent, max_extent
+
+class Voxels():
+    """
+    holds a group of voxels
+    used to iterate through many voxels
+    """
+    def __init__(self):
+        return 0
+
+    def addVoxel(self):
+        return 0
+
+    def pruneVoxels(self):
+        return 0
+
+    def getMidpoints(self):
+        return 0
+
+    def getOrigins(self):
+        return 0
