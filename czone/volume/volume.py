@@ -10,7 +10,9 @@ class Volume():
         """
         points is N x 3 numpy array of coordinates (x,y,z)
         """
-        self._points = np.array([])
+        self._points = None
+        self._hull = None
+
         if points is None:
             return
         else:
@@ -33,6 +35,41 @@ class Volume():
             self.addPoints(points)
         except AssertionError:
             raise ValueError("Check shape of input array.")
+
+    @property
+    def hull(self):
+        return self._hull
+
+    @property
+    def centroid(self):
+        """
+        Return heuristic centroid-- works okay if convex hull has points well distributed on surface.
+        Used to track translations and apply rotations if no center is specified.
+        """
+        try:
+            return np.mean(self.hull.points)
+        except AttributeError:
+            raise AttributeError("No hull has been created.")
+    
+    @property
+    def volume(self):
+        """
+        Return volume of convex hull defined by volume points
+        """
+        try:
+            return (self.hull.volume)
+        except AttributeError:
+            raise AttributeError("No hull has been created.")
+
+    @property
+    def area(self):
+        """
+        Return surface area of convex hull defined by volume points
+        """
+        try:
+            return (self.hull.area)
+        except AttributeError:
+            raise AttributeError("No hull has been created.")
     
     """
     Methods
@@ -43,7 +80,7 @@ class Volume():
         """
         #check to make sure there are N>3 points in point list
         assert(self.points.shape[0] > 3), "must have more than 3 points to create hull"
-        self.hull = ConvexHull(self.points,incremental=True)
+        self._hull = ConvexHull(self.points,incremental=True)
 
     def addPoints(self, points):
         """
@@ -52,7 +89,7 @@ class Volume():
         assert(points.shape[-1]==3), "points must be N x 3 numpy array (x,y,z)"
         assert(len(points.shape)<3), "points must be N x 3 numpy array (x,y,z)"
 
-        if(self._points.size == 0):
+        if(self._points is None):
             self._points = points
             if len(points.shape) == 1: #add dim if only single new point
                 self._points = np.expand_dims(points)
@@ -64,26 +101,17 @@ class Volume():
 
         #if hull created, update points; else, create hull
         try:
-            self.hull.add_points(points)
+            self._hull.add_points(points)
         except AttributeError:
             self.createHull()
-            return
 
     def translate(self, vec):
         """
         expects translation vector as 1x3 numpy array
         """
-        assert(self.points.size > 0), "No points to translate"
-        self.points = self.points + vec
-        
-        try:
-            self.hull.points += vec #translate hull if it exists
-        except ValueError:
-            print("entered value error")
-            return
-        except AttributeError:
-            print("entered attribute error")
-            return
+        assert(self._points.size > 0), "No points to translate"
+        self._points = self._points + vec
+        self._hull.points += vec 
 
     def checkIfInterior(self,testPoints):
         """
@@ -98,7 +126,7 @@ class Volume():
 
         for point in testPoints:
             point = np.expand_dims(point,axis=0)
-            testPoints = np.append(self.hull.points,point,axis=0)
+            testPoints = np.append(self._hull.points,point,axis=0)
             testHull = ConvexHull(testPoints)
             #if vertice list is exactly the same, then the new point should be interior to hull
             #or on one of it's simplices
