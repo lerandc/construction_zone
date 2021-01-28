@@ -1,6 +1,6 @@
 """
 Generator Class
-Luis Rangel DaCosta June 1, 2020
+Luis Rangel DaCosta
 """
 from pymatgen import Structure, Lattice
 

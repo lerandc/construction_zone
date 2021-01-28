@@ -1,26 +1,48 @@
 """
 Volume Class
-Luis Rangel DaCosta May 6, 2020
+Luis Rangel DaCosta
 """
 from scipy.spatial import ConvexHull
 import numpy as np
 class Volume():
 
     def __init__(self, points=None):
+        """
+        points is N x 3 numpy array of coordinates (x,y,z)
+        """
+        self._points = np.array([])
         if points is None:
-            self.points = np.array([])
+            return
         else:
             #expect 2D array with Nx3 points
             assert(len(points.shape) == 2), "points must be N x 3 numpy array (x,y,z)"
             assert(points.shape[1] == 3), "points must be N x 3 numpy array (x,y,z)"
-            self.points = points
+            self.addPoints(points)
 
+    """
+    Properties
+    """
+    @property
+    def points(self):
+        return self._points
+
+    @points.setter
+    def points(self, points):
+        try:
+            self._points = np.array([]) #clear points
+            self.addPoints(points)
+        except AssertionError:
+            raise ValueError("Check shape of input array.")
+    
+    """
+    Methods
+    """
     def createHull(self):
         """
         Create convex hull of volume boundaries
         """
         #check to make sure there are N>3 points in point list
-        assert(self.points.shape[0] > 3), "must have at least 3 points to create hull"
+        assert(self.points.shape[0] > 3), "must have more than 3 points to create hull"
         self.hull = ConvexHull(self.points,incremental=True)
 
     def addPoints(self, points):
@@ -30,20 +52,21 @@ class Volume():
         assert(points.shape[-1]==3), "points must be N x 3 numpy array (x,y,z)"
         assert(len(points.shape)<3), "points must be N x 3 numpy array (x,y,z)"
 
-        if(self.points.size == 0):
-            self.points = points
+        if(self._points.size == 0):
+            self._points = points
             if len(points.shape) == 1: #add dim if only single new point
-                self.points = np.expand_dims(points)
+                self._points = np.expand_dims(points)
         else:    
             if len(points.shape) == 1: #check for single point
                 points = np.expand_dims(points,axis=0)
             
-            self.points = np.append(self.points,points,axis=0)
+            self._points = np.append(self._points,points,axis=0)
 
-        #if hull created, update points
+        #if hull created, update points; else, create hull
         try:
             self.hull.add_points(points)
         except AttributeError:
+            self.createHull()
             return
 
     def translate(self, vec):
@@ -64,6 +87,7 @@ class Volume():
 
     def checkIfInterior(self,testPoints):
         """
+        TODO: adopt interiority test used in manipulatt
         Checks if any point in testPoints lies within convex hull
         testPoints should be Nx3 numpy array
         """
@@ -81,13 +105,15 @@ class Volume():
             if np.array_equal(testHull.vertices,self.hull.vertices):
                 return True
             
-        
         return False
 
     def checkIfCoplanar(self,testPoints):
         """
         Checks if any point in testPoints lies on a face 
         """
+
+        return False
+
 
 def checkCollisionHulls(volumeA, volumeB):
     """

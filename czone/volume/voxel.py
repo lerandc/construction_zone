@@ -1,6 +1,6 @@
 """
 Voxel Class
-Luis Rangel DaCosta June 5, 2020
+Luis Rangel DaCosta
 
 defines a voxel in 3D cartesian space based on a linear basis set
 TODO: polar coordinates/curvilinear forms/etc.
