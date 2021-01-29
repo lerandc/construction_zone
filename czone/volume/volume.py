@@ -9,9 +9,11 @@ class Volume():
     def __init__(self, points=None):
         """
         points is N x 3 numpy array of coordinates (x,y,z)
+        Default orientation of a volume is aligned with global orthonormal system
         """
         self._points = None
         self._hull = None
+        self._orientation = np.array([[1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,1.0]])
 
         if points is None:
             return
@@ -70,6 +72,16 @@ class Volume():
             return (self.hull.area)
         except AttributeError:
             raise AttributeError("No hull has been created.")
+
+    @property
+    def orientation(self):
+        """
+        Return orientation of volume as orthonormal 3x3 matrix, representing
+        current orientations of local X/Y/Z vectors.
+        Each row is direction the original X/Y/Z now points, in terms of a 
+        global othornomal system.
+        """
+        return self._orientation
     
     """
     Methods
@@ -110,7 +122,7 @@ class Volume():
         expects translation vector as 1x3 numpy array
         """
         assert(self._points.size > 0), "No points to translate"
-        self._points = self._points + vec
+        self._points += vec
         self._hull.points += vec 
 
     def checkIfInterior(self,testPoints):
