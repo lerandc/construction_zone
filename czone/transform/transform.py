@@ -1,13 +1,26 @@
 import numpy as np
+from scipy.spatial.transform import Rotation
 
 #Rotation
-## About an arbitrary axis, through an arbitrary point
+def rot_v(v, theta):
+    """
+    Rotate about an arbitary vector.
+    Inputs:
+        v: rotation axis
+        theta: radians
+    Outputs:
+        R: 3x3 rotation matrix
+    """
+    v *= (theta/np.norm(v))
+
+    return Rotation.from_rotvec(v).as_matrix()
+
 def rot_vtv(v, vt):
     """
-    Vector-to-vector rotation
+    Vector-to-vector rotation.
     Inputs:
-        v: original vector
-        vt: target vector into which v is rotated
+        v: 1x3 original vector
+        vt: 1x3 target vector into which v is rotated
     
     Outputs:
         R: 3x3 rotation matrix
@@ -37,9 +50,41 @@ def rot_vtv(v, vt):
 
     return np.identity(3) + np.sin(theta)*A + (1.0-np.cos(theta))*A @ A
 
+def rot_align(v, vt):
+    """
+    Align two sets of vectors
+    Used for matching orientations to eachother
+    Inputs:
+        v: Nx3 set of vectors
+        vt: Nx3 set of corresponding target vectors
+
+    Outputs:
+        R: 3x3 rotation matrix
+    """
 
 
-## Align axis to axis
+    return Rotation.align_vectors(vt, v).as_matrix()
+
+def rot_zxz(alpha, beta, gamma, convention="intrinsic"):
+    """
+    Rotate to orientation described by zxz euler angles
+    Inputs:
+        alpha: rotation around z in radians
+        beta: rotation around x' in radians
+        gammma: rotation around z'' in radians
+        convention: "intrinsic" or "extrinsic" (default: "intrinsic")
+
+    Outputs:
+        R: 3x3 rotation matrix
+    """
+
+    if convention=="intrinsic":
+        return Rotation.from_euler("ZXZ", [alpha, beta, gamma], degrees=False).as_matrix()
+    elif convention=="extrinsic":
+        return Rotation.from_euler("zxz", [gamma, alpha, beta], degrees=False).as_matrix()
+    else:
+        raise(ValueError("Invalid argument for convention."))
+
 
 #Translation
 
