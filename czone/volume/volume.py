@@ -148,6 +148,17 @@ class Volume():
         assert(self._points.size > 0), "No points to translate"
         self._points += vec
         self.createHull() #implcitly update hull, since can't transform points directly
+    
+    def rotate(self, R, center=None, locked=False):
+        if center is None:
+            self._points = np.dot(R, (self._points-self.centroid).T).T+self.centroid
+        else:
+            self._points = np.dot(R, (self._points-center).T).T+center
+
+        if locked:
+            self.generator.rotate(R)
+
+        self.createHull()
 
     def checkIfInterior(self,testPoints):
         """
@@ -241,5 +252,8 @@ def from_volume(orig, **kwargs):
         
     if "translate" in kwargs.keys():
         new_volume.translate(kwargs["translate"])
+
+    if "rotate" in kwargs.keys():
+        new_volume.rotate(kwargs["rotate"], locked=True)
 
     return new_volume

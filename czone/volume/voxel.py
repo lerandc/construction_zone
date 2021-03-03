@@ -113,3 +113,6 @@ class Voxel():
         max_extent = np.ceil(np.max(extents,axis=0))
 
         return min_extent.astype(np.int64), max_extent.astype(np.int64)
+
+    def rotate(self, R):
+        self.bases = np.dot(R, self.bases.T).T 

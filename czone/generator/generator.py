@@ -90,6 +90,10 @@ class Generator():
                         species.append(self.species)
 
             return np.squeeze(np.array(coords)), np.squeeze(np.array(species))
+
+    def rotate(self,R):
+        #rotate basis of voxel for equivalence
+        self.voxel.rotate(R)
                         
 
 

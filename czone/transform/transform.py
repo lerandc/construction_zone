@@ -11,7 +11,7 @@ def rot_v(v, theta):
     Outputs:
         R: 3x3 rotation matrix
     """
-    v *= (theta/np.norm(v))
+    v *= (theta/np.linalg.norm(v))
 
     return Rotation.from_rotvec(v).as_matrix()
 
@@ -34,7 +34,7 @@ def rot_vtv(v, vt):
 
     """
     eps = np.finfo(float).eps #get machine epsilon for collinearity check
-    theta = np.acos(np.dot(v,vt)/(np.norm(v)*np.norm(vt)))
+    theta = np.acos(np.dot(v,vt)/(np.linalg.norm(v)*np.linalg.norm(vt)))
     if(theta < eps):
         return np.identity(3)
     elif(np.pi - theta < eps):
@@ -43,7 +43,7 @@ def rot_vtv(v, vt):
     else:
         rot_axis = np.cross(v,vt)
 
-    rot_axis /= np.norm(rot_axis)
+    rot_axis /= np.linalg.norm(rot_axis)
     A = np.array([[0, -rot_axis[2], rot_axis[1]]
                   [rot_axis[2], 0, -rot_axis[0]]
                   [-rot_axis[1], rot_axis[0], 0]])
