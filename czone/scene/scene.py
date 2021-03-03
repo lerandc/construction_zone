@@ -21,7 +21,19 @@ class Scene():
 
         if bounds is None:
             #default bounding box is 10 angstrom cube
-            self.bounds = makeRectPrism(10,10,10)
+            bbox = makeRectPrism(10,10,10)
+            self.bounds = np.vstack([np.min(bbox,axis=0), np.max(bbox,axis=0)])
+        else:
+            self.bounds = bounds
+
+    @property
+    def bounds(self):
+        return self._bounds
+
+    @bounds.setter
+    def bounds(self, bounds):
+        assert(bounds.shape == (2,3))
+        self._bounds = bounds
 
     @property
     def objects(self):
@@ -41,7 +53,7 @@ class Scene():
 
     @property
     def all_species(self):
-        return np.vstack([object.species for object in self.objects])
+        return np.hstack([object.species for object in self.objects])
 
     def populate(self):
         for object in self.objects:

@@ -103,6 +103,10 @@ class Volume():
     def atoms(self):
         return self._atoms
 
+    @property
+    def species(self):
+        return self._species
+
     """
     Methods
     """

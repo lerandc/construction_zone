@@ -89,7 +89,7 @@ class Generator():
                         coords.append(new_coords)
                         species.append(self.species)
 
-            return np.squeeze(np.array(coords)), np.array(species)
+            return np.squeeze(np.array(coords)), np.squeeze(np.array(species))
                         
 
 
