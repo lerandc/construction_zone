@@ -10,7 +10,7 @@ setup(
     author_email='luisrd@berkeley.edu',
     python_requires='>=3.7',
     install_requires=[
-        'pymatgen >= 2020.4.29'
-        'numpy >= 1.16.2'
+        'pymatgen >= 2020.4.29',
+        'numpy >= 1.16.2',
         'scipy >= 1.3.0']
 )

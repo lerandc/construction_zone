@@ -3,7 +3,6 @@ Voxel Class
 Luis Rangel DaCosta
 
 defines a voxel in 3D cartesian space based on a linear basis set
-TODO: polar coordinates/curvilinear forms/etc.
 """
 import numpy as np
 
@@ -106,31 +105,11 @@ class Voxel():
         """
         extents = []
         for point in box:
-            extent = np.linalg.solve(self.bases,np.array(point))
+            extent = np.linalg.solve(self.sbases,np.array(point))
             extents.append(extent)
 
         extents = np.array(extents)
-        min_extent = np.min(extents,axis=0)
-        max_extent = np.max(extents,axis=0)
+        min_extent = np.floor(np.min(extents,axis=0))
+        max_extent = np.ceil(np.max(extents,axis=0))
 
-        return min_extent, max_extent
-
-class Voxels():
-    """
-    holds a group of voxels
-    used to iterate through many voxels
-    """
-    def __init__(self):
-        return 0
-
-    def addVoxel(self):
-        return 0
-
-    def pruneVoxels(self):
-        return 0
-
-    def getMidpoints(self):
-        return 0
-
-    def getOrigins(self):
-        return 0
+        return min_extent.astype(np.int64), max_extent.astype(np.int64)

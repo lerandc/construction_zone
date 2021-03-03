@@ -3,10 +3,13 @@ Volume Class
 Luis Rangel DaCosta
 """
 from scipy.spatial import ConvexHull
+from ..generator import Generator
 import numpy as np
+import copy
+
 class Volume():
 
-    def __init__(self, points=None):
+    def __init__(self, points=None, generator=None):
         """
         points is N x 3 numpy array of coordinates (x,y,z)
         Default orientation of a volume is aligned with global orthonormal system
@@ -14,6 +17,8 @@ class Volume():
         self._points = None
         self._hull = None
         self._orientation = np.array([[1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,1.0]])
+        self._generator = generator
+        self._atoms = None
 
         if points is None:
             return
@@ -82,7 +87,22 @@ class Volume():
         global othornomal system.
         """
         return self._orientation
+
+    @property
+    def generator(self):
+        return self._generator
+
+    @generator.setter
+    def generator(self, generator):
+        if not isinstance(generator, Generator):
+            raise TypeError("Supplied generator is not of Generator() class")
+        
+        self._generator = generator
     
+    @property
+    def atoms(self):
+        return self._atoms
+
     """
     Methods
     """
@@ -102,7 +122,7 @@ class Volume():
         assert(len(points.shape)<3), "points must be N x 3 numpy array (x,y,z)"
 
         if(self._points is None):
-            self._points = points
+            self._points = np.copy(points)
             if len(points.shape) == 1: #add dim if only single new point
                 self._points = np.expand_dims(points)
         else:    
@@ -123,7 +143,7 @@ class Volume():
         """
         assert(self._points.size > 0), "No points to translate"
         self._points += vec
-        self._hull.points += vec 
+        self.createHull() #implcitly update hull, since can't transform points directly
 
     def checkIfInterior(self,testPoints):
         """
@@ -141,18 +161,27 @@ class Volume():
             testPoints = np.append(self._hull.points,point,axis=0)
             testHull = ConvexHull(testPoints)
             #if vertice list is exactly the same, then the new point should be interior to hull
-            #or on one of it's simplices
+            #or on one of its simplices
             if np.array_equal(testHull.vertices,self.hull.vertices):
                 return True
             
         return False
 
-    def checkIfCoplanar(self,testPoints):
-        """
-        Checks if any point in testPoints lies on a face 
-        """
+    def get_bounding_box(self):
+        return self.points
 
-        return False
+    def populate_atoms(self):
+        """
+        Fill bounding space with atoms then remove atoms falling outside 
+        """
+        bbox = self.get_bounding_box()
+        atoms = self.generator.supply_atoms(bbox)
+        atoms = [atom for atom in atoms if self.checkIfInterior(atom)]
+
+        self._atoms = np.array(atoms)
+
+
+
 
 
 def checkCollisionHulls(volumeA, volumeB):
@@ -188,3 +217,22 @@ def makeRectPrism(a,b,c,center=None):
         #translate prism to desired center if specified
         cur_center = np.mean(points,axis=0)
         return points + (center-cur_center)
+
+def from_volume(orig, **kwargs):
+    """
+    Construct a volume from another volume
+    **kwargs encodes relationship
+    """
+    if not isinstance(orig, Volume):
+            raise TypeError("Supplied volume is not of Volume() class")
+
+    new_volume = Volume(points=orig.points)
+    if "generator" in kwargs.keys():
+        new_volume.generator = kwargs["generator"]
+    else:
+        new_volume.generator = copy.deepcopy(orig.generator)
+        
+    if "translate" in kwargs.keys():
+        new_volume.translate(kwargs["translate"])
+
+    return new_volume
