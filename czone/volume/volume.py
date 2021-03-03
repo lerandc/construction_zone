@@ -175,10 +175,13 @@ class Volume():
         Fill bounding space with atoms then remove atoms falling outside 
         """
         bbox = self.get_bounding_box()
-        atoms = self.generator.supply_atoms(bbox)
-        atoms = [atom for atom in atoms if self.checkIfInterior(atom)]
-
-        self._atoms = np.array(atoms)
+        coords, species = self.generator.supply_atoms(bbox)
+        check = np.zeros(coords.shape[0], dtype=np.bool_)
+        for i in range(coords.shape[0]):
+            check[i] = self.checkIfInterior(coords[i])
+    
+        self._atoms = coords[check,:]
+        self._species = species[check]
 
 
 

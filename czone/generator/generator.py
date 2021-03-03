@@ -80,14 +80,16 @@ class Generator():
             fcoords = np.copy(self.structure.frac_coords) #grab fractional in case bases are rotated
 
             coords = []
+            species = []
             for i in range(min_extent[0], max_extent[0]+1):
                 for j in range(min_extent[1], max_extent[1]+1):
                     for k in range(min_extent[2], max_extent[2]+1):
                         new_coords = np.matmul(self.voxel.sbases, np.array([i,j,k])) \
                                     + np.dot(self.voxel.sbases, fcoords.T).T
                         coords.append(new_coords)
+                        species.append(self.species)
 
-            return np.squeeze(np.array(coords))
+            return np.squeeze(np.array(coords)), np.array(species)
                         
 
 
