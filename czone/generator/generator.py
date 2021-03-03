@@ -85,7 +85,8 @@ class Generator():
                 for j in range(min_extent[1], max_extent[1]+1):
                     for k in range(min_extent[2], max_extent[2]+1):
                         new_coords = np.matmul(self.voxel.sbases, np.array([i,j,k])) \
-                                    + np.dot(self.voxel.sbases, fcoords.T).T
+                                    + np.dot(self.voxel.sbases, fcoords.T).T \
+                                    + self.voxel.origin
                         coords.append(new_coords)
                         species.append(self.species)
 
@@ -94,7 +95,6 @@ class Generator():
     def rotate(self,R):
         #rotate basis of voxel for equivalence
         self.voxel.rotate(R)
-                        
 
 
 

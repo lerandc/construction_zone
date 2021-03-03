@@ -2,7 +2,7 @@
 Volume Class
 Luis Rangel DaCosta
 """
-from scipy.spatial import ConvexHull
+from scipy.spatial import ConvexHull, Delaunay
 from ..generator import Generator
 import numpy as np
 import copy
@@ -19,6 +19,7 @@ class Volume():
         self._orientation = np.array([[1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,1.0]])
         self._generator = generator
         self._atoms = None
+        self._tri = None
 
         if points is None:
             return
@@ -46,6 +47,10 @@ class Volume():
     @property
     def hull(self):
         return self._hull
+    
+    @property
+    def tri(self):
+        return self._tri
 
     @property
     def centroid(self):
@@ -54,7 +59,7 @@ class Volume():
         Used to track translations and apply rotations if no center is specified.
         """
         try:
-            return np.mean(self.hull.points)
+            return np.mean(self.hull.points,axis=0)
         except AttributeError:
             raise AttributeError("No hull has been created.")
     
@@ -93,10 +98,14 @@ class Volume():
         return self._generator
 
     @generator.setter
-    def generator(self, generator):
+    def generator(self, generator, origin=None):
         if not isinstance(generator, Generator):
             raise TypeError("Supplied generator is not of Generator() class")
         
+        if origin is None:
+            generator.voxel.origin = self.centroid
+        else:
+            generator.voxel.origin = origin
         self._generator = generator
     
     @property
@@ -117,6 +126,7 @@ class Volume():
         #check to make sure there are N>3 points in point list
         assert(self.points.shape[0] > 3), "must have more than 3 points to create hull"
         self._hull = ConvexHull(self.points,incremental=True)
+        self._tri = Delaunay(self.hull.points[self.hull.vertices])
 
     def addPoints(self, points):
         """
@@ -141,13 +151,17 @@ class Volume():
         except AttributeError:
             self.createHull()
 
-    def translate(self, vec):
+    def translate(self, vec, locked=True):
         """
         expects translation vector as 1x3 numpy array
         """
         assert(self._points.size > 0), "No points to translate"
         self._points += vec
         self.createHull() #implcitly update hull, since can't transform points directly
+
+        if locked:
+            if not self.generator is None:
+                self.generator.voxel.origin += vec
     
     def rotate(self, R, center=None, locked=False):
         if center is None:
@@ -162,8 +176,7 @@ class Volume():
 
     def checkIfInterior(self,testPoints):
         """
-        TODO: adopt interiority test used in manipulatt
-        Checks if any point in testPoints lies within convex hull
+        Checks if points in testPoints lie within convex hull
         testPoints should be Nx3 numpy array
         """
         assert(testPoints.shape[-1]==3), "testPoints must be N x 3 numpy array (x,y,z)"
@@ -171,16 +184,7 @@ class Volume():
         if(len(testPoints.shape)==1):
             testPoints = np.expand_dims(testPoints,axis=0)
 
-        for point in testPoints:
-            point = np.expand_dims(point,axis=0)
-            testPoints = np.append(self._hull.points,point,axis=0)
-            testHull = ConvexHull(testPoints)
-            #if vertice list is exactly the same, then the new point should be interior to hull
-            #or on one of its simplices
-            if np.array_equal(testHull.vertices,self.hull.vertices):
-                return True
-            
-        return False
+        return self.tri.find_simplex(testPoints, tol=2.5e-1) >= 0
 
     def get_bounding_box(self):
         return self.points
@@ -191,16 +195,10 @@ class Volume():
         """
         bbox = self.get_bounding_box()
         coords, species = self.generator.supply_atoms(bbox)
-        check = np.zeros(coords.shape[0], dtype=np.bool_)
-        for i in range(coords.shape[0]):
-            check[i] = self.checkIfInterior(coords[i])
+        check = self.checkIfInterior(coords)
     
         self._atoms = coords[check,:]
         self._species = species[check]
-
-
-
-
 
 def checkCollisionHulls(volumeA, volumeB):
     """

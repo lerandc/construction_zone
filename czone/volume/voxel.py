@@ -8,7 +8,7 @@ import numpy as np
 
 class Voxel():
 
-    def __init__(self, bases=np.identity(3), scale=np.array([1]), origin=np.array([0, 0, 0])):
+    def __init__(self, bases=np.identity(3), scale=np.array([1]), origin=np.array([0.0, 0.0, 0.0])):
         """
         bases is 3x3 array defining vectors that span 3D space
             [0,:] = [x_1, y_1, z_1]
@@ -104,6 +104,7 @@ class Voxel():
         box is 8x3 np array
         """
         extents = []
+        box = box - self.origin
         for point in box:
             extent = np.linalg.solve(self.sbases,np.array(point))
             extents.append(extent)
