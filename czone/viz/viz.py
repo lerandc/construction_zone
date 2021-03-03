@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from ipywidgets import interact, interactive, fixed, interact_manual, FloatSlider, Layout
 import ipywidgets as widgets
 
-def simple_view_with_rotate(data, azim, elev):
+def simple_view_with_rotate(data, azim=60, elev=30):
     fig = plt.figure(figsize=(12,3), constrained_layout=True)
     fig.set_constrained_layout_pads(w_pad=0.05, h_pad=0.05, hspace=0.1, wspace=0.2)
     ax_x = fig.add_subplot(1,4,3, projection='3d')
@@ -63,4 +63,4 @@ def simple_view_widget(data):
                            description='Elevation', readout_format='.1f', 
                            style={'description_width':'150px'}, layout=Layout(width='400px', height='30px'))
     
-    return interact(rotate_plot, data=fixed(data), azim=azim_widget, elev=elev_widget)
+    return interact(simple_view_with_rotate, data=fixed(data), azim=azim_widget, elev=elev_widget)
