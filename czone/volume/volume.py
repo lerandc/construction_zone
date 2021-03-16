@@ -7,9 +7,13 @@ from ..generator import Generator
 import numpy as np
 import copy
 
+############################
+####### Volume Class #######
+############################
+
 class Volume():
 
-    def __init__(self, points=None, generator=None):
+    def __init__(self, points=None, generator=None, priority=None):
         """
         points is N x 3 numpy array of coordinates (x,y,z)
         Default orientation of a volume is aligned with global orthonormal system
@@ -17,17 +21,22 @@ class Volume():
         self._points = None
         self._hull = None
         self._orientation = np.array([[1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,1.0]])
-        self._generator = generator
+        self._generator = None
         self._atoms = None
         self._tri = None
+        self._priority = 0
 
-        if points is None:
-            return
-        else:
+        if not (points is None):
             #expect 2D array with Nx3 points
             assert(len(points.shape) == 2), "points must be N x 3 numpy array (x,y,z)"
             assert(points.shape[1] == 3), "points must be N x 3 numpy array (x,y,z)"
             self.addPoints(points)
+
+        if not (generator is None):
+            self.generator = copy.deepcopy(generator)
+
+        if not (priority is None):
+            self.priority = priority
 
     """
     Properties
@@ -116,6 +125,17 @@ class Volume():
     def species(self):
         return self._species
 
+    @property
+    def priority(self):
+        return self._priority
+    
+    @priority.setter
+    def priority(self, priority):
+        if not isinstance(priority, int):
+            raise TypeError("Priority needs to be integer valued")
+
+        self._priority = priority
+
     """
     Methods
     """
@@ -199,6 +219,12 @@ class Volume():
     
         self._atoms = coords[check,:]
         self._species = species[check]
+
+
+############################
+#### Utility functions #####
+############################
+
 
 def checkCollisionHulls(volumeA, volumeB):
     """
