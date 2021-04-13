@@ -54,11 +54,14 @@ class Scene():
 
     @property
     def all_atoms(self):
-        return np.vstack([object.atoms[check,:] for object in self.objects for check in self.checks])
+        return np.vstack([ob.atoms[self.checks[i],:] for i, ob in enumerate(self.objects)])
 
     @property
     def all_species(self):
-        return np.hstack([object.species[check] for object in self.objects for check in self.checks])
+        return np.hstack([ob.species[self.checks[i]] for i, ob in enumerate(self.objects)])
+
+    def species_from_object(self, idx):
+        return self.objects[idx].atoms[self.checks[idx],:]
 
     def get_priorities(self):
         # get all priority levels active first
