@@ -1,5 +1,211 @@
 import numpy as np
-from scipy.spatial.transform import Rotation
+from abc import ABC, abstractmethod
+from scipy.spatial.transform import Rotation as scRotation #avoid namespace conflicts
+from ..volume.algebraic import Plane, Sphere
+
+#####################################
+########### Base Classes ############
+#####################################
+
+class BaseTransformation(ABC):
+
+    @abstractmethod
+    def __init__(self, **kwargs):
+        pass
+
+    @abstractmethod
+    def applyTransformation(self, points):
+        pass
+
+    @abstractmethod
+    def applyTransformation_alg(self, alg_object):
+        pass
+
+    @property
+    @abstractmethod
+    def params(self):
+        pass
+
+    @property
+    def locked(self):
+        return self._locked
+
+    @locked.setter
+    def locked(self, locked):
+        assert(isinstance(locked, bool)), "Must supply bool to locked parameter."
+        self._locked = locked
+
+class Translation(BaseTransformation):
+
+    def __init__(self, shift=None, locked=True):
+        self._shift = None
+        self._locked = None
+
+        if not (shift is None):
+            self.shift = shift
+
+        self.locked = locked
+
+    @property
+    def shift(self):
+        return self._shift
+
+    @shift.setter
+    def shift(self, shift):
+        shift = np.array(shift)
+        assert(shift.size == 3), "Shift must be a vector in 3D space"
+        assert(shift.shape[0] == 3), "Shift must be a vector in 3D space"
+        self._shift = shift
+
+    @property
+    def params(self):
+        return self.shift
+
+    def applyTransformation(self, points):
+        return points + self.shift
+
+    def applyTransformation_alg(self, alg_object):
+        if isinstance(alg_object, Sphere):
+            alg_object.center = alg_object.center + shift
+
+        if isinstance(alg_object, Plane):
+            alg_object.point = alg_object.point + shift
+
+        return alg_object
+
+class Rotation(BaseTransformation):
+
+    def __init__(self, matrix=None, origin=None, locked=True):
+        self._matrix = None
+        self._origin = None
+        self._locked = None
+
+        if not (matrix is None):
+            self.matrix = matrix
+
+        if not (center is None):
+            self.origin = origin
+
+        self.locked = locked
+
+    @property
+    def matrix(self):
+        return self._matrix
+
+    @matrix.setter
+    def matrix(self, matrix):
+        assert(matrix.shape == (3,3)), "Input matrix must be square 3x3 numpy array"
+        assert(np.abs(np.linalg.det(matrix)-1.0) < 1e-6), "Input matrix not a valid rotation matrix. Fails determinant."
+        assert(np.sum(np.abs(matrix * matrix.T - np.eye(3))) < 1e-6), "Input matrix not a valid rotation matrix. Fails orthogonality." 
+        self._matrix = matrix
+
+    @property
+    def origin(self):
+        return self._origin
+
+    @origin.setter
+    def origin(self, origin):
+        origin = np.array(origin)
+        assert(origin.size == 3), "Origin must be a point in 3D space"
+        assert(origin.shape[0] == 3), "Origin must be a point in 3D space"
+        self._origin = origin
+
+    @property
+    def params(self):
+        return self.matrix, self.origin
+
+    def applyTransformation(self, points):
+        if (self.origin is None):
+            points = np.dot(self.matrix, (points-self.origin).T).T+self.origin
+        else:
+            points = np.dot(self.matrix, (points).T).T
+
+        return points
+
+    def applyTransformation_alg(self, alg_object):
+
+        if isinstance(alg_object, Sphere):
+            """
+            Should only rotate the Sphere in space if rotation origin and sphere origin differ
+            """
+            if (self.origin is None):
+                alg_object.center = np.dot(self.matrix, (alg_object.center-self.origin).T).T+self.origin
+            else:
+                alg_object.center = np.dot(self.matrix, (alg_object.center).T).T
+            
+        if isinstance(alg_object, Plane):
+            if (self.origin is None):
+                alg_object.point = np.dot(self.matrix, (alg_object.point-self.origin).T).T+self.origin
+            else:
+                alg_object.point = np.dot(self.matrix, (alg_object.point).T).T
+            
+            alg_object.normal = np.dot(self.matrix, (alg_object.normal).T).T
+
+        return alg_object
+
+class Reflection(BaseTransformation):
+
+    def __init__(self, plane=None, locked=True):
+        self._plane = None
+        self._locked = None
+        self._matrix = None
+
+        if not (plane is None):
+            self.plane = plane
+
+        self.locked = locked
+
+    @property
+    def matrix(self):
+        return self._matrix
+
+    @matrix.setter
+    def matrix(self, normal):
+        self._matrix = np.eye(3) - (2.0/(normal.T @ normal))*(normal @ normal.T)
+
+    @property
+    def shift(self):
+        return self._shift
+
+    @shift.setter
+    def shift(self, shift):
+        self._shift = shift
+
+    @property
+    def plane(self):
+        return self._plane
+    
+    @plane.setter
+    def plane(self, plane):
+        assert(isinstance(plane, Plane)), "Input plane must be Plane object from algebraic module"
+        self._plane = plane
+        self.matrix = plane.normal
+        self.shift = plane.point
+
+    @property
+    def params(self):
+        return self.plane
+
+    def applyTransformation(self, points):
+        """
+        Reflect with shifted Householder transformation
+        """
+        return np.dot(self.matrix, (points-self.shift).T).T+self.shift
+
+    def applyTransformation_alg(self, alg_object):
+
+        if(isinstance(alg_object), Sphere):
+            alg_object.center = np.dot(self.matrix, (alg_object.center-self.shift).T).T+self.shift
+
+        if(isinstance(alg_object), Plane):
+            alg_object.point = np.dot(self.matrix, (alg_object.point-self.shift).T).T+self.shift
+
+        return alg_object
+
+
+#####################################
+############# Utilities #############
+#####################################
 
 #Rotation
 def rot_v(v, theta):
@@ -13,7 +219,7 @@ def rot_v(v, theta):
     """
     v *= (theta/np.linalg.norm(v))
 
-    return Rotation.from_rotvec(v).as_matrix()
+    return scRotation.from_rotvec(v).as_matrix()
 
 def rot_vtv(v, vt):
     """
@@ -62,8 +268,7 @@ def rot_align(v, vt):
         R: 3x3 rotation matrix
     """
 
-
-    return Rotation.align_vectors(vt, v).as_matrix()
+    return scRotation.align_vectors(vt, v).as_matrix()
 
 def rot_zxz(alpha, beta, gamma, convention="intrinsic"):
     """
@@ -79,13 +284,8 @@ def rot_zxz(alpha, beta, gamma, convention="intrinsic"):
     """
 
     if convention=="intrinsic":
-        return Rotation.from_euler("ZXZ", [alpha, beta, gamma], degrees=False).as_matrix()
+        return scRotation.from_euler("ZXZ", [alpha, beta, gamma], degrees=False).as_matrix()
     elif convention=="extrinsic":
-        return Rotation.from_euler("zxz", [gamma, alpha, beta], degrees=False).as_matrix()
+        return scRotation.from_euler("zxz", [gamma, alpha, beta], degrees=False).as_matrix()
     else:
         raise(ValueError("Invalid argument for convention."))
-
-
-#Translation
-
-#Deformation
