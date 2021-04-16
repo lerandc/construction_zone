@@ -2,8 +2,12 @@
 Generator Class
 Luis Rangel DaCosta
 """
-import numpy as np
+from .amorphous_algorithms import *
+from ..transform import BaseTransformation, Translation
 from ..volume.voxel import Voxel
+import copy
+import numpy as np
+from abc import ABC, abstractmethod
 from pymatgen import Structure, Lattice
 from pymatgen.symmetry.groups import SpaceGroup, sg_symbol_from_int_number
 
@@ -11,7 +15,13 @@ from pymatgen.symmetry.groups import SpaceGroup, sg_symbol_from_int_number
 ########## Generator Classes ########
 #####################################
 
-class Generator():
+class BaseGenerator():
+
+    @abstractmethod
+    def supply_atoms(self):
+        pass
+
+class Generator(BaseGenerator):
     """
     Generator class for crystal systems
     Utilizes pymatgen Lattice and Structure to supply relevant methods
@@ -40,11 +50,12 @@ class Generator():
     @property
     def lattice(self):
         return self.structure.lattice
+
     
     @property
     def species(self):
         return self.structure.atomic_numbers
-    
+
     @property
     def coords(self):
         return self.structure.frac_coords
@@ -65,7 +76,7 @@ class Generator():
         self._voxel = voxel
 
     """ 
-    Operations
+    Methods
     """
     def supply_atoms(self, bbox):
         """
@@ -86,12 +97,91 @@ class Generator():
                     coords.append(new_coords)
                     species.append(self.species)
 
-        return np.squeeze(np.array(coords)), np.squeeze(np.array(species))
+        coords = np.squeeze(np.array(coords))
+        species = np.squeeze(np.array(species))
+
+        if len(coords.shape) > 2:
+            coords = np.reshape(coords, (np.prod(coords.shape[0:-1]), 3))
+            species = species.ravel()
+        return coords, species
 
     def rotate(self,R):
         #rotate basis of voxel for equivalence
         self.voxel.rotate(R)
 
+    def transform(self, transformation):
+        assert(isinstance(transformation, BaseTransformation)), "Supplied transformation not transformation object."
+        self.voxel.bases = transformation.applyTransformation_bases(self.voxel.bases)
+
+        if not (transformation.basis_only):
+            new_origin = transformation.applyTransformation(np.reshape(self.voxel.origin,(1,3)))
+            self.voxel.origin = np.squeeze(new_origin)
+
+
+class AmorphousGenerator(BaseGenerator):
+    """
+    Currently supports only monatomic, periodically uniformly disrtributed blocks
+
+    Defaults to carbon properties
+    """
+    def __init__(self, origin=None, min_dist=1.4, density=.1103075, species=6):
+        self._origin = None
+        self._species = None
+        self._density = None
+        self._min_dist = None
+
+        if not (origin is None):
+            self.origin = origin
+
+        self.species = species
+        self.min_dist = min_dist
+        self.density = density
+
+    """
+    Properties
+    """
+    @property
+    def origin(self):
+        return self._origin
+
+    @origin.setter
+    def origin(self, origin):
+        origin = np.array(origin)
+        assert(origin.size==3), "Origin must be a point in 3D space"
+        self._origin = origin
+
+    @property
+    def species(self):
+        return self._species
+
+    @species.setter
+    def species(self, species):
+        self._species = species
+
+    @property
+    def density(self):
+        return self._density
+
+    @density.setter
+    def density(self, density):
+        assert(density>0.0)
+        self._density = density
+
+    @property
+    def min_dist(self):
+        return self._min_dist
+
+    @min_dist.setter
+    def min_dist(self, min_dist):
+        assert(min_dist > 0)
+        self._min_dist = min_dist
+    """
+    Methods
+    """
+    def supply_atoms(self, bbox):
+
+        coords = gen_p_substrate(np.max(bbox,axis=0)-np.min(bbox,axis=0), self.min_dist)
+        return coords, np.ones(coords.shape[0])*self.species
 
 #####################################
 ######### Utility routines ##########
@@ -102,11 +192,10 @@ def BasicStructure(Z=[1], coords=[[0.0, 0.0, 0.0]], cellDims=[2.5, 2.5, 2.5], ce
     Define simple translating unit
     """
     tmp = Generator()
-    tmp.species = Z
-    tmp.lattice = Lattice.from_parameters(a=cellDims[0], b=cellDims[1], c=cellDims[2],
+    tmp_lattice = Lattice.from_parameters(a=cellDims[0], b=cellDims[1], c=cellDims[2], \
                                             alpha=cellAngs[0], beta=cellAngs[1], gamma=cellAngs[2])
 
-    tmp.structure = Structure(tmp.lattice, Z, coords)
+    tmp.structure = Structure(tmp_lattice, Z, coords)
     tmp.voxel = Voxel(scale=cellDims[0])
 
     return tmp
@@ -121,7 +210,7 @@ def from_spacegroup(Z, coords, cellDims, cellAngs, sgn=None, sym=None):
                                         alpha=cellAngs[0], beta=cellAngs[1], gamma=cellAngs[2])
 
     tmp = Generator()
-    tmp.structure = Structure.from_spacegroup(sg.int_number, lattice=b.lattice, species=Z, coords=coords)
+    tmp.structure = Structure.from_spacegroup(sg.int_number, lattice=test_lattice, species=Z, coords=coords)
     tmp.voxel = Voxel(scale=cellDims[0])
 
     return tmp
@@ -136,10 +225,9 @@ def from_generator(orig, **kwargs):
         raise TypeError("Supplied generator is not of Generator() class")
 
     new_generator = copy.deepcopy(orig)
-    if "species" in kwargs.keys():
-        new_generator.species = kwargs["species"]
 
-    if "translate" in kwargs.keys():
-        new_generator
+    if "transformation" in kwargs.keys():
+        for t in kwargs["transformation"]:
+            new_generator.transform(t)
 
     return new_generator

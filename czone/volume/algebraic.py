@@ -35,7 +35,7 @@ class Sphere(BaseAlgebraic):
             self.center = center
 
     def checkIfInterior(self, testPoints):
-        return (testPoints-self.center)**2.0 < self.radius**2.0
+        return np.sum((testPoints-self.center)**2.0, axis=1) < self.radius**2.0
 
     @property
     def params(self):
@@ -86,7 +86,7 @@ class Plane(BaseAlgebraic):
     def point(self):
         return self._point
 
-    @radius.setter
+    @point.setter
     def point(self, point):
         point = np.array(point) #cast to np array if not already
         assert(point.shape[0] == 3), "Point must be a point in 3D space"
@@ -102,13 +102,13 @@ class Plane(BaseAlgebraic):
         normal = np.array(normal) #cast to np array if not already
         assert(normal.size == 3), "normal must be a vector in 3D space"
         normal = np.reshape(normal, (3,1)) #make a consistent shape
-        if(np.linalg.norm(normal) > np.finfo().eps):
+        if(np.linalg.norm(normal) > np.finfo(float).eps):
             self._normal = normal
         else:
             raise ValueError("Normal vector must have some length")
     
     def checkIfInterior(self, testPoints):
-        return (testPoints*self.normal) + self.point < 0
+        return np.sum((testPoints*self.normal.T), axis=1) - np.squeeze(np.dot(self.normal.T, self.point)) < 0
 
     def flip_orientation(self):
         self.normal = -1*self.normal
@@ -137,7 +137,7 @@ def get_bounding_box(planes):
     for i, plane in enumerate(planes):
         n, p = plane.params
         A[i,:] = n.squeeze()
-        d[i,0] = -1.0*np.dot(n,p)
+        d[i,0] = -1.0*np.dot(n.squeeze(),p.squeeze())
         norms[i,0] = np.linalg.norm(n)
 
     #check feasiblity of region and get interior point
@@ -165,7 +165,7 @@ def snap_plane_near_point(point, generator, miller_indices, mode="nearest"):
     miller_indices = np.array(miller_indices)
 
     # get point coordinates in generator coordinate system
-    point_fcoord = np.linalg.solve(generator.voxel.sbases, point)
+    point_fcoord = np.array(np.linalg.solve(generator.voxel.sbases, point))
 
     # get lattice points that are intersected by miller plane
     with np.errstate(divide="ignore"): #check for infs directly
@@ -175,20 +175,20 @@ def snap_plane_near_point(point, generator, miller_indices, mode="nearest"):
     new_point = np.zeros((3,1))
     if mode=="nearest":
         for i in range(3):
-            new_point[i,0] = np.round(point_fcoord[i]/target_fcoord[i])*target_fcoord \
+            new_point[i,0] = np.round(point_fcoord[i]/target_fcoord[i])*target_fcoord[i] \
                                 if not np.isinf(target_fcoord[i]) else point_fcoord[i]
     elif mode=="ceil":
         for i in range(3):
-            new_point[i,0] = np.ceil(point_fcoord[i]/target_fcoord[i])*target_fcoord \
+            new_point[i,0] = np.ceil(point_fcoord[i]/target_fcoord[i])*target_fcoord[i] \
                                 if not np.isinf(target_fcoord[i]) else point_fcoord[i]
     elif mode == "floor":
         for i in range(3):
-            new_point[i,0] = np.floor(point_fcoord[i]/target_fcoord[i])*target_fcoord \
+            new_point[i,0] = np.floor(point_fcoord[i]/target_fcoord[i])*target_fcoord[i] \
                                 if not np.isinf(target_fcoord[i]) else point_fcoord[i]
     
     # scale back to real space
     new_point = generator.voxel.sbases @ new_point
     
     # get perpendicular vector
-    normal = generator.structure.reciprocal_lattice_crystallographic.matrix * miller_indices
+    normal = generator.lattice.reciprocal_lattice_crystallographic.matrix @ miller_indices
     return Plane(normal=normal, point=new_point)

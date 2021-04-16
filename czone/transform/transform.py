@@ -16,6 +16,10 @@ class BaseTransformation(ABC):
     @abstractmethod
     def applyTransformation(self, points):
         pass
+    
+    @abstractmethod
+    def applyTransformation_bases(self, points):
+        pass
 
     @abstractmethod
     def applyTransformation_alg(self, alg_object):
@@ -35,9 +39,18 @@ class BaseTransformation(ABC):
         assert(isinstance(locked, bool)), "Must supply bool to locked parameter."
         self._locked = locked
 
+    @property
+    def basis_only(self):
+        return self._basis_only
+    
+    @basis_only.setter
+    def basis_only(self, basis_only):
+        assert(isinstance(basis_only, bool)), "Must supply bool to basis_only parameter"
+        self._basis_only = basis_only
+
 class Translation(BaseTransformation):
 
-    def __init__(self, shift=None, locked=True):
+    def __init__(self, shift=None, locked=True, basis_only=False):
         self._shift = None
         self._locked = None
 
@@ -45,6 +58,7 @@ class Translation(BaseTransformation):
             self.shift = shift
 
         self.locked = locked
+        self.basis_only = basis_only
 
     @property
     def shift(self):
@@ -64,18 +78,21 @@ class Translation(BaseTransformation):
     def applyTransformation(self, points):
         return points + self.shift
 
+    def applyTransformation_bases(self, points):
+        return points
+
     def applyTransformation_alg(self, alg_object):
         if isinstance(alg_object, Sphere):
-            alg_object.center = alg_object.center + shift
+            alg_object.center = alg_object.center + self.shift
 
         if isinstance(alg_object, Plane):
-            alg_object.point = alg_object.point + shift
+            alg_object.point = alg_object.point + self.shift.reshape(3,1)
 
         return alg_object
 
 class Rotation(BaseTransformation):
 
-    def __init__(self, matrix=None, origin=None, locked=True):
+    def __init__(self, matrix=None, origin=None, locked=True,  basis_only=False):
         self._matrix = None
         self._origin = None
         self._locked = None
@@ -87,6 +104,7 @@ class Rotation(BaseTransformation):
             self.origin = origin
 
         self.locked = locked
+        self.basis_only = basis_only
 
     @property
     def matrix(self):
@@ -115,12 +133,17 @@ class Rotation(BaseTransformation):
         return self.matrix, self.origin
 
     def applyTransformation(self, points):
-        if (self.origin is None):
+        if not (self.origin is None):
             points = np.dot(self.matrix, (points-self.origin).T).T+self.origin
         else:
             points = np.dot(self.matrix, (points).T).T
 
         return points
+
+    def applyTransformation_bases(self, points):
+        return np.dot(self.matrix, (points).T).T
+
+
 
     def applyTransformation_alg(self, alg_object):
 
@@ -145,7 +168,7 @@ class Rotation(BaseTransformation):
 
 class Reflection(BaseTransformation):
 
-    def __init__(self, plane=None, locked=True):
+    def __init__(self, plane=None, locked=True, basis_only=False):
         self._plane = None
         self._locked = None
         self._matrix = None
@@ -154,6 +177,7 @@ class Reflection(BaseTransformation):
             self.plane = plane
 
         self.locked = locked
+        self.basis_only = basis_only
 
     @property
     def matrix(self):
@@ -169,7 +193,7 @@ class Reflection(BaseTransformation):
 
     @shift.setter
     def shift(self, shift):
-        self._shift = shift
+        self._shift = np.reshape(shift, (1,3))
 
     @property
     def plane(self):
@@ -191,6 +215,12 @@ class Reflection(BaseTransformation):
         Reflect with shifted Householder transformation
         """
         return np.dot(self.matrix, (points-self.shift).T).T+self.shift
+
+    def applyTransformation_bases(self, points):
+        """
+        Reflect with Householder transformation
+        """
+        return np.dot(self.matrix, (points).T).T
 
     def applyTransformation_alg(self, alg_object):
 

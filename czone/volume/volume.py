@@ -2,8 +2,12 @@
 Volume Class
 Luis Rangel DaCosta
 """
+from .algebraic import BaseAlgebraic, Plane, Sphere
+from .algebraic import get_bounding_box as get_bounding_box_planes
+from ..generator import BaseGenerator, AmorphousGenerator
+from ..transform import BaseTransformation
 from scipy.spatial import ConvexHull, Delaunay
-from ..generator import Generator
+
 import numpy as np
 import copy
 
@@ -13,7 +17,7 @@ import copy
 
 class Volume():
 
-    def __init__(self, points=None, generator=None, priority=None):
+    def __init__(self, points=None, alg_objects=None, generator=None, priority=None, **kwargs):
         """
         points is N x 3 numpy array of coordinates (x,y,z)
         Default orientation of a volume is aligned with global orthonormal system
@@ -24,6 +28,7 @@ class Volume():
         self._generator = None
         self._atoms = None
         self._tri = None
+        self._alg_objects = []
         self._priority = 0
 
         if not (points is None):
@@ -33,10 +38,17 @@ class Volume():
             self.addPoints(points)
 
         if not (generator is None):
-            self.generator = copy.deepcopy(generator)
+            if 'gen_origin' in kwargs:
+                self.add_generator(copy.deepcopy(generator), kwargs["gen_origin"])
+            else:
+                self.add_generator(copy.deepcopy(generator))
 
         if not (priority is None):
             self.priority = priority
+
+        if not (alg_objects is None):
+            for obj in alg_objects:
+                self.add_alg_object(obj)
 
     """
     Properties
@@ -53,6 +65,14 @@ class Volume():
         except AssertionError:
             raise ValueError("Check shape of input array.")
 
+    @property
+    def alg_objects(self):
+        return self._alg_objects
+
+    def add_alg_object(self, obj):
+        assert(isinstance(obj, (BaseAlgebraic))), "Must be adding algebraic objects from derived BaseAlgebraic class"
+        self._alg_objects.append(obj)
+        
     @property
     def hull(self):
         return self._hull
@@ -106,15 +126,22 @@ class Volume():
     def generator(self):
         return self._generator
 
-    @generator.setter
-    def generator(self, generator, origin=None):
-        if not isinstance(generator, Generator):
+    
+    def add_generator(self, generator, origin=None):
+        if not isinstance(generator, BaseGenerator):
             raise TypeError("Supplied generator is not of Generator() class")
         
-        if origin is None:
-            generator.voxel.origin = self.centroid
-        else:
-            generator.voxel.origin = origin
+
+        if not isinstance(generator, AmorphousGenerator):
+            if origin is None:
+                try:
+                    generator.voxel.origin = self.centroid
+                except AttributeError:
+                    print("No origin passed and no hull has been formed to default to convex hull centroid.")
+                    print("Setting generator origin to (0,0,0). ")
+                    generator.voxel.origin = np.array([0,0,0])
+            else:
+                generator.voxel.origin = origin
         self._generator = generator
     
     @property
@@ -194,6 +221,21 @@ class Volume():
 
         self.createHull()
 
+    def transform(self, transformation):
+        assert(isinstance(transformation, BaseTransformation)), "Supplied transformation not transformation object."
+
+        if not(self.points is None):
+            self.points = transformation.applyTransformation(self.points)
+            self.createHull()
+
+        if len(self.alg_objects) > 0:
+            for i, obj in enumerate(self.alg_objects):
+                self.alg_objects[i] = transformation.applyTransformation_alg(obj)
+
+        if transformation.locked and (not (self.generator is None)):
+            self.generator.transform(transformation)
+
+
     def checkIfInterior(self,testPoints):
         """
         Checks if points in testPoints lie within convex hull
@@ -204,10 +246,33 @@ class Volume():
         if(len(testPoints.shape)==1):
             testPoints = np.expand_dims(testPoints,axis=0)
 
-        return self.tri.find_simplex(testPoints, tol=2.5e-1) >= 0
+        check = np.ones(testPoints.shape[0]).astype(bool)
+
+        if not self.tri is None:
+            check = np.logical_and(check, self.tri.find_simplex(testPoints, tol=2.5e-1) >= 0)
+
+        if len(self.alg_objects) > 0:
+            for obj in self.alg_objects:
+                check = np.logical_and(check, obj.checkIfInterior(testPoints))
+
+        return check
 
     def get_bounding_box(self):
-        return self.points
+        if not(self.points is None):
+            return self.points
+        else:
+            # As heuristic, look for any sphere first
+            # Then, gather planes and check if valid intersection exists
+            spheres = [obj for obj in self.alg_objects if isinstance(obj, Sphere)]
+            if len(spheres) > 0:
+                d = 2*spheres[0].radius
+                bbox = makeRectPrism(d,d,d) 
+                shift = spheres[0].center-(d/2)*np.ones(3)
+                return  bbox + shift
+            
+            planes = [obj for obj in self.alg_objects if isinstance(obj, Plane)]
+            if len(planes) > 3:
+                return get_bounding_box_planes(planes)
 
     def populate_atoms(self):
         """
