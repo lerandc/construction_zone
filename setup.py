@@ -12,5 +12,6 @@ setup(
     install_requires=[
         'pymatgen >= 2020.4.29',
         'numpy >= 1.16.2',
-        'scipy >= 1.3.0']
+        'scipy >= 1.3.0',
+        'ase >= 3.21.0']
 )
