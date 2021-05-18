@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 from abc import ABC, abstractmethod
 from scipy.spatial.transform import Rotation as scRotation #avoid namespace conflicts
@@ -237,7 +238,6 @@ class Reflection(BaseTransformation):
 ############# Utilities #############
 #####################################
 
-#Rotation
 def rot_v(v, theta):
     """
     Rotate about an arbitary vector.
@@ -319,3 +319,15 @@ def rot_zxz(alpha, beta, gamma, convention="intrinsic"):
         return scRotation.from_euler("zxz", [gamma, alpha, beta], degrees=False).as_matrix()
     else:
         raise(ValueError("Invalid argument for convention."))
+
+def s2s_alignment(M_plane: Plane, T_plane: Plane, M_point, T_point):
+    R = rot_vtv(M_plane.normal, -1.0*T_plane.normal)
+    R_t = Rotation(matrix=R, origin=M_plane.point)
+    M_plane_r = R_t.applyTransformation_alg(M_plane)
+    M_point_r = R_t.applyTransformation(M_point)
+
+    proj_point = T_plane.project_point(M_point)
+
+    T_t = Translation(shift=T_point-proj_point)
+
+    return R_t, T_t
