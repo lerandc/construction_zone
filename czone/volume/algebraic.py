@@ -103,7 +103,7 @@ class Plane(BaseAlgebraic):
         assert(normal.size == 3), "normal must be a vector in 3D space"
         normal = np.reshape(normal, (3,1)) #make a consistent shape
         if(np.linalg.norm(normal) > np.finfo(float).eps):
-            self._normal = normal
+            self._normal = normal/np.linalg(normal)
         else:
             raise ValueError("Normal vector must have some length")
     
@@ -112,6 +112,13 @@ class Plane(BaseAlgebraic):
 
     def flip_orientation(self):
         self.normal = -1*self.normal
+
+    def dist_from_plane(self, point):
+        return np.dot(point-self.point, self.normal)
+
+    def project_point(self, point):
+        return point - self.dist_from_plane(point)*self.normal
+
             
 
 #####################################
