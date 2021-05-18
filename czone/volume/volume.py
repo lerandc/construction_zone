@@ -6,16 +6,55 @@ from .algebraic import BaseAlgebraic, Plane, Sphere
 from .algebraic import get_bounding_box as get_bounding_box_planes
 from ..generator import BaseGenerator, AmorphousGenerator
 from ..transform import BaseTransformation
+from abc import ABC, abstractmethod
 from scipy.spatial import ConvexHull, Delaunay
 
 import numpy as np
 import copy
 
 ############################
-####### Volume Class #######
+###### Volume Classes ######
 ############################
 
-class Volume():
+class BaseVolume(ABC):
+
+    @abstractmethod
+    def __init__(self, **kwargs):
+        pass
+
+    @property
+    def atoms(self):
+        return self._atoms
+
+    @property
+    def species(self):
+        return self._species
+
+    @property
+    def priority(self):
+        return self._priority
+    
+    @priority.setter
+    def priority(self, priority):
+        if not isinstance(priority, int):
+            raise TypeError("Priority needs to be integer valued")
+
+        self._priority = priority
+
+    @abstractmethod
+    def transform(self, transformation):
+        pass
+
+    @abstractmethod
+    def populate_atoms(self):
+        pass
+
+    @abstractmethod
+    def checkIfInterior(self):
+        pass
+
+
+class Volume(BaseVolume):
 
     def __init__(self, points=None, alg_objects=None, generator=None, priority=None, **kwargs):
         """
@@ -39,9 +78,9 @@ class Volume():
 
         if not (generator is None):
             if 'gen_origin' in kwargs:
-                self.add_generator(copy.deepcopy(generator), kwargs["gen_origin"])
+                self.add_generator(generator, kwargs["gen_origin"])
             else:
-                self.add_generator(copy.deepcopy(generator))
+                self.add_generator(generator)
 
         if not (priority is None):
             self.priority = priority
@@ -131,37 +170,19 @@ class Volume():
         if not isinstance(generator, BaseGenerator):
             raise TypeError("Supplied generator is not of Generator() class")
         
+        new_generator = copy.deepcopy(generator)
 
         if not isinstance(generator, AmorphousGenerator):
             if origin is None:
                 try:
-                    generator.voxel.origin = self.centroid
+                    new_generator.voxel.origin = self.centroid
                 except AttributeError:
                     print("No origin passed and no hull has been formed to default to convex hull centroid.")
                     print("Setting generator origin to (0,0,0). ")
-                    generator.voxel.origin = np.array([0,0,0])
+                    New_generator.voxel.origin = np.array([0,0,0])
             else:
-                generator.voxel.origin = origin
-        self._generator = generator
-    
-    @property
-    def atoms(self):
-        return self._atoms
-
-    @property
-    def species(self):
-        return self._species
-
-    @property
-    def priority(self):
-        return self._priority
-    
-    @priority.setter
-    def priority(self, priority):
-        if not isinstance(priority, int):
-            raise TypeError("Priority needs to be integer valued")
-
-        self._priority = priority
+                new_generator.voxel.origin = origin
+        self._generator = new_generator
 
     """
     Methods
@@ -236,7 +257,7 @@ class Volume():
             self.generator.transform(transformation)
 
 
-    def checkIfInterior(self,testPoints):
+    def checkIfInterior(self, testPoints):
         """
         Checks if points in testPoints lie within convex hull
         testPoints should be Nx3 numpy array
@@ -284,6 +305,97 @@ class Volume():
     
         self._atoms = coords[check,:]
         self._species = species[check]
+
+class MultiVolume(BaseVolume):
+
+    def __init__(self, volumes=None):
+        self._volumes = []
+        if not (volumes is None):
+            self.add_volume(volumes)
+
+    """
+    Propeties
+    """
+    @property
+    def volumes(self):
+        return self._volumes
+
+    @property
+    def atoms(self):
+        return self._atoms
+
+    """
+    Methods
+    """
+
+    def add_volume(self, volume):
+        if hasattr(volume, '__iter__'):
+            for v in volume:
+                assert(isinstance(v, BaseVolume)), "volumes must be volume objects"
+            self._volumes.extend(volume)
+        else:
+                assert(isinstance(volume, BaseVolume)), "volumes must be volume objects"
+            self._volumes.append(volume)
+
+    def get_priorities(self):
+        # get all priority levels active first
+        self.volumes.sort(key=lambda ob: ob.priority)
+        plevels = np.array([x.priority for x in self.volumes]) 
+
+        # get unique levels and create relative priority array
+        __, idx = np.unique(plevels, return_index=True)
+        rel_plevels = np.zeros(len(self.volumes)).astype(int)
+        for i in idx[1:]:
+            rel_plevels[i:] += 1
+
+        offsets = np.append(idx, len(self.volumes))
+
+        return rel_plevels, offsets
+
+    def transform(self, transformation):
+        assert(isinstance(transformation, BaseTransformation)), "Supplied transformation not transformation object."
+
+        for vol in self.volumes:
+            vol.transform(transformation)
+
+    def checkIfInterior(self, testPoints):
+        assert(testPoints.shape[-1]==3), "testPoints must be N x 3 numpy array (x,y,z)"
+        assert(len(testPoints.shape)<3), "testPoints must be N x 3 numpy array (x,y,z)"
+        if(len(testPoints.shape)==1):
+            testPoints = np.expand_dims(testPoints,axis=0)
+
+        check = np.zeros(testPoints.shape[0]).astype(bool)
+
+        for vol in self.volumes:
+            check = np.logical_or(check, vol.checkIfInterior(testPoints))
+
+        return check
+
+    def populate_atoms(self):
+        """
+        routine is modified form of scene atom population
+        """
+        for vol in self.volumes:
+            vol.populate_atoms()
+
+        rel_plevels, offsets = self.get_priorities()
+
+        checks = []
+
+        for i, ob in enumerate(self.objects):
+            check = np.ones(vol.atoms.shape[0]).astype(bool)
+            eidx = offsets[rel_plevels[i]+1]
+
+            for j in range(eidx):
+                if(i != j):
+                    check_against = np.logical_not(self.volumes[j].checkIfInterior(vol.atoms))
+                    check = np.logical_and(check, check_against)
+
+            checks.append(check)
+
+        self._atoms = np.vstack([vol.atoms[checks[i],:] for i, vol in enumerate(self.volumes)])
+        self._species = np.hstack([vol.species[checks[i]] for i, vol in enumerate(self.volumes)])
+
 
 
 ############################
