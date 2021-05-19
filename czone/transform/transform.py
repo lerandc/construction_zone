@@ -233,6 +233,54 @@ class Reflection(BaseTransformation):
 
         return alg_object
 
+class MultiTransform(BaseTransformation):
+
+    def __init__(self, transforms=None):
+        self._transforms = []
+
+        if not transforms is None:
+            self.add_transform(transforms)
+
+    """
+    Properties
+    """
+    @property
+    def transforms(self):
+        return self._transforms
+
+    @property
+    def params(self):
+        return [x.params for x in self.transforms]
+
+    """
+    Methods
+    """
+    def add_transform(self, transform):
+        if hasattr(transform, '__iter__'):
+            for t in transform:
+                assert(isinstance(t, BaseTransformation)), "transforms must be BaseTransformation objects"
+            self._transforms.extend(transform)
+        else:
+            assert(isinstance(transform, BaseTransformation)), "transforms must be BaseTransformation objects"
+            self._transforms.append(transform)
+
+    def applyTransformation(self, points):
+        for t in self.transforms:
+            points = t.applyTransformation(points)
+        return points
+
+    def applyTransformation_bases(self, points):
+        for t in self.transforms:
+            points = t.applyTransformation_bases(points)
+        return points
+
+    def applyTransformation_alg(self, alg_object):
+        for t in self.transforms:
+            alg_object = t.applyTransformation(alg_object)
+        return alg_object
+
+    
+            
 
 #####################################
 ############# Utilities #############
@@ -330,4 +378,4 @@ def s2s_alignment(M_plane: Plane, T_plane: Plane, M_point, T_point):
 
     T_t = Translation(shift=T_point-proj_point)
 
-    return R_t, T_t
+    return MultiTransform(transforms=[R_t, T_t])

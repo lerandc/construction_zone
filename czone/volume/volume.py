@@ -334,7 +334,7 @@ class MultiVolume(BaseVolume):
                 assert(isinstance(v, BaseVolume)), "volumes must be volume objects"
             self._volumes.extend(volume)
         else:
-                assert(isinstance(volume, BaseVolume)), "volumes must be volume objects"
+            assert(isinstance(volume, BaseVolume)), "volumes must be volume objects"
             self._volumes.append(volume)
 
     def get_priorities(self):
