@@ -2,6 +2,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 from scipy.optimize import linprog
 from scipy.spatial import HalfspaceIntersection
+from ..util.misc import round_away
 
 #####################################
 ##### Geometric Surface Classes #####
@@ -103,7 +104,7 @@ class Plane(BaseAlgebraic):
         assert(normal.size == 3), "normal must be a vector in 3D space"
         normal = np.reshape(normal, (3,1)) #make a consistent shape
         if(np.linalg.norm(normal) > np.finfo(float).eps):
-            self._normal = normal/np.linalg(normal)
+            self._normal = normal/np.linalg.norm(normal)
         else:
             raise ValueError("Normal vector must have some length")
     
@@ -117,7 +118,7 @@ class Plane(BaseAlgebraic):
         return np.dot(point-self.point, self.normal)
 
     def project_point(self, point):
-        return point - self.dist_from_plane(point)*self.normal
+        return point - self.dist_from_plane(point)*self.normal.T
 
             
 
@@ -180,22 +181,23 @@ def snap_plane_near_point(point, generator, miller_indices, mode="nearest"):
 
     # TODO: if bases are not orthonormal, this procedure is not correct
     new_point = np.zeros((3,1))
+
     if mode=="nearest":
         for i in range(3):
             new_point[i,0] = np.round(point_fcoord[i]/target_fcoord[i])*target_fcoord[i] \
                                 if not np.isinf(target_fcoord[i]) else point_fcoord[i]
     elif mode=="ceil":
         for i in range(3):
-            new_point[i,0] = np.ceil(point_fcoord[i]/target_fcoord[i])*target_fcoord[i] \
+            new_point[i,0] = round_away(point_fcoord[i]/target_fcoord[i])*target_fcoord[i] \
                                 if not np.isinf(target_fcoord[i]) else point_fcoord[i]
     elif mode == "floor":
         for i in range(3):
-            new_point[i,0] = np.floor(point_fcoord[i]/target_fcoord[i])*target_fcoord[i] \
+            new_point[i,0] = np.fix(point_fcoord[i]/target_fcoord[i])*target_fcoord[i] \
                                 if not np.isinf(target_fcoord[i]) else point_fcoord[i]
     
     # scale back to real space
     new_point = generator.voxel.sbases @ new_point
     
     # get perpendicular vector
-    normal = generator.lattice.reciprocal_lattice_crystallographic.matrix @ miller_indices
+    normal = generator.voxel.reciprocal_bases @ miller_indices
     return Plane(normal=normal, point=new_point)

@@ -88,6 +88,10 @@ class Voxel():
         """
         return self.origin + self.sbases*np.array([1,1,1])/2
 
+    @property
+    def reciprocal_bases(self):
+        return np.linalg.inv(self.sbases)
+
     def _collinear(self, vec1, vec2):
         """
         checks if two vectors are collinear

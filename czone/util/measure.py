@@ -90,8 +90,8 @@ def get_voxel_grid(dim, px=True, py=True, pz=True):
                     neighbors[idx_check @ nn_check] = np.nan
 
     mask = np.isnan(neighbors)
-    neighbors_ma = np.ma.masked_array(neighbors, mask=mask)
-    neighbor_lists = [np.ma.compressed(x) for x in neighbors]
+    neighbors_ma = np.ma.masked_array(neighbors, mask=mask).astype(int)
+    neighbor_lists = [np.ma.compressed(x) for x in neighbors_ma]
 
     return neighbor_lists
 
@@ -105,11 +105,12 @@ def get_sdist_fun(dims=None, px=False, py=False, pz=False):
 
     cols = [x for x, y in zip([0,1,2], [px,py,pz]) if y]
     sdims = np.array(dims)[cols]
+    sdims = sdims[None, :, None]
 
     def sdist(A,B):
         dist_0 = np.abs(A-B)
-        dist_1 = sdims - dist_0[:,cols]
-        dist_0[:,cols] = np.min(np.stack([dist_0[cols], dist_1],axis=-1), axis=-1)
+        dist_1 = sdims - dist_0[:,cols,:]
+        dist_0[:,cols,:] = np.min(np.stack([dist_0[:,cols,:], dist_1],axis=-1), axis=-1)
 
         return np.sum(dist_0*dist_0, axis=1)
 
@@ -117,15 +118,17 @@ def get_sdist_fun(dims=None, px=False, py=False, pz=False):
 
 def calc_rdf(coords, cutoff=20.0, px=True, py=True, pz=True):
     # shift outside of negative octants
-    coords -= np.min(coords)
+    coords -= np.min(coords, axis=0)
 
     # get box size and number of voxels in each direction
-    dims = np.max(coords, axis=1)
-    N = np.ceil(dims/cutoff)
+    dims = np.max(coords, axis=0)
+    N = np.ceil(dims/cutoff).astype(int)
+
+    Nt = np.array([1, N[0], N[0]*N[1]])
 
     # get voxel neighbor list and 1D voxel idx for each obj
     nn = get_voxel_grid(N, px, py, pz)
-    box_idx = np.floor(coords/vsize) @ N
+    box_idx = (np.floor(coords/cutoff) @ Nt).astype(int)
 
     # get periodic distance calculation
     f_sdist = get_sdist_fun(dims, px, py, pz)
@@ -133,7 +136,7 @@ def calc_rdf(coords, cutoff=20.0, px=True, py=True, pz=True):
     parts = []
     part_ids = np.arange(coords.shape[0])
     for i in range(np.prod(N)):
-        parts.append(part_ids[box_idx==i])
+        parts.append( [int(x) for x in part_ids[box_idx==i]] )
 
     # do 3D arrays so that distances are broadcasted/batched
     counts = np.zeros(int(cutoff/0.1))
@@ -141,7 +144,7 @@ def calc_rdf(coords, cutoff=20.0, px=True, py=True, pz=True):
         cur_parts = coords[parts[i],:][:,:,None]
 
         for n in nn[box_idx[i]]:
-            neighbor_parts = coords[parts[n],:][None,:,:]
+            neighbor_parts = (coords[parts[n],:].T)[None,:,:]
             dist = np.sqrt(f_sdist(cur_parts, neighbor_parts))
             tmp_counts, _ = np.histogram(dist, bins=counts.shape[0], range=(0.0, cutoff))
             counts += tmp_counts

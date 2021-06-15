@@ -437,7 +437,7 @@ def makeRectPrism(a,b,c,center=None):
         cur_center = np.mean(points,axis=0)
         return points + (center-cur_center)
 
-def from_volume(orig, **kwargs):
+def from_volume(orig: Volume, **kwargs) -> Volume:
     """
     Construct a volume from another volume
     **kwargs encodes relationship
@@ -445,16 +445,14 @@ def from_volume(orig, **kwargs):
     if not isinstance(orig, Volume):
             raise TypeError("Supplied volume is not of Volume() class")
 
-    new_volume = Volume(points=orig.points)
+    new_volume = Volume(points=orig.points, alg_objects=orig.alg_objects)
     if "generator" in kwargs.keys():
         new_volume.generator = kwargs["generator"]
     else:
         new_volume.generator = copy.deepcopy(orig.generator)
         
-    if "translate" in kwargs.keys():
-        new_volume.translate(kwargs["translate"])
-
-    if "rotate" in kwargs.keys():
-        new_volume.rotate(kwargs["rotate"], locked=True)
+    if "transformation" in kwargs.keys():
+        for t in kwargs["transformation"]:
+            new_volume.transform(t)
 
     return new_volume

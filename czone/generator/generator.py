@@ -31,7 +31,6 @@ class Generator(BaseGenerator):
         self._lattice = None
         self._species = None
         self._coords = None
-        self._origin = None
         self._orientation = np.array([[1,0,0],[0,1,0],[0,0,1]])
         self._voxel = None
 

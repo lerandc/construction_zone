@@ -4,13 +4,13 @@ import numpy as np
 ######### Utilities ########
 ############################
 
-def get_p_dist(coords, new_coord):
+def get_p_dist(coords, new_coord, dims):
     """
     calculate squared periodic distance between a coordinate and all other coordinates in a set
     """
 
     dist_0 = np.abs(coords-new_coord)
-    dist_1 = 1-dist_0
+    dist_1 = dims-dist_0
     dist_1[:,2] = dist_0[:,2]
 
     p_dist = np.sum(np.min(np.dstack([dist_0,dist_1]),axis=2)**2.0, axis=1)
@@ -63,6 +63,7 @@ def gen_p_substrate(dims, min_dist=1.4, density=.1103075, print_progress=True):
     Defaults are values for amor. carbon
     """
     print(dims)
+    dims = np.array(dims)
     min_dist_2 = min_dist**2.0
     dim_x = dims[0]
     dim_y = dims[1]
@@ -95,7 +96,7 @@ def gen_p_substrate(dims, min_dist=1.4, density=.1103075, print_progress=True):
         for t in tlist:
             parts.extend(voxels[t[0]][t[1]][t[2]])
         
-        p_dist = get_p_dist(coords[parts,:], new_coord)
+        p_dist = get_p_dist(coords[parts,:], new_coord, dims)
         while((len(p_dist) > 0) and (np.min(p_dist) < min_dist_2)):
             new_coord = np.random.random_sample((1,3))*dims
             block = np.floor(new_coord/(min_dist)).astype(int)
@@ -105,7 +106,7 @@ def gen_p_substrate(dims, min_dist=1.4, density=.1103075, print_progress=True):
             for t in tlist:
                 parts.extend(voxels[t[0]][t[1]][t[2]])
          
-            p_dist = get_p_dist(coords[parts,:], new_coord)
+            p_dist = get_p_dist(coords[parts,:], new_coord, dims)
             
         voxels[block[0]][block[1]][block[2]].append(i)
         coords[i,:] = new_coord
