@@ -8,7 +8,7 @@ from ..volume.voxel import Voxel
 import copy
 import numpy as np
 from abc import ABC, abstractmethod
-from pymatgen import Structure, Lattice
+from pymatgen.core import Structure, Lattice
 from pymatgen.symmetry.groups import SpaceGroup, sg_symbol_from_int_number
 
 #####################################

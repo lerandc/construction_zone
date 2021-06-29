@@ -1,6 +1,6 @@
 import unittest
 from ..generator import *
-from pymatgen import Structure
+from pymatgen.core import Structure
 
 class Generator_Test(unittest.TestCase):
 
