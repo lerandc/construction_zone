@@ -1,9 +1,7 @@
 import numpy as np
 from abc import ABC, abstractmethod
 
-# basically just want a short calss that gets attached to generators
-
-def BaseStrain(ABC):
+class BaseStrain(ABC):
 
     def __init__(self):
         self.origin = np.array([0,0,0])
@@ -15,12 +13,15 @@ def BaseStrain(ABC):
         """
         pass
 
-    @abstractmethod
     def scrape_params(self, obj):
         """
-        scrape necessary params from object applying strain to
+        grab origin and bases from generator if needed
         """
-        pass
+        if self.mode == "crystal":
+            self._bases = np.copy(obj.voxel.sbases)
+
+        if self.origin == "generator":
+            self.origin = np.copy(obj.origin)
 
     @property
     def origin(self):
@@ -31,7 +32,22 @@ def BaseStrain(ABC):
         assert(origin.shape == (3,)), "Origin must have shape (3,)"
         self._origin = np.array(origin)
 
-def HStrain(BaseStrain):
+    @property
+    def mode(self):
+        return self._mode
+
+    @mode.setter
+    def mode(self, val):
+        if mode == "crystal" or "standard":
+            self._mode = val
+        else:
+            raise ValueError("Mode must be either crystal or standard")
+
+    @property
+    def bases(self):
+        return self._bases
+
+class HStrain(BaseStrain):
     """
     Homogenous strain field
     Applies strain in crystal coordinates by default with respect to generator origin
@@ -61,6 +77,7 @@ def HStrain(BaseStrain):
 
     @matrix.setter
     def matrix(self, vals):
+        # TODO: reduce/check symmetry of matrix if in crystal mode?
         vals = np.squeeze(np.array(vals))
         if vals.shape == (3,):
             self._matrix = np.eye(3)*vals
@@ -71,25 +88,9 @@ def HStrain(BaseStrain):
         else:
             raise ValueError("Input shape must be either 3 or 9 elements")
 
-    @property
-    def mode(self):
-        return self._mode
-
-    @mode.setter
-    def mode(self, val):
-        if mode == "crystal" or "standard":
-            self._mode = val
-        else:
-            raise ValueError("Mode must be either crystal or standard")
-
-    @property
-    def bases(self):
-        return self._bases
-
     ##############
     ### Methods ##
     ##############
-
     def apply_strain(self, points):
 
         # get points relative to origin
@@ -106,16 +107,3 @@ def HStrain(BaseStrain):
         s_points += self.origin
 
         return s_points
-
-    def scrape_params(self, obj):
-        """
-        grab origin and bases from generator if needed
-        """
-        if self.mode == "crystal":
-            self._bases = np.copy(obj.voxel.sbases)
-
-        if self.origin == "generator":
-            self.origin = np.copy(obj.origin)
-
-
-
