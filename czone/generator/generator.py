@@ -137,7 +137,12 @@ class Generator(BaseGenerator):
         if len(coords.shape) > 2:
             coords = np.reshape(coords, (np.prod(coords.shape[0:-1]), 3))
             species = species.ravel()
-        return coords, species
+
+        if self.strain_field is None:
+            return coords, species
+        else:
+            self.strain_field.scrape_params(self)
+            return self.strain_field.apply_strain(coords), species
 
     def rotate(self,R):
         #rotate basis of voxel for equivalence
