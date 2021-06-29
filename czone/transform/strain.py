@@ -1,5 +1,7 @@
 import numpy as np
 from abc import ABC, abstractmethod
+from collections.abc import Callable
+import copy
 
 class BaseStrain(ABC):
 
@@ -51,12 +53,15 @@ class HStrain(BaseStrain):
     """
     Homogenous strain field
     Applies strain in crystal coordinates by default with respect to generator origin
-    No species selectivity
+    TODO: add species selectivity filter
     """
 
     def __init__(self, matrix=None, origin="generator", mode="crystal"):
         if not matrix is None:
             self.matrix = matrix
+        else:
+            # apply no strain
+            self._matrix = np.eye(3)
 
         self.mode = mode
 
@@ -104,6 +109,75 @@ class HStrain(BaseStrain):
             sp = sp @ self.matrix
         
         # shift back w.r.t. origin
+        sp += self.origin
+
+        return sp
+
+
+class IStrain(BaseStrain):
+    """
+    Inhomogenous strain field
+    Applies strain in crystal coordinates by default with respect to generator origin
+    User must input a custom strain function F: R^3 -> R^3 for np.arrays of shape (N,3)->(N,3)
+    """
+    def __init__(self, fun=None, origin="generator", mode="crystal"):
+        if not fun is None:
+            self.strain_fun = fun
+        else:
+            # apply no strain
+            self.strain_fun = lambda x: x 
+
+        self.mode = mode
+
+        if origin != "generator":
+            self.origin = origin
+        else:
+            super.__init__()
+
+        self._bases = None
+
+    ##############
+    # Properties #
+    ##############
+
+    @property
+    def strain_fun(self):
+        return self._strain_fun
+
+    @strain_fun.setter
+    def strain_fun(self, fun: Callable [[np.ndarray], np.ndarray]) -> np.ndarray:
+        try:
+            ref_arr = np.random.rand((100,3))
+            test_arr = fun(ref_arr)
+            assert(test_arr.shape == (100,3))
+        except AssertionError:
+            raise ValueError("Strain function must return numpy arrays with shape (N,3) for input arrays of shape (N,3)")
+        
+        self._strain_fun = copy.deepcopy(fun)
+        
+    ##############
+    ### Methods ##
+    ##############
+
+    def apply_strain(self, points):
+
+        # get points relative to origin
+        sp = np.copy(points)-self.origin
+
+        if self.mode == "crystal":
+            # project onto crystal coordinates 
+            sp = sp @ np.linalg.inv(self.bases)
+
+            # strain
+            sp = self.strain_fun(sp)
+
+            # project back into real space
+            sp = sp @ self.bases
+        else:
+            # strain
+            sp = self.strain_fun(sp)
+        
+        # shift back w.r.t. origin
         s_points += self.origin
 
-        return s_points
+        return sp
