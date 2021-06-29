@@ -27,14 +27,20 @@ class Generator(BaseGenerator):
     Generator class for crystal systems
     Utilizes pymatgen Lattice and Structure to supply relevant methods
     """
-    def __init__(self, origin=None, structure=None):
+    def __init__(self, origin=None, structure=None, strain_field=None):
         self._structure = None
-        self._lattice = None
-        self._species = None
-        self._coords = None
-        self._orientation = np.array([[1,0,0],[0,1,0],[0,0,1]])
         self._voxel = None
+        self._orientation = np.array([[1,0,0],[0,1,0],[0,0,1]])
 
+        if not structure is None:
+            self.structure = structure
+
+        if not strain_field is None:
+            self.strain_field = strain_field
+
+        if not origin is None:
+            self.origin = origin
+        
     """
     Properties
     """
@@ -46,12 +52,18 @@ class Generator(BaseGenerator):
     def structure(self, structure):
         assert(isinstance(structure, Structure)), "Structure must be pymatgen Structure object"
         self._structure = structure
+        
+        # check if voxel exists, if so, copy origin
+        if self.voxel is None:
+            self.voxel = Voxel(bases=structure.lattice.matrix)
+        else:
+            self.voxel = Voxel(bases=structure.lattice.matrix, origin=self.origin)
+            
 
     @property
     def lattice(self):
         return self.structure.lattice
 
-    
     @property
     def species(self):
         return self.structure.atomic_numbers
@@ -70,7 +82,11 @@ class Generator(BaseGenerator):
 
     @origin.setter
     def origin(self, val):
-        self.voxel.origin = val
+        if self.voxel is None:
+            # create voxel to store origin for when structure is later attached
+            self.voxel = Voxel(origin=val)
+        else:
+            self.voxel.origin = val
 
     @property
     def voxel(self):
@@ -83,7 +99,14 @@ class Generator(BaseGenerator):
 
         self._voxel = voxel
 
-    
+    @property
+    def strain_field(self):
+        return self._strain_field
+
+    @strain_field.setter
+    def strain_field(self, field: BaseStrain):
+        assert(isinstance(field, BaseStrain)), "Strain field must be of BaseStrain class"
+        self._strain_field = field
 
     """ 
     Methods
