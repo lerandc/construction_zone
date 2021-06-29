@@ -219,29 +219,6 @@ class Volume(BaseVolume):
         except AttributeError:
             self.createHull()
 
-    def translate(self, vec, locked=True):
-        """
-        expects translation vector as 1x3 numpy array
-        """
-        assert(self._points.size > 0), "No points to translate"
-        self._points += vec
-        self.createHull() #implcitly update hull, since can't transform points directly
-
-        if locked:
-            if not self.generator is None:
-                self.generator.voxel.origin += vec
-    
-    def rotate(self, R, center=None, locked=False):
-        if center is None:
-            self._points = np.dot(R, (self._points-self.centroid).T).T+self.centroid
-        else:
-            self._points = np.dot(R, (self._points-center).T).T+center
-
-        if locked:
-            self.generator.rotate(R)
-
-        self.createHull()
-
     def transform(self, transformation):
         assert(isinstance(transformation, BaseTransformation)), "Supplied transformation not transformation object."
 

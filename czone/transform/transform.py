@@ -279,8 +279,6 @@ class MultiTransform(BaseTransformation):
             alg_object = t.applyTransformation(alg_object)
         return alg_object
 
-    
-            
 
 #####################################
 ############# Utilities #############

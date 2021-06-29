@@ -87,6 +87,7 @@ class Generator(BaseGenerator):
 
         coords = []
         species = []
+        # TODO: remove loops for speed
         for i in range(min_extent[0], max_extent[0]+1):
             for j in range(min_extent[1], max_extent[1]+1):
                 for k in range(min_extent[2], max_extent[2]+1):

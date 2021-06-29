@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def get_voxel_grid(dim, px=True, py=True, pz=True):
     """
     dim is (Nx, Ny, Nz)

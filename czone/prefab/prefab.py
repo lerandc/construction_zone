@@ -266,7 +266,7 @@ class fccMixedTwinSF(BasePrefab):
 
         return  MultiVolume(volumes=vols)
 
-class SimpleGrainBoundary(BassePrefab):
+class SimpleGrainBoundary(BasePrefab):
 
     def __init__(self, z1, r1, z2=None, r2=None, plane=None, point=None, volume=None, generator=None):
         """
@@ -305,10 +305,6 @@ class SimpleGrainBoundary(BassePrefab):
             assert(z2.size==3), "Zone axes inputs must be 3-element list, tuple, or numpy array"
             self._z2 = z2
 
-    @property
-    def r1()
-    
-
     def build_object(self):
         """
         make two generator copies
@@ -325,8 +321,6 @@ class SimpleGrainBoundary(BassePrefab):
         rot_2 = Rotation(rot_vtv(z2v, zv))
         gen_1 = from_generator(self.generator, transformation=rot_1)
         gen_2 = from_generator(self.generator, transformation=rot_2)
-
-        if()
 
         vol_1 = from_volume(self.volume, generator=gen_1)
         vol_1.add_alg_object(self.plane)
