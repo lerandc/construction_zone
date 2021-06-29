@@ -4,6 +4,7 @@ Luis Rangel DaCosta
 """
 from .amorphous_algorithms import *
 from ..transform import BaseTransformation, Translation
+from ..transform.strain import BaseStrain
 from ..volume.voxel import Voxel
 import copy
 import numpy as np
@@ -60,8 +61,16 @@ class Generator(BaseGenerator):
         return self.structure.frac_coords
 
     @property
-    def orientation(self, type):
+    def orientation(self):
         return self._orientation
+
+    @property
+    def origin(self):
+        return self.voxel.origin
+
+    @origin.setter
+    def origin(self, val):
+        self.voxel.origin = val
 
     @property
     def voxel(self):
@@ -73,6 +82,8 @@ class Generator(BaseGenerator):
             raise TypeError("Supplied voxel is not of Voxel() class")
 
         self._voxel = voxel
+
+    
 
     """ 
     Methods

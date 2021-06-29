@@ -144,8 +144,6 @@ class Rotation(BaseTransformation):
     def applyTransformation_bases(self, points):
         return np.dot(self.matrix, (points).T).T
 
-
-
     def applyTransformation_alg(self, alg_object):
 
         if isinstance(alg_object, Sphere):
