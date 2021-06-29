@@ -82,7 +82,6 @@ class HStrain(BaseStrain):
 
     @matrix.setter
     def matrix(self, vals):
-        # TODO: reduce/check symmetry of matrix if in crystal mode?
         vals = np.squeeze(np.array(vals))
         if vals.shape == (3,):
             self._matrix = np.eye(3)*vals
@@ -90,8 +89,14 @@ class HStrain(BaseStrain):
             self._matrix = vals
         elif vals.shape == (9,):
             self._matrix = np.reshape(vals, (3,3))
+        elif vals.shape == (6,):
+            # voigt notation
+            v = vals
+            self._matrix = np.array([[v[0], v[5], v[4]], \
+                                     [v[5], v[1], v[3]], \
+                                     [v[4], v[3], v[2]]])
         else:
-            raise ValueError("Input shape must be either 3 or 9 elements")
+            raise ValueError("Input shape must be either 3,6, or 9 elements")
 
     ##############
     ### Methods ##
