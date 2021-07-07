@@ -120,7 +120,56 @@ class Plane(BaseAlgebraic):
     def project_point(self, point):
         return point - self.dist_from_plane(point)*self.normal.T
 
+
+class Cylinder(BaseAlgebraic):
+    """
+    Only supports circular cylinders for now
+    """
+
+    def __init__(self, axis=[0,0,1], point=[0,0,0], radius=1.0):
+        self.axis = axis
+        self.point = point
+        self.radius = radius
+
+    def params(self):
+        return self.axis, self.radius
+
+    @property
+    def axis(self):
+        return self._axis
+
+    @axis.setter
+    def axis(self, arr):
+        arr = np.squeeze(np.array(arr))
+        assert(arr.shape == (3,))
+        self._axis = arr/np.linalg.norm(arr)
+        
+    @property
+    def point(self):
+        return self._point
+
+    @point.setter
+    def point(self, arr):
+        arr = np.squeeze(np.array(arr))
+        assert(arr.shape == (3,))
+        self._point = arr
+
+    @property
+    def radius(self):
+        return self._radius
+
+    @radius.setter
+    def radius(self, val):
+        try:
+            val = float(val)
+            self._radius = val
+        except TypeError:
+            raise TypeError("Supplied value must be castable to float")
             
+    def checkIfInterior(self, testPoints):
+        dists = np.linalg.norm(np.cross(a-self.point, self.axis[None,:]), axis=1)
+        return dists < self.radius
+
 
 #####################################
 ######### Utility routines ##########

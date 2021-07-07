@@ -22,6 +22,20 @@ class BaseGenerator():
     def supply_atoms(self):
         pass
 
+    def from_generator(self, **kwargs):
+        """
+        Construct a generator from another generator
+        **kwargs encodes relationship
+        """
+        new_generator = copy.deepcopy(self)
+
+        if "transformation" in kwargs.keys():
+            for t in kwargs["transformation"]:
+                new_generator.transform(t)
+
+        return new_generator
+
+
 class Generator(BaseGenerator):
     """
     Generator class for crystal systems
@@ -58,7 +72,6 @@ class Generator(BaseGenerator):
             self.voxel = Voxel(bases=structure.lattice.matrix)
         else:
             self.voxel = Voxel(bases=structure.lattice.matrix, origin=self.origin)
-            
 
     @property
     def lattice(self):
@@ -156,7 +169,6 @@ class Generator(BaseGenerator):
             new_origin = transformation.applyTransformation(np.reshape(self.voxel.origin,(1,3)))
             self.voxel.origin = np.squeeze(new_origin)
 
-
 class AmorphousGenerator(BaseGenerator):
     """
     Currently supports only monatomic, periodically uniformly disrtributed blocks
@@ -253,20 +265,3 @@ def from_spacegroup(Z, coords, cellDims, cellAngs, sgn=None, sym=None):
     tmp.voxel = Voxel(scale=cellDims[0])
 
     return tmp
-
-def from_generator(orig, **kwargs):
-    """
-    Construct a generator from another generator
-    **kwargs encodes relationship
-    """
-
-    if not isinstance(orig, Generator):
-        raise TypeError("Supplied generator is not of Generator() class")
-
-    new_generator = copy.deepcopy(orig)
-
-    if "transformation" in kwargs.keys():
-        for t in kwargs["transformation"]:
-            new_generator.transform(t)
-
-    return new_generator

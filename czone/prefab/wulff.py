@@ -1,8 +1,10 @@
 from wulffpack.core import wp_BaseParticle
-from wulffpack import wp_SingleCrystal wp_Winterbottom
+from wulffpack import SingleCrystal, Winterbottom, Decahedron, Icosahedron 
 from ..volume.volume import Volume, MultiVolume
 from ..generator.generator import Generator
-from ..volume.algebraic import Plane
+from ..volume.algebraic import Plane, Cylinder
+from ..transform.transform import Rotation, rot_v
+from ..transform.strain import HStrain
 from ase import Atoms
 from abc import ABC, abstractmethod
 
@@ -65,8 +67,12 @@ class WulffBase(ABC):
     ####################
 
     @staticmethod
-    def planes_from_facets(wulff):
+    def planes_from_wulff(wulff):
         return [Plane(f.normal, f.normal*f.distance_from_origin) for f in wulff._yield_facets()]
+
+    @staticmethod
+    def planes_from_form(wulff_form):
+        return [Plane(f.normal, f.normal*f.distance_from_origin) for f in wulff_form.facets]
 
     @abstractmethod
     def get_construction(self):
@@ -96,39 +102,121 @@ class WulffSingle(WulffBase):
         -convert facets to CZ planes-> place w.r.t. generator origin and orientation
         -return volume with original generator attached
         """
-        wulff = wp_SingleCrystal(self.surface_energies, self.p_atoms, self.natoms)
-        planes = planes_from_facets(wulff)
-
+        wulff = SingleCrystal(self.surface_energies, self.p_atoms, self.natoms)
         return Volume(alg_objects=planes, generator=self.generator)
 
     def winterbottom(self, interface: tuple, interface_energy: float):
-        wulff = wp_Winterbottom(self.surface_energies, interface, interface_energy, self.p_atoms, self.natoms)
-        planes = planes_from_facets(wulff)
+        wulff = Winterbottom(self.surface_energies, interface, interface_energy, self.p_atoms, self.natoms)
+        planes = planes_from_wulff(wulff)
 
         return Volume(alg_objects=planes, generator=self.generator)
 
     @classmethod
-    def cube(generator: Generator, natoms: int = 1000):
+    def cube(cls, generator: Generator, natoms: int = 1000):
         energies = {(1,0,0):1.0}
         wulff = cls(generator, natoms)
         return wulff.get_construction(energies)
 
     @classmethod
-    def cuboctohedron(generator: Generator, natoms: int = 1000):
+    def cuboctohedron(cls, generator: Generator, natoms: int = 1000):
         energies = {(1,0,0):1.0, (1,1,1):1.15}
         wulff = cls(generator, natoms)
         return wulff.get_construction(energies)
 
     @classmethod
-    def octohedron(generator: Generator, natoms: int = 1000):
+    def octohedron(cls, generator: Generator, natoms: int = 1000):
         energies = {(1,1,1):1.0}
         wulff = cls(generator, natoms)
         return wulff.get_construction(energies)
 
     @classmethod
-    def truncated_octohedron(generator: Generator, natoms: int = 1000):
+    def truncated_octohedron(cls, generator: Generator, natoms: int = 1000):
         energies = {(1,0,0):1.1, (1,1,0):1.15, (1,1,1):1.0}
         wulff = cls(generator, natoms)
         return wulff.get_construction(energies)
 
 # class WulffDecahedron(WulffBase):
+
+"""
+WulffPack's dechaedron and icosahedron class is not as clean to grab.
+Generally, they form the nanoparticle twice, in independent steps.
+For facet visualization, they generate the first grain's surfaces as facets,
+then rotate the group of facets about the central axes. 
+
+Since the number of rotations applied is known, and the grains are stored in order,
+we can back out which facets (and which rotations) are applied to each grain.
+This will yield us all (most) of the subvolumes we need for the particle,
+minus the internal zone of the rotation axis.
+
+For atomic generation, they work again with a single grain. They first remove
+atoms on the twin boundaries, and store atoms within the grain/inside the fivefold axis separately.
+That is, twin_indices contains twin boundaries, which contains five_old axis atoms, too.
+They then strain the in grain atoms out, make rotated duplicates, and return the atoms only.
+
+The five fold axis is just a stack of atoms along the center. We should be able to replicate this in CZ with a 
+cylinder object, placed at the origin and with diameter equal to the atom spacing.
+####################################################
+
+Strategy for replication of Decahedron:
+1) Get list of facets.
+2) Prune list into the 5 separate grains, create subvolumes
+4) Create strained generator, rotate it to create grain specific generators, add to subvolumes
+5) Create subvolume for 5 fold axis based on Cylinder, add unstrained generator
+6) Return MultiVolume object with mutually exclusive priorities
+
+"""
+
+class WulffDecahedron(WulffBase):
+
+    def __init__(self, generator: Generator,
+                        surface_energies: dict[tuple, float],
+                        twin_energy: float,
+                        natoms: int = 1000):
+        self.generator = generator
+        self.natoms = natoms
+        self.surface_energies = surface_energies
+        self.twin_energy = twin_energy
+
+    @property
+    def twin_energy(self):
+        return self._twin_energy
+    
+    @twin_energy.setter
+    def twin_energy(self, val):
+        assert(isinstance(val, float)), "twin energy must be float"
+        self._twin_energy = val
+
+    def get_construction(self):
+        wulff = Dechedraon(self.surface_energies, self.twin_energy, self.p_atoms, self.natoms)
+        sf = wulff._get_dechedral_scale_factor()
+        planes_lists = [[],[],[],[],[]]
+        for form in wulff.forms:
+            planes = planes_from_form(form)
+            len_p = len(planes)
+            for i, p in enumerate(planes):
+                # there will always be a multiple 5 planes in planes
+                idx = i // (len_p // 5)
+                planes_lists[idx].append(p)
+
+        vols = []
+        for plist in planes_lists:
+            vols.append(Volume(alg_objects=plist))
+
+        # create strained and rotated generators
+        strain_field = HStrain(matrix=[sf, 1, 1, 0, 0, 0])
+
+        for i in range(0, 5):
+            rot_mat = rot_v([0,0,1], i * 2 * np.pi / 5)
+            rot = Rotation(rot_mat)
+            gen = self.generator.from_generator(transformation=[rot])
+            gen.strain_field = strain_field
+            vols[i].add_generator(gen)
+
+        z_extremes = np.array([np.max(np.vstack(f.vertices)[:,2]) for f in wulff._yield_facets()])
+        ff_axis_b = Plane(normal=[0,0,-1], point=[0,0, np.min(z_extremes)])
+        ff_axis_t = Plane(normal=[0,0, 1], point=[0,0, np.max(z_extremes)])
+        ff_axis_cyl = Cylinder(radius=1e-3)
+        vols.append(Volume(alg_objects=[ff_axis_b, ff_axis_t, ff_axis_cyl],
+                            generator=self.generator))
+
+        return MultiVolume(volumes=vols)

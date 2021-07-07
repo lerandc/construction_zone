@@ -150,7 +150,8 @@ class IStrain(BaseStrain):
         return self._strain_fun
 
     @strain_fun.setter
-    def strain_fun(self, fun: Callable [[np.ndarray], np.ndarray]) -> np.ndarray:
+    def strain_fun(self, fun) -> np.ndarray:
+    # def strain_fun(self, fun: Callable [[np.ndarray], np.ndarray]) -> np.ndarray:
         try:
             ref_arr = np.random.rand((100,3))
             test_arr = fun(ref_arr)

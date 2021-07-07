@@ -165,7 +165,6 @@ class Volume(BaseVolume):
     def generator(self):
         return self._generator
 
-    
     def add_generator(self, generator, origin=None):
         if not isinstance(generator, BaseGenerator):
             raise TypeError("Supplied generator is not of Generator() class")
@@ -173,15 +172,9 @@ class Volume(BaseVolume):
         new_generator = copy.deepcopy(generator)
 
         if not isinstance(generator, AmorphousGenerator):
-            if origin is None:
-                try:
-                    new_generator.voxel.origin = self.centroid
-                except AttributeError:
-                    print("No origin passed and no hull has been formed to default to convex hull centroid.")
-                    print("Setting generator origin to (0,0,0). ")
-                    New_generator.voxel.origin = np.array([0,0,0])
-            else:
+            if not origin is None:
                 new_generator.voxel.origin = origin
+        
         self._generator = new_generator
 
     """
