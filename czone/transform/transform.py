@@ -8,7 +8,7 @@ from ..volume.algebraic import Plane, Sphere
 ########### Base Classes ############
 #####################################
 
-class BaseTransformation(ABC):
+class BaseTransform(ABC):
 
     @abstractmethod
     def __init__(self, **kwargs):
@@ -49,7 +49,7 @@ class BaseTransformation(ABC):
         assert(isinstance(basis_only, bool)), "Must supply bool to basis_only parameter"
         self._basis_only = basis_only
 
-class Translation(BaseTransformation):
+class Translation(BaseTransform):
 
     def __init__(self, shift=None, locked=True, basis_only=False):
         self._shift = None
@@ -91,7 +91,7 @@ class Translation(BaseTransformation):
 
         return alg_object
 
-class Rotation(BaseTransformation):
+class MatrixTransform(BaseTransform):
 
     def __init__(self, matrix=None, origin=None, locked=True,  basis_only=False):
         self._matrix = None
@@ -101,7 +101,7 @@ class Rotation(BaseTransformation):
         if not (matrix is None):
             self.matrix = matrix
 
-        if not (center is None):
+        if not (origin is None):
             self.origin = origin
 
         self.locked = locked
@@ -114,8 +114,6 @@ class Rotation(BaseTransformation):
     @matrix.setter
     def matrix(self, matrix):
         assert(matrix.shape == (3,3)), "Input matrix must be square 3x3 numpy array"
-        assert(np.abs(np.linalg.det(matrix)-1.0) < 1e-6), "Input matrix not a valid rotation matrix. Fails determinant."
-        assert(np.sum(np.abs(matrix * matrix.T - np.eye(3))) < 1e-6), "Input matrix not a valid rotation matrix. Fails orthogonality." 
         self._matrix = matrix
 
     @property
@@ -147,9 +145,6 @@ class Rotation(BaseTransformation):
     def applyTransformation_alg(self, alg_object):
 
         if isinstance(alg_object, Sphere):
-            """
-            Should only rotate the Sphere in space if rotation origin and sphere origin differ
-            """
             if (self.origin is None):
                 alg_object.center = np.dot(self.matrix, (alg_object.center-self.origin).T).T+self.origin
             else:
@@ -165,34 +160,51 @@ class Rotation(BaseTransformation):
 
         return alg_object
 
-class Reflection(BaseTransformation):
+class Inversion(MatrixTransform):
 
-    def __init__(self, plane=None, locked=True, basis_only=False):
-        self._plane = None
+    def __init__(self, origin=None, locked=True, basis_only=False):
+        self._origin = None
         self._locked = None
-        self._matrix = None
 
-        if not (plane is None):
-            self.plane = plane
+        if not (origin is None):
+            self.origin = origin
 
         self.locked = locked
         self.basis_only = basis_only
 
     @property
     def matrix(self):
-        return self._matrix
+        return -1.0*np.eye(3)
+
+class Rotation(MatrixTransform):
+
+    def __init__(self, matrix=None, origin=None, locked=True,  basis_only=False):
+        super.__init__(matrix=matrix, 
+                        origin=origin, 
+                        locked=locked, 
+                        basis_only=basis_only)
+
+    @matrix.setter
+    def matrix(self, matrix):
+        assert(matrix.shape == (3,3)), "Input matrix must be square 3x3 numpy array"
+        assert(np.abs(np.linalg.det(matrix)-1.0) < 1e-6), "Input matrix not a valid rotation matrix. Fails determinant."
+        assert(np.sum(np.abs(matrix * matrix.T - np.eye(3))) < 1e-6), "Input matrix not a valid rotation matrix. Fails orthogonality." 
+        self._matrix = matrix
+
+class Reflection(MatrixTransform):
+
+    def __init__(self, plane=None, locked=True, basis_only=False):
+        super.__init__(matrix=None, 
+                       origin=None, 
+                       locked=locked, 
+                       basis_only=basis_only)
+
+        if not (plane is None):
+            self.plane = plane
 
     @matrix.setter
     def matrix(self, normal):
         self._matrix = np.eye(3) - (2.0/(normal.T @ normal))*(normal @ normal.T)
-
-    @property
-    def shift(self):
-        return self._shift
-
-    @shift.setter
-    def shift(self, shift):
-        self._shift = np.reshape(shift, (1,3))
 
     @property
     def plane(self):
@@ -203,35 +215,23 @@ class Reflection(BaseTransformation):
         assert(isinstance(plane, Plane)), "Input plane must be Plane object from algebraic module"
         self._plane = plane
         self.matrix = plane.normal
-        self.shift = plane.point
+        self.origin = plane.point
 
     @property
     def params(self):
         return self.plane
 
-    def applyTransformation(self, points):
-        """
-        Reflect with shifted Householder transformation
-        """
-        return np.dot(self.matrix, (points-self.shift).T).T+self.shift
-
-    def applyTransformation_bases(self, points):
-        """
-        Reflect with Householder transformation
-        """
-        return np.dot(self.matrix, (points).T).T
-
     def applyTransformation_alg(self, alg_object):
 
         if(isinstance(alg_object), Sphere):
-            alg_object.center = np.dot(self.matrix, (alg_object.center-self.shift).T).T+self.shift
+            alg_object.center = np.dot(self.matrix, (alg_object.center-self.origin).T).T+self.origin
 
         if(isinstance(alg_object), Plane):
-            alg_object.point = np.dot(self.matrix, (alg_object.point-self.shift).T).T+self.shift
+            alg_object.point = np.dot(self.matrix, (alg_object.point-self.origin).T).T+self.origin
 
         return alg_object
 
-class MultiTransform(BaseTransformation):
+class MultiTransform(BaseTransform):
 
     def __init__(self, transforms=None):
         self._transforms = []
@@ -256,10 +256,10 @@ class MultiTransform(BaseTransformation):
     def add_transform(self, transform):
         if hasattr(transform, '__iter__'):
             for t in transform:
-                assert(isinstance(t, BaseTransformation)), "transforms must be BaseTransformation objects"
+                assert(isinstance(t, BaseTransform)), "transforms must be BaseTransformation objects"
             self._transforms.extend(transform)
         else:
-            assert(isinstance(transform, BaseTransformation)), "transforms must be BaseTransformation objects"
+            assert(isinstance(transform, BaseTransform)), "transforms must be BaseTransformation objects"
             self._transforms.append(transform)
 
     def applyTransformation(self, points):

@@ -5,7 +5,7 @@ Luis Rangel DaCosta
 from .algebraic import BaseAlgebraic, Plane, Sphere
 from .algebraic import get_bounding_box as get_bounding_box_planes
 from ..generator import BaseGenerator, AmorphousGenerator
-from ..transform import BaseTransformation
+from ..transform import BaseTransform
 from abc import ABC, abstractmethod
 from scipy.spatial import ConvexHull, Delaunay
 
@@ -213,7 +213,7 @@ class Volume(BaseVolume):
             self.createHull()
 
     def transform(self, transformation):
-        assert(isinstance(transformation, BaseTransformation)), "Supplied transformation not transformation object."
+        assert(isinstance(transformation, BaseTransform)), "Supplied transformation not transformation object."
 
         if not(self.points is None):
             self.points = transformation.applyTransformation(self.points)
@@ -323,7 +323,7 @@ class MultiVolume(BaseVolume):
         return rel_plevels, offsets
 
     def transform(self, transformation):
-        assert(isinstance(transformation, BaseTransformation)), "Supplied transformation not transformation object."
+        assert(isinstance(transformation, BaseTransform)), "Supplied transformation not transformation object."
 
         for vol in self.volumes:
             vol.transform(transformation)

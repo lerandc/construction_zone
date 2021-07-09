@@ -2,9 +2,9 @@ from wulffpack.core import wp_BaseParticle
 from wulffpack import SingleCrystal, Winterbottom, Decahedron, Icosahedron 
 from ..volume.volume import Volume, MultiVolume
 from ..generator.generator import Generator
-from ..volume.algebraic import Plane, Cylinder
-from ..transform.transform import Rotation, rot_v
-from ..transform.strain import HStrain
+from ..volume.algebraic import Plane, Cylinder, Sphere
+from ..transform.transform import Rotation, rot_v, MatrixTransform
+from ..transform.strain import HStrain, IStrain
 from ase import Atoms
 from abc import ABC, abstractmethod
 
@@ -135,8 +135,6 @@ class WulffSingle(WulffBase):
         wulff = cls(generator, natoms)
         return wulff.get_construction(energies)
 
-# class WulffDecahedron(WulffBase):
-
 """
 WulffPack's dechaedron and icosahedron class is not as clean to grab.
 Generally, they form the nanoparticle twice, in independent steps.
@@ -218,5 +216,58 @@ class WulffDecahedron(WulffBase):
         ff_axis_cyl = Cylinder(radius=1e-3)
         vols.append(Volume(alg_objects=[ff_axis_b, ff_axis_t, ff_axis_cyl],
                             generator=self.generator))
+
+        return MultiVolume(volumes=vols)
+
+class WulffIcosahedron(WulffDecahedron):
+
+    @property
+    def icosahedral_scale_factor(self):
+        k = (5 + np.sqrt(5)) / 8
+        return np.sqrt(2 / (3 * k - 1))
+
+    @staticmethod
+    def strain_from_111(points, basis=np.eye(3).astype(float), sf=1):
+        vec_111 = basis @ np.array([[1.0,1.0,1.0]]).T
+        vec_111 /= np.linalg.norm(vec_111)
+
+        disp_vec = points - np.dot(points, vec_111) * vec_111.T
+        return points + (sf-1.0)*disp_vec
+
+    def get_construction(self):
+        wulff = Icosahedron(self.surface_energies, self.twin_energy, self.p_atoms, self.natoms)
+
+        sf = wulff._get_icosahedral_scale_factor()
+        planes_lists = [[] for x in range(20)]
+        
+        for form in wulff.forms:
+            planes = planes_from_form(form)
+            len_p = len(planes)
+            for i, p in enumerate(planes):
+                # there will always be a multiple 20 planes in planes
+                idx = i // (len_p // 20)
+                planes_lists[idx].append(p)
+
+        vols = []
+        for plist in planes_lists:
+            vols.append(Volume(alg_objects=plist))
+
+        # get strained and rotated generators for the 20 tetrahedral grains
+        strain_field = IStrain(fun=strain_from_111(), sf=self.icosahedral_scale_factor())
+
+        sym_mats = [MatrixTransform(np.eye(3))] + \
+                    [MatrixTransform(m) for m in wulff._get_all_symmetry_operations()]
+
+        for i, m in enumerate(sym_mats):
+            gen = self.generator.from_generator(transformation=m)
+            gen.strain_field = strain_field
+
+            # setting an ordered priority might ensure that the fivefold axes, twin boundaries aren't duplicated
+            # TODO: test this against wulffpack implementation
+            vols[i].add_generator(gen)
+            vols[i].priority = i
+
+        central_sphere = Volume(alg_objects=Sphere(radius=1.0), generator=self.generator, priority=-1)
+        vols.append(central_sphere)
 
         return MultiVolume(volumes=vols)

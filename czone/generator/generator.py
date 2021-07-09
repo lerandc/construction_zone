@@ -3,7 +3,7 @@ Generator Class
 Luis Rangel DaCosta
 """
 from .amorphous_algorithms import *
-from ..transform import BaseTransformation, Translation
+from ..transform import BaseTransform, Translation
 from ..transform.strain import BaseStrain
 from ..volume.voxel import Voxel
 import copy
@@ -162,7 +162,7 @@ class Generator(BaseGenerator):
         self.voxel.rotate(R)
 
     def transform(self, transformation):
-        assert(isinstance(transformation, BaseTransformation)), "Supplied transformation not transformation object."
+        assert(isinstance(transformation, BaseTransform)), "Supplied transformation not transformation object."
         self.voxel.bases = transformation.applyTransformation_bases(self.voxel.bases)
 
         if not (transformation.basis_only):

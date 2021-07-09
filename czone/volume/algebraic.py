@@ -27,7 +27,7 @@ class Sphere(BaseAlgebraic):
 
     def __init__(self, radius=None, center=None):
         self._radius = None
-        self._center = None
+        self._center = np.array([0,0,0])
 
         if not (radius is None):
             self.radius = radius
