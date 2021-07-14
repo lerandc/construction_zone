@@ -45,6 +45,7 @@ class Generator(BaseGenerator):
         self._structure = None
         self._voxel = None
         self._orientation = np.array([[1,0,0],[0,1,0],[0,0,1]])
+        self._strain_field = None
 
         if not structure is None:
             self.structure = structure
@@ -169,6 +170,32 @@ class Generator(BaseGenerator):
             new_origin = transformation.applyTransformation(np.reshape(self.voxel.origin,(1,3)))
             self.voxel.origin = np.squeeze(new_origin)
 
+    @classmethod
+    def from_spacegroup(cls, Z, coords, cellDims, cellAngs, sgn=None, sym=None, **kwargs):
+        if sym is None:
+            sg = SpaceGroup(int_symbol=sg_symbol_from_int_number(sgn))
+        else:
+            sg = SpaceGroup(int_symbol=sym)
+
+        lattice = Lattice.from_parameters(a=cellDims[0], b=cellDims[1], c=cellDims[2],
+                                            alpha=cellAngs[0], beta=cellAngs[1], gamma=cellAngs[2])
+
+        structure = Structure.from_spacegroup(sg.int_number, lattice=lattice, species=Z, coords=coords)
+
+        return cls(structure=structure, **kwargs)
+
+    @classmethod
+    def from_unit_cell(cls, Z=[1], coords=[[0.0, 0.0, 0.0]], cellDims=[2.5, 2.5, 2.5], cellAngs=[90, 90, 90], **kwargs):
+        """
+        Define simple translating unit
+        """
+        tmp_lattice = Lattice.from_parameters(a=cellDims[0], b=cellDims[1], c=cellDims[2], \
+                                                alpha=cellAngs[0], beta=cellAngs[1], gamma=cellAngs[2])
+
+        structure = Structure(tmp_lattice, Z, coords)
+
+        return cls(structure=structure, **kwargs)
+
 class AmorphousGenerator(BaseGenerator):
     """
     Currently supports only monatomic, periodically uniformly disrtributed blocks
@@ -233,35 +260,3 @@ class AmorphousGenerator(BaseGenerator):
 
         coords = gen_p_substrate(np.max(bbox,axis=0)-np.min(bbox,axis=0), self.min_dist)
         return coords, np.ones(coords.shape[0])*self.species
-
-#####################################
-######### Utility routines ##########
-#####################################
-
-def BasicStructure(Z=[1], coords=[[0.0, 0.0, 0.0]], cellDims=[2.5, 2.5, 2.5], cellAngs=[90, 90, 90]):
-    """
-    Define simple translating unit
-    """
-    tmp = Generator()
-    tmp_lattice = Lattice.from_parameters(a=cellDims[0], b=cellDims[1], c=cellDims[2], \
-                                            alpha=cellAngs[0], beta=cellAngs[1], gamma=cellAngs[2])
-
-    tmp.structure = Structure(tmp_lattice, Z, coords)
-    tmp.voxel = Voxel(scale=cellDims[0])
-
-    return tmp
-
-def from_spacegroup(Z, coords, cellDims, cellAngs, sgn=None, sym=None):
-    if sym is None:
-        sg = SpaceGroup(int_symbol=sg_symbol_from_int_number(sgn))
-    else:
-        sg = SpaceGroup(int_symbol=sym)
-
-    test_lattice = Lattice.from_parameters(a=cellDims[0], b=cellDims[1], c=cellDims[2],
-                                        alpha=cellAngs[0], beta=cellAngs[1], gamma=cellAngs[2])
-
-    tmp = Generator()
-    tmp.structure = Structure.from_spacegroup(sg.int_number, lattice=test_lattice, species=Z, coords=coords)
-    tmp.voxel = Voxel(scale=cellDims[0])
-
-    return tmp

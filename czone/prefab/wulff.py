@@ -1,4 +1,4 @@
-from wulffpack.core import wp_BaseParticle
+from wulffpack.core import BaseParticle
 from wulffpack import SingleCrystal, Winterbottom, Decahedron, Icosahedron 
 from ..volume.volume import Volume, MultiVolume
 from ..generator.generator import Generator
@@ -7,6 +7,7 @@ from ..transform.transform import Rotation, rot_v, MatrixTransform
 from ..transform.strain import HStrain, IStrain
 from ase import Atoms
 from abc import ABC, abstractmethod
+import numpy as np
 
 """
 Submodule provides convenience constructors for returning Wulff constructions
@@ -80,7 +81,7 @@ class WulffBase(ABC):
 
 class WulffSingle(WulffBase):
 
-    def __init__(self, generator: Generator, surface_energies: dict[tuple, float], natoms: int = 1000):
+    def __init__(self, generator: Generator, surface_energies: dict, natoms: int = 1000):
         self.generator = generator
         self.natoms = natoms
         self.surface_energies = surface_energies
@@ -167,7 +168,7 @@ Strategy for replication of Decahedron:
 class WulffDecahedron(WulffBase):
 
     def __init__(self, generator: Generator,
-                        surface_energies: dict[tuple, float],
+                        surface_energies: dict,
                         twin_energy: float,
                         natoms: int = 1000):
         self.generator = generator

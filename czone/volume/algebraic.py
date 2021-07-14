@@ -10,9 +10,8 @@ from ..util.misc import round_away
 
 class BaseAlgebraic(ABC):
 
-    @abstractmethod
-    def __init__(self, **kwargs):
-        pass
+    def __init__(self, tol=1e-5):
+        self.tol = tol
 
     @abstractmethod
     def checkIfInterior(self, testPoints):
@@ -23,9 +22,19 @@ class BaseAlgebraic(ABC):
     def params(self):
         pass
 
+    @property
+    def tol(self):
+        return self._tol
+
+    @tol.setter
+    def tol(self, val):
+        assert(float(val) > 0.0)
+        self._tol = float(val)
+    
+
 class Sphere(BaseAlgebraic):
 
-    def __init__(self, radius=None, center=None):
+    def __init__(self, radius=None, center=None, tol=1e-5):
         self._radius = None
         self._center = np.array([0,0,0])
 
@@ -34,6 +43,8 @@ class Sphere(BaseAlgebraic):
             
         if not (center is None):
             self.center = center
+
+        super().__init__(tol=tol)
 
     def checkIfInterior(self, testPoints):
         return np.sum((testPoints-self.center)**2.0, axis=1) < self.radius**2.0
@@ -44,7 +55,7 @@ class Sphere(BaseAlgebraic):
 
     @property
     def radius(self):
-        return self._radius
+        return self._radius + self.tol
 
     @radius.setter
     def radius(self, radius):
@@ -68,7 +79,7 @@ class Plane(BaseAlgebraic):
     """
     Normal vector points to excluded half-space
     """
-    def __init__(self, normal=None, point=None):
+    def __init__(self, normal=None, point=None, tol=1e-5):
         self._normal = None
         self._point = None
 
@@ -78,6 +89,8 @@ class Plane(BaseAlgebraic):
 
         if not (point is None):
             self.point = point
+        
+        super().__init__(tol=tol)
 
     @property
     def params(self):
@@ -89,9 +102,8 @@ class Plane(BaseAlgebraic):
 
     @point.setter
     def point(self, point):
-        point = np.array(point) #cast to np array if not already
+        point = np.squeeze(np.array(point)) #cast to np array if not already
         assert(point.shape[0] == 3), "Point must be a point in 3D space"
-
         self._point = point
 
     @property
@@ -102,20 +114,20 @@ class Plane(BaseAlgebraic):
     def normal(self, normal):
         normal = np.array(normal) #cast to np array if not already
         assert(normal.size == 3), "normal must be a vector in 3D space"
-        normal = np.reshape(normal, (3,1)) #make a consistent shape
+        # normal = np.reshape(normal, (3,1)) #make a consistent shape
         if(np.linalg.norm(normal) > np.finfo(float).eps):
             self._normal = normal/np.linalg.norm(normal)
         else:
             raise ValueError("Normal vector must have some length")
     
     def checkIfInterior(self, testPoints):
-        return np.sum((testPoints*self.normal.T), axis=1) - np.squeeze(np.dot(self.normal.T, self.point)) < 0
+        return np.sum((testPoints*self.normal), axis=1) - np.squeeze(np.dot(self.normal, self.point + self.normal*self.tol)) < 0
 
     def flip_orientation(self):
         self.normal = -1*self.normal
 
     def dist_from_plane(self, point):
-        return np.dot(point-self.point, self.normal)
+        return np.abs(np.dot(point-self.point, self.normal))
 
     def project_point(self, point):
         return point - self.dist_from_plane(point)*self.normal.T
@@ -126,10 +138,11 @@ class Cylinder(BaseAlgebraic):
     Only supports circular cylinders for now
     """
 
-    def __init__(self, axis=[0,0,1], point=[0,0,0], radius=1.0):
+    def __init__(self, axis=[0,0,1], point=[0,0,0], radius=1.0, tol=1e-5):
         self.axis = axis
         self.point = point
         self.radius = radius
+        super().__init__(tol=tol)
 
     def params(self):
         return self.axis, self.radius
@@ -156,7 +169,7 @@ class Cylinder(BaseAlgebraic):
 
     @property
     def radius(self):
-        return self._radius
+        return self._radius + self.tol
 
     @radius.setter
     def radius(self, val):
@@ -248,5 +261,5 @@ def snap_plane_near_point(point, generator, miller_indices, mode="nearest"):
     new_point = generator.voxel.sbases @ new_point
     
     # get perpendicular vector
-    normal = generator.voxel.reciprocal_bases @ miller_indices
+    normal = generator.voxel.reciprocal_bases.T @ miller_indices
     return Plane(normal=normal, point=new_point)

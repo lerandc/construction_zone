@@ -8,6 +8,8 @@ from ..generator import BaseGenerator, AmorphousGenerator
 from ..transform import BaseTransform
 from abc import ABC, abstractmethod
 from scipy.spatial import ConvexHull, Delaunay
+from ase import Atoms
+from ase.io import write as ase_write
 
 import numpy as np
 import copy
@@ -31,6 +33,10 @@ class BaseVolume(ABC):
         return self._species
 
     @property
+    def ase_atoms(self):
+        return Atoms(symbols=self.species, positions=self.atoms)
+
+    @property
     def priority(self):
         return self._priority
     
@@ -52,6 +58,9 @@ class BaseVolume(ABC):
     @abstractmethod
     def checkIfInterior(self):
         pass
+
+    def to_file(self, fname, **kwargs):
+        ase_write(filename=fname, images=self.ase_atoms, **kwargs)
 
 
 class Volume(BaseVolume):
@@ -110,7 +119,7 @@ class Volume(BaseVolume):
 
     def add_alg_object(self, obj):
         assert(isinstance(obj, (BaseAlgebraic))), "Must be adding algebraic objects from derived BaseAlgebraic class"
-        self._alg_objects.append(obj)
+        self._alg_objects.append(copy.deepcopy(obj))
         
     @property
     def hull(self):
@@ -276,6 +285,23 @@ class Volume(BaseVolume):
         self._atoms = coords[check,:]
         self._species = species[check]
 
+    def from_volume(self, **kwargs):
+        """
+        Construct a volume from another volume
+        **kwargs encodes relationship
+        """
+        new_volume = Volume(points=self.points, alg_objects=self.alg_objects)
+        if "generator" in kwargs.keys():
+            new_volume.add_generator(kwargs["generator"])
+        else:
+            new_volume.add_generator(orig.generator)
+            
+        if "transformation" in kwargs.keys():
+            for t in kwargs["transformation"]:
+                new_volume.transform(t)
+
+        return new_volume
+
 class MultiVolume(BaseVolume):
 
     def __init__(self, volumes=None):
@@ -352,7 +378,7 @@ class MultiVolume(BaseVolume):
 
         checks = []
 
-        for i, ob in enumerate(self.objects):
+        for i, vol in enumerate(self.volumes):
             check = np.ones(vol.atoms.shape[0]).astype(bool)
             eidx = offsets[rel_plevels[i]+1]
 

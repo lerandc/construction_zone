@@ -3,8 +3,10 @@ Scene Class
 Luis Rangel DaCosta
 """
 
-from ..volume import Volume, makeRectPrism
+from ..volume import BaseVolume, makeRectPrism
 import numpy as np
+from ase import Atoms
+from ase.io import write as ase_write
 
 class Scene():
 
@@ -33,6 +35,7 @@ class Scene():
 
     @bounds.setter
     def bounds(self, bounds):
+        bounds = np.array(bounds)
         assert(bounds.shape == (2,3))
         self._bounds = bounds
 
@@ -42,7 +45,7 @@ class Scene():
 
     def add_object(self, ob):
         #for now, only volumes are objects
-        if isinstance(ob, Volume):
+        if isinstance(ob, BaseVolume):
             if self._objects is None:
                 self._objects = [ob]
             else:
@@ -59,6 +62,10 @@ class Scene():
     @property
     def all_species(self):
         return np.hstack([ob.species[self.checks[i]] for i, ob in enumerate(self.objects)])
+
+    @property
+    def ase_atoms(self):
+        return Atoms(symbols=self.all_species, positions=self.all_atoms)
 
     def species_from_object(self, idx):
         return self.objects[idx].atoms[self.checks[idx],:]
@@ -111,3 +118,6 @@ class Scene():
                     check = np.logical_and(check, check_against)
 
             self._checks.append(check)
+
+    def to_file(self, fname, **kwargs):
+        ase_write(filename=fname, images=self.ase_atoms, **kwargs)

@@ -56,6 +56,7 @@ class Voxel():
         assert (not self._collinear(bases[1,:], bases[2,:])), "Bases vectors must linearly indepedent"
         
         self._bases = bases
+        self
 
     @property
     def origin(self):
