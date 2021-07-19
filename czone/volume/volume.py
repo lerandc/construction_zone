@@ -304,10 +304,15 @@ class Volume(BaseVolume):
 
 class MultiVolume(BaseVolume):
 
-    def __init__(self, volumes=None):
+    def __init__(self, volumes=None, priority=None):
+        self._priority = 0
         self._volumes = []
         if not (volumes is None):
             self.add_volume(volumes)
+
+        if not (priority is None):
+            self.priority = priority
+
 
     """
     Propeties

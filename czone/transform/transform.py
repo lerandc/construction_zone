@@ -387,7 +387,7 @@ def s2s_alignment(M_plane: Plane, T_plane: Plane, M_point, T_point):
     proj_point = T_plane.project_point(M_point)
     plane_shift = T_plane.project_point(T_point)-proj_point
 
-    ortho_shift = -1.0*T_plane.dist_from_plane(M_plane.point)*T_plane.normal
+    ortho_shift = 1.0*T_plane.dist_from_plane(M_plane.point)*T_plane.normal
     T_t = Translation(shift=ortho_shift+plane_shift)
 
     return MultiTransform(transforms=[R_t, T_t])

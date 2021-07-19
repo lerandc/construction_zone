@@ -261,10 +261,8 @@ class fccMixedTwinSF(BasePrefab):
             if (np.random.rand() < self.ratio):
                 burger = twin_last * gen_tmp.voxel.sbases @ ((1/3)*np.array([1,1,-2])*np.sign(self.plane))
                 t = Translation(shift=burger)
-                print("stacking fault added for vol " + str(i))
             else:
                 t = Reflection(planes[splits[i]])
-                print("twin added for vol " + str(i))
                 twin_last *= -1
             gen_tmp = gen_tmp.from_generator(transformation=[t])
             new_vol = self.volume.from_volume(generator=gen_tmp)

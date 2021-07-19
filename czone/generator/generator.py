@@ -214,6 +214,7 @@ class AmorphousGenerator(BaseGenerator):
         self.species = species
         self.min_dist = min_dist
         self.density = density
+        self.use_old_result = False
 
     """
     Properties
@@ -253,10 +254,19 @@ class AmorphousGenerator(BaseGenerator):
     def min_dist(self, min_dist):
         assert(min_dist > 0)
         self._min_dist = min_dist
+
+    @property
+    def old_result(self):
+        return self._old_result
+
     """
     Methods
     """
     def supply_atoms(self, bbox):
 
-        coords = gen_p_substrate(np.max(bbox,axis=0)-np.min(bbox,axis=0), self.min_dist)
-        return coords, np.ones(coords.shape[0])*self.species
+        if self.use_old_result:
+            return self.old_result
+        else:
+            coords = gen_p_substrate(np.max(bbox,axis=0)-np.min(bbox,axis=0), self.min_dist)
+            self._old_result = (coords, np.ones(coords.shape[0])*self.species)
+            return self.old_result

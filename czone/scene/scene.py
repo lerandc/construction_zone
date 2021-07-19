@@ -6,6 +6,7 @@ Luis Rangel DaCosta
 from ..volume import BaseVolume, makeRectPrism
 import numpy as np
 from ase import Atoms
+from ase.symbols import Symbols, string2symbols
 from ase.io import write as ase_write
 
 class Scene():
@@ -65,7 +66,8 @@ class Scene():
 
     @property
     def ase_atoms(self):
-        return Atoms(symbols=self.all_species, positions=self.all_atoms)
+        cell_dims = self.bounds[1,:]-self.bounds[0,:]
+        return Atoms(symbols=self.all_species, positions=self.all_atoms, cell=cell_dims)
 
     def species_from_object(self, idx):
         return self.objects[idx].atoms[self.checks[idx],:]
@@ -120,4 +122,10 @@ class Scene():
             self._checks.append(check)
 
     def to_file(self, fname, **kwargs):
-        ase_write(filename=fname, images=self.ase_atoms, **kwargs)
+        if "format" in kwargs.keys():
+            if kwargs["format"] == "prismatic":
+                dwf = set(self.all_species)
+                dwf = {str(Symbols([x])):0.1 for x in dwf}
+                ase_write(filename=fname, images=self.ase_atoms, debye_waller_factors=dwf, **kwargs)
+        else:
+            ase_write(filename=fname, images=self.ase_atoms, **kwargs)
