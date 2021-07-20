@@ -302,7 +302,7 @@ def rot_v(v, theta):
         R: 3x3 rotation matrix
     """
     v = np.array(v)
-    v *= (theta/np.linalg.norm(v))
+    v = v * (theta/np.linalg.norm(v))
 
     return scRotation.from_rotvec(v).as_matrix()
 

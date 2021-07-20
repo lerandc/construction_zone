@@ -35,3 +35,5 @@ def get_N_splits(n, m, l):
     splits.sort()
     return splits
 
+def vector_angle(v1, v2):
+    return np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))

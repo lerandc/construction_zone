@@ -290,11 +290,11 @@ class Volume(BaseVolume):
         Construct a volume from another volume
         **kwargs encodes relationship
         """
-        new_volume = Volume(points=self.points, alg_objects=self.alg_objects)
+        new_volume = Volume(points=self.points, alg_objects=self.alg_objects, priority=self.priority)
         if "generator" in kwargs.keys():
             new_volume.add_generator(kwargs["generator"])
         else:
-            new_volume.add_generator(orig.generator)
+            new_volume.add_generator(self.generator)
             
         if "transformation" in kwargs.keys():
             for t in kwargs["transformation"]:
@@ -396,6 +396,17 @@ class MultiVolume(BaseVolume):
 
         self._atoms = np.vstack([vol.atoms[checks[i],:] for i, vol in enumerate(self.volumes)])
         self._species = np.hstack([vol.species[checks[i]] for i, vol in enumerate(self.volumes)])
+
+    def from_volume(self, **kwargs):
+        """
+        Construct a volume from another volume
+        **kwargs encodes relationship
+        """
+        new_vols = []
+        for vol in self.volumes:
+            new_vols.append(vol.from_volume(**kwargs))
+
+        return MultiVolume(volumes=new_vols, priority=self.priority)
 
 
 

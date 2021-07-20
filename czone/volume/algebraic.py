@@ -201,13 +201,20 @@ def get_bounding_box(planes):
     returns 3 if intersection is unbounded 
     """
 
+    # some issues arose when all planes were in negative coordinate space
+    shift = np.zeros_like(planes[0].point)
+    for plane in planes:
+        shift = np.min([shift, plane.point], axis=0)
+
+    shift = -1.5*shift
+
     A = np.zeros((len(planes),3))
     d = np.zeros((len(planes),1))
     norms = np.zeros((len(planes),1))
     for i, plane in enumerate(planes):
         n, p = plane.params
         A[i,:] = n.squeeze()
-        d[i,0] = -1.0*np.dot(n.squeeze(),p.squeeze())
+        d[i,0] = -1.0*np.dot(n.squeeze(),(p + shift).squeeze())
         norms[i,0] = np.linalg.norm(n)
 
     #check feasiblity of region and get interior point
@@ -217,7 +224,7 @@ def get_bounding_box(planes):
 
     if(res.status == 0):
         hs = HalfspaceIntersection(np.hstack([A,d]),res.x[:-1])
-        return hs.intersections
+        return hs.intersections - shift
     else:
         return res.status
 
