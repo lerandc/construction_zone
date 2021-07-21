@@ -11,6 +11,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 from pymatgen.core import Structure, Lattice
 from pymatgen.symmetry.groups import SpaceGroup, sg_symbol_from_int_number
+import itertools
 
 #####################################
 ########## Generator Classes ########
@@ -133,30 +134,31 @@ class Generator(BaseGenerator):
         min_extent, max_extent = self.voxel.get_extents(bbox)
         fcoords = np.copy(self.coords) #grab fractional in case bases are rotated
 
-        coords = []
-        species = []
-        # TODO: remove loops for speed
-        for i in range(min_extent[0], max_extent[0]+1):
-            for j in range(min_extent[1], max_extent[1]+1):
-                for k in range(min_extent[2], max_extent[2]+1):
-                    new_coords = np.matmul(self.voxel.sbases, np.array([i,j,k])) \
-                                + np.dot(self.voxel.sbases, fcoords.T).T \
-                                + self.voxel.origin
-                    coords.append(new_coords)
-                    species.append(self.species)
+        # get matrix representing unit cells as grid
+        l = [range(min_extent[0], max_extent[0]+1),
+            range(min_extent[1], max_extent[1]+1),
+            range(min_extent[2], max_extent[2]+1),
+            [0]]
+        ucs = np.array(list(itertools.product(*l)))
 
-        coords = np.squeeze(np.array(coords))
-        species = np.squeeze(np.array(species))
+        # get 4D bases with identity in final index to multiply species list
+        bases = np.eye(4)
+        bases[0:3,0:3] = self.voxel.sbases
+        lcoords = bases @ ucs.T
+        scoords = bases @ (np.hstack([fcoords, np.array(self.species)[:,None]])).T
 
-        if len(coords.shape) > 2:
-            coords = np.reshape(coords, (np.prod(coords.shape[0:-1]), 3))
-            species = species.ravel()
+        coords = lcoords[:,:,None] + scoords[:,None,:]
+        coords = coords.reshape(4, coords.shape[1]*coords.shape[2])
+        coords = coords.T
+
+        out_coords = coords[:,:-1] + self.voxel.origin
+        species = coords[:,-1]
 
         if self.strain_field is None:
-            return coords, species
+            return out_coords, species
         else:
             self.strain_field.scrape_params(self)
-            return self.strain_field.apply_strain(coords), species
+            return self.strain_field.apply_strain(out_coords), species
 
     def rotate(self,R):
         #rotate basis of voxel for equivalence

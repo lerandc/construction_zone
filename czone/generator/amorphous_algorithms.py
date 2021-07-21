@@ -62,17 +62,17 @@ def gen_p_substrate(dims, min_dist=1.4, density=.1103075, print_progress=True):
 
     Defaults are values for amor. carbon
     """
-    print(dims)
+    # print(dims)
     dims = np.array(dims)
     min_dist_2 = min_dist**2.0
     dim_x = dims[0]
     dim_y = dims[1]
     dim_z = dims[2]
     sub_vol = dim_x*dim_y*dim_z
-    print(sub_vol)
+    # print(sub_vol)
 
     num_c = np.round(sub_vol*density).astype(int)
-    print(num_c)
+    # print(num_c)
     coords = np.zeros((num_c,3))
     dims = np.array([dim_x, dim_y, dim_z])
     

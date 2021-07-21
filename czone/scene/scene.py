@@ -125,7 +125,8 @@ class Scene():
         if "format" in kwargs.keys():
             if kwargs["format"] == "prismatic":
                 dwf = set(self.all_species)
-                dwf = {str(Symbols([x])):0.1 for x in dwf}
+                dw_default = (0.1**2.0)*8*np.pi**2.0
+                dwf = {str(Symbols([x])):dw_default for x in dwf}
                 ase_write(filename=fname, images=self.ase_atoms, debye_waller_factors=dwf, **kwargs)
         else:
             ase_write(filename=fname, images=self.ase_atoms, **kwargs)
