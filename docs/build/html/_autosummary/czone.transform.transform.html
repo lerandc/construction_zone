@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>czone.transform.transform &#8212; Construction Zone v0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="czone.util" href="czone.util.html" />
+    <link rel="prev" title="czone.transform.strain" href="czone.transform.strain.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-czone.transform.transform">
+<span id="czone-transform-transform"></span><h1>czone.transform.transform<a class="headerlink" href="#module-czone.transform.transform" title="Permalink to this headline">¶</a></h1>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rot_align</span></code>(v, vt)</p></td>
+<td><p>Align two sets of vectors Used for matching orientations to eachother Inputs:     v: Nx3 set of vectors     vt: Nx3 set of corresponding target vectors</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rot_v</span></code>(v, theta)</p></td>
+<td><p>Rotate about an arbitary vector. Inputs:     v: rotation axis     theta: radians Outputs:     R: 3x3 rotation matrix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rot_vtv</span></code>(v, vt)</p></td>
+<td><p>Vector-to-vector rotation. Inputs:     v: 1x3 original vector     vt: 1x3 target vector into which v is rotated.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rot_zxz</span></code>(alpha, beta, gamma[, convention])</p></td>
+<td><p>Rotate to orientation described by zxz euler angles Inputs:     alpha: rotation around z in radians     beta: rotation around x’ in radians     gammma: rotation around z’’ in radians     convention: “intrinsic” or “extrinsic” (default: “intrinsic”)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">s2s_alignment</span></code>(M_plane, T_plane, M_point, T_point)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseTransform</span></code>([locked, basis_only])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Inversion</span></code>([matrix, origin, locked, basis_only])</p></td>
+<td><p>Inherits everything about MatrixTransform; just has a special matrix</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MatrixTransform</span></code>([matrix, origin, locked, …])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiTransform</span></code>([transforms])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Reflection</span></code>([plane, locked, basis_only])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Rotation</span></code>([matrix, origin, locked, basis_only])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Translation</span></code>([shift, locked, basis_only])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Construction Zone</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="czone.html">czone</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="czone.generator.html">czone.generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="czone.io.html">czone.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="czone.prefab.html">czone.prefab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="czone.scene.html">czone.scene</a></li>
+<li class="toctree-l2"><a class="reference internal" href="czone.tests.html">czone.tests</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="czone.transform.html">czone.transform</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="czone.transform.strain.html">czone.transform.strain</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">czone.transform.transform</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="czone.util.html">czone.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="czone.viz.html">czone.viz</a></li>
+<li class="toctree-l2"><a class="reference internal" href="czone.volume.html">czone.volume</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="czone.html">czone</a><ul>
+  <li><a href="czone.transform.html">czone.transform</a><ul>
+      <li>Previous: <a href="czone.transform.strain.html" title="previous chapter">czone.transform.strain</a></li>
+      <li>Next: <a href="czone.util.html" title="next chapter">czone.util</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Luis Rangel DaCosta.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/_autosummary/czone.transform.transform.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

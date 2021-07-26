@@ -1,0 +1,553 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>czone.volume package &#8212; Construction Zone v0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="czone-volume-package">
+<h1>czone.volume package<a class="headerlink" href="#czone-volume-package" title="Permalink to this headline">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-czone.volume.algebraic">
+<span id="czone-volume-algebraic-module"></span><h2>czone.volume.algebraic module<a class="headerlink" href="#module-czone.volume.algebraic" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="czone.volume.algebraic.BaseAlgebraic">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.volume.algebraic.</span></span><span class="sig-name descname"><span class="pre">BaseAlgebraic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.algebraic.BaseAlgebraic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.algebraic.BaseAlgebraic.checkIfInterior">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">checkIfInterior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">testPoints</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.algebraic.BaseAlgebraic.checkIfInterior" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.algebraic.BaseAlgebraic.params">
+<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">params</span></span><a class="headerlink" href="#czone.volume.algebraic.BaseAlgebraic.params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.algebraic.BaseAlgebraic.tol">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">tol</span></span><a class="headerlink" href="#czone.volume.algebraic.BaseAlgebraic.tol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Cylinder">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.volume.algebraic.</span></span><span class="sig-name descname"><span class="pre">Cylinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">1]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.algebraic.Cylinder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#czone.volume.algebraic.BaseAlgebraic" title="czone.volume.algebraic.BaseAlgebraic"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.volume.algebraic.BaseAlgebraic</span></code></a></p>
+<p>Only supports circular cylinders for now</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Cylinder.axis">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">axis</span></span><a class="headerlink" href="#czone.volume.algebraic.Cylinder.axis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Cylinder.checkIfInterior">
+<span class="sig-name descname"><span class="pre">checkIfInterior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">testPoints</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.algebraic.Cylinder.checkIfInterior" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Cylinder.params">
+<span class="sig-name descname"><span class="pre">params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.algebraic.Cylinder.params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Cylinder.point">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">point</span></span><a class="headerlink" href="#czone.volume.algebraic.Cylinder.point" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Cylinder.radius">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">radius</span></span><a class="headerlink" href="#czone.volume.algebraic.Cylinder.radius" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Plane">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.volume.algebraic.</span></span><span class="sig-name descname"><span class="pre">Plane</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.algebraic.Plane" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#czone.volume.algebraic.BaseAlgebraic" title="czone.volume.algebraic.BaseAlgebraic"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.volume.algebraic.BaseAlgebraic</span></code></a></p>
+<p>Normal vector points to excluded half-space</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Plane.checkIfInterior">
+<span class="sig-name descname"><span class="pre">checkIfInterior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">testPoints</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.algebraic.Plane.checkIfInterior" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Plane.dist_from_plane">
+<span class="sig-name descname"><span class="pre">dist_from_plane</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.algebraic.Plane.dist_from_plane" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Plane.flip_orientation">
+<span class="sig-name descname"><span class="pre">flip_orientation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.algebraic.Plane.flip_orientation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Plane.normal">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">normal</span></span><a class="headerlink" href="#czone.volume.algebraic.Plane.normal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Plane.params">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">params</span></span><a class="headerlink" href="#czone.volume.algebraic.Plane.params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Plane.point">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">point</span></span><a class="headerlink" href="#czone.volume.algebraic.Plane.point" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Plane.project_point">
+<span class="sig-name descname"><span class="pre">project_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.algebraic.Plane.project_point" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Sphere">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.volume.algebraic.</span></span><span class="sig-name descname"><span class="pre">Sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.algebraic.Sphere" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#czone.volume.algebraic.BaseAlgebraic" title="czone.volume.algebraic.BaseAlgebraic"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.volume.algebraic.BaseAlgebraic</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Sphere.center">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">center</span></span><a class="headerlink" href="#czone.volume.algebraic.Sphere.center" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Sphere.checkIfInterior">
+<span class="sig-name descname"><span class="pre">checkIfInterior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">testPoints</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.algebraic.Sphere.checkIfInterior" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Sphere.params">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">params</span></span><a class="headerlink" href="#czone.volume.algebraic.Sphere.params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.algebraic.Sphere.radius">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">radius</span></span><a class="headerlink" href="#czone.volume.algebraic.Sphere.radius" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="czone.volume.algebraic.get_bounding_box">
+<span class="sig-prename descclassname"><span class="pre">czone.volume.algebraic.</span></span><span class="sig-name descname"><span class="pre">get_bounding_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">planes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.algebraic.get_bounding_box" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input is iterable of Plane objects.</p>
+<p>Determines if set of planes forms a valid interior convex region and
+returns vertices representing convex region.</p>
+<p>If fails,
+returns 2 if no valid intersection
+returns 3 if intersection is unbounded</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="czone.volume.algebraic.snap_plane_near_point">
+<span class="sig-prename descclassname"><span class="pre">czone.volume.algebraic.</span></span><span class="sig-name descname"><span class="pre">snap_plane_near_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">miller_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.algebraic.snap_plane_near_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns nearest plane defined by miller indices in current generator coordinate system
+to the supplied point.</p>
+<p>Mode:
+nearest- closest plane to point
+floor  - next nearest valid plane towards generator origin
+ceil   - next furthest valid plane from generator origin</p>
+</dd></dl>
+
+</section>
+<section id="module-czone.volume.volume">
+<span id="czone-volume-volume-module"></span><h2>czone.volume.volume module<a class="headerlink" href="#module-czone.volume.volume" title="Permalink to this headline">¶</a></h2>
+<p>Volume Class
+Luis Rangel DaCosta</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="czone.volume.volume.BaseVolume">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.volume.volume.</span></span><span class="sig-name descname"><span class="pre">BaseVolume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.BaseVolume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.volume.BaseVolume.ase_atoms">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ase_atoms</span></span><a class="headerlink" href="#czone.volume.volume.BaseVolume.ase_atoms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.volume.BaseVolume.atoms">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">atoms</span></span><a class="headerlink" href="#czone.volume.volume.BaseVolume.atoms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.BaseVolume.checkIfInterior">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">checkIfInterior</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.BaseVolume.checkIfInterior" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.BaseVolume.populate_atoms">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">populate_atoms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.BaseVolume.populate_atoms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.volume.BaseVolume.priority">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">priority</span></span><a class="headerlink" href="#czone.volume.volume.BaseVolume.priority" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.volume.BaseVolume.species">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">species</span></span><a class="headerlink" href="#czone.volume.volume.BaseVolume.species" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.BaseVolume.to_file">
+<span class="sig-name descname"><span class="pre">to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.BaseVolume.to_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.BaseVolume.transform">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transformation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.BaseVolume.transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="czone.volume.volume.MultiVolume">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.volume.volume.</span></span><span class="sig-name descname"><span class="pre">MultiVolume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">volumes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.MultiVolume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#czone.volume.volume.BaseVolume" title="czone.volume.volume.BaseVolume"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.volume.volume.BaseVolume</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.MultiVolume.add_volume">
+<span class="sig-name descname"><span class="pre">add_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">volume</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.MultiVolume.add_volume" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.volume.MultiVolume.atoms">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">atoms</span></span><a class="headerlink" href="#czone.volume.volume.MultiVolume.atoms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.MultiVolume.checkIfInterior">
+<span class="sig-name descname"><span class="pre">checkIfInterior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">testPoints</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.MultiVolume.checkIfInterior" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.MultiVolume.from_volume">
+<span class="sig-name descname"><span class="pre">from_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.MultiVolume.from_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct a volume from another volume
+<a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs encodes relationship</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.MultiVolume.get_priorities">
+<span class="sig-name descname"><span class="pre">get_priorities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.MultiVolume.get_priorities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.MultiVolume.populate_atoms">
+<span class="sig-name descname"><span class="pre">populate_atoms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.MultiVolume.populate_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>routine is modified form of scene atom population</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.MultiVolume.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transformation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.MultiVolume.transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.volume.MultiVolume.volumes">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">volumes</span></span><a class="headerlink" href="#czone.volume.volume.MultiVolume.volumes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.volume.volume.</span></span><span class="sig-name descname"><span class="pre">Volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.Volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#czone.volume.volume.BaseVolume" title="czone.volume.volume.BaseVolume"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.volume.volume.BaseVolume</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.addPoints">
+<span class="sig-name descname"><span class="pre">addPoints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.Volume.addPoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>expects points as an Nx3 numpy array</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.add_alg_object">
+<span class="sig-name descname"><span class="pre">add_alg_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.Volume.add_alg_object" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.add_generator">
+<span class="sig-name descname"><span class="pre">add_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.Volume.add_generator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.alg_objects">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">alg_objects</span></span><a class="headerlink" href="#czone.volume.volume.Volume.alg_objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.area">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">area</span></span><a class="headerlink" href="#czone.volume.volume.Volume.area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return surface area of convex hull defined by volume points</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.centroid">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">centroid</span></span><a class="headerlink" href="#czone.volume.volume.Volume.centroid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return heuristic centroid– works okay if convex hull has points well distributed on surface.
+Used to track translations and apply rotations if no center is specified.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.checkIfInterior">
+<span class="sig-name descname"><span class="pre">checkIfInterior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">testPoints</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.Volume.checkIfInterior" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if points in testPoints lie within convex hull
+testPoints should be Nx3 numpy array</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.createHull">
+<span class="sig-name descname"><span class="pre">createHull</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.Volume.createHull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create convex hull of volume boundaries</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.from_volume">
+<span class="sig-name descname"><span class="pre">from_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.Volume.from_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct a volume from another volume
+<a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs encodes relationship</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.generator">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">generator</span></span><a class="headerlink" href="#czone.volume.volume.Volume.generator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.get_bounding_box">
+<span class="sig-name descname"><span class="pre">get_bounding_box</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.Volume.get_bounding_box" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.hull">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">hull</span></span><a class="headerlink" href="#czone.volume.volume.Volume.hull" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.orientation">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">orientation</span></span><a class="headerlink" href="#czone.volume.volume.Volume.orientation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return orientation of volume as orthonormal 3x3 matrix, representing
+current orientations of local X/Y/Z vectors.
+Each row is direction the original X/Y/Z now points, in terms of a
+global othornomal system.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.points">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">points</span></span><a class="headerlink" href="#czone.volume.volume.Volume.points" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.populate_atoms">
+<span class="sig-name descname"><span class="pre">populate_atoms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.Volume.populate_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill bounding space with atoms then remove atoms falling outside</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transformation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.Volume.transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.tri">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">tri</span></span><a class="headerlink" href="#czone.volume.volume.Volume.tri" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.volume.Volume.volume">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#czone.volume.volume.Volume.volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return volume of convex hull defined by volume points</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="czone.volume.volume.checkCollisionHulls">
+<span class="sig-prename descclassname"><span class="pre">czone.volume.volume.</span></span><span class="sig-name descname"><span class="pre">checkCollisionHulls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">volumeA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volumeB</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.checkCollisionHulls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expects two volume objects.
+Checks to see if any region is interior to two separate convex hulls.
+Uses interior point check with vertice list of Volume B
+to check for intersection of hulls. Checks both lists for
+the case where one volume is entirely interior to the other.</p>
+<p>TODO: add tolerance, i.e., check shell around a volume</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="czone.volume.volume.from_volume">
+<span class="sig-prename descclassname"><span class="pre">czone.volume.volume.</span></span><span class="sig-name descname"><span class="pre">from_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#czone.volume.volume.Volume" title="czone.volume.volume.Volume"><span class="pre">czone.volume.volume.Volume</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#czone.volume.volume.Volume" title="czone.volume.volume.Volume"><span class="pre">czone.volume.volume.Volume</span></a></span></span><a class="headerlink" href="#czone.volume.volume.from_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct a volume from another volume
+<a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs encodes relationship</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="czone.volume.volume.makeRectPrism">
+<span class="sig-prename descclassname"><span class="pre">czone.volume.volume.</span></span><span class="sig-name descname"><span class="pre">makeRectPrism</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.volume.makeRectPrism" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns 8x3 numpy array of 8 points defining a rectangular prism in space.
+a,b,c are floats defining sidelength.
+center is midpoint of prism</p>
+</dd></dl>
+
+</section>
+<section id="module-czone.volume.voxel">
+<span id="czone-volume-voxel-module"></span><h2>czone.volume.voxel module<a class="headerlink" href="#module-czone.volume.voxel" title="Permalink to this headline">¶</a></h2>
+<p>Voxel Class
+Luis Rangel DaCosta</p>
+<p>defines a voxel in 3D cartesian space based on a linear basis set</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="czone.volume.voxel.Voxel">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.volume.voxel.</span></span><span class="sig-name descname"><span class="pre">Voxel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([[1.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0],</span> <span class="pre">[0.0,</span> <span class="pre">1.0,</span> <span class="pre">0.0],</span> <span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">1.0]])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([1])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0])</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.voxel.Voxel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.bases">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">bases</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.bases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.corners">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">corners</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.corners" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns 8 corners comprising all single unit linear combinations of basis set</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.get_extents">
+<span class="sig-name descname"><span class="pre">get_extents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">box</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.voxel.Voxel.get_extents" title="Permalink to this definition">¶</a></dt>
+<dd><p>determine minimum contiguous block of voxels that fully covers a space</p>
+<p>solves for vector extents to corners of a simple rectangular bounding box</p>
+<p>box is 8x3 np array</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.midpoint">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">midpoint</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.midpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>return midpoint of voxel defined by basis set</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.origin">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">origin</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.origin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.reciprocal_bases">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">reciprocal_bases</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.reciprocal_bases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.rotate">
+<span class="sig-name descname"><span class="pre">rotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.voxel.Voxel.rotate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.sbases">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">sbases</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.sbases" title="Permalink to this definition">¶</a></dt>
+<dd><p>scaled basis set</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.scale">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">scale</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.scale" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-czone.volume">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-czone.volume" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Construction Zone</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Luis Rangel DaCosta.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/czone.volume.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
