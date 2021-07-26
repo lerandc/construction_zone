@@ -1,7 +1,3 @@
-"""
-Generator Class
-Luis Rangel DaCosta
-"""
 from .amorphous_algorithms import *
 from ..transform import BaseTransform, Translation
 from ..transform.strain import BaseStrain
