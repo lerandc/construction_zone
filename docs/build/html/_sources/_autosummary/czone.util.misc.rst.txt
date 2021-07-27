@@ -1,4 +1,4 @@
-czone.util.misc
+﻿czone.util.misc
 ===============
 
 .. automodule:: czone.util.misc
@@ -15,7 +15,7 @@ czone.util.misc
    
       get_N_splits
       round_away
-      vector_angle
+      vangle
    
    
 
