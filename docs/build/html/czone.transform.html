@@ -85,17 +85,10 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">czone.transform package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#czone-transform-strain-module">czone.transform.strain module</a></li>
-<li><a class="reference internal" href="#module-czone.transform.transform">czone.transform.transform module</a></li>
-<li><a class="reference internal" href="#module-czone.transform">Module contents</a></li>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/czone.html">czone</a></li>
 </ul>
-</li>
-</ul>
-</div>
+
             
           
         </div>
@@ -166,8 +159,209 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="czone-transform-strain-module">
-<h2>czone.transform.strain module<a class="headerlink" href="#czone-transform-strain-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-czone.transform.strain">
+<span id="czone-transform-strain-module"></span><h2>czone.transform.strain module<a class="headerlink" href="#module-czone.transform.strain" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="czone.transform.strain.BaseStrain">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.strain.</span></span><span class="sig-name descname"><span class="pre">BaseStrain</span></span><a class="headerlink" href="#czone.transform.strain.BaseStrain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class for strain fields that act on Generators.</p>
+<p>Strain objects can be attached to generators, and transform the coordinates
+of the atoms post-generation of the supercell. Strain fields apply strain
+in crystal coordinate system by default.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.transform.strain.BaseStrain.origin">
+<span class="sig-name descname"><span class="pre">origin</span></span><a class="headerlink" href="#czone.transform.strain.BaseStrain.origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>origin with which respect coordinates are strained</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.transform.strain.BaseStrain.mode">
+<span class="sig-name descname"><span class="pre">mode</span></span><a class="headerlink" href="#czone.transform.strain.BaseStrain.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>“crystal” or “standard”, for straining in crystal coordinates
+or for straining coordinates with respect to standard R3
+orthonromal basis and orientation, respectively</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.transform.strain.BaseStrain.bases">
+<span class="sig-name descname"><span class="pre">bases</span></span><a class="headerlink" href="#czone.transform.strain.BaseStrain.bases" title="Permalink to this definition">¶</a></dt>
+<dd><p>3x3 array representing generator basis vectors</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.transform.strain.BaseStrain.apply_strain">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">apply_strain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#czone.transform.strain.BaseStrain.apply_strain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply strain to a collection of points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – Nx3 array of points in space</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Nx3 array of strained points in space</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">bases</span></span><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p>“Basis vectors of crystal coordinate system.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id1">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">mode</span></span><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinate system for strain application, either ‘crystal’ or ‘standard’.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id2">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">origin</span></span><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Origin with respect to which strain is applied.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.transform.strain.BaseStrain.scrape_params">
+<span class="sig-name descname"><span class="pre">scrape_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">BaseGenerator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.strain.BaseStrain.scrape_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper method to grab origin and bases from host generator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> (<a class="reference internal" href="czone.generator.html#czone.generator.generator.BaseGenerator" title="czone.generator.generator.BaseGenerator"><em>BaseGenerator</em></a>) – generator to grab parameters from</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="czone.transform.strain.HStrain">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.strain.</span></span><span class="sig-name descname"><span class="pre">HStrain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'generator'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'crystal'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.strain.HStrain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#czone.transform.strain.BaseStrain" title="czone.transform.strain.BaseStrain"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.transform.strain.BaseStrain</span></code></a></p>
+<p>Strain class for applying homogeneous strain fields to generators.</p>
+<p>HStrain objects can be attached to generators, and transform the coordinates
+of the atoms post-generation of the supercell via simple strain tensor.
+HStrain fields apply strain in crystal coordinate system by default.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.transform.strain.HStrain.matrix">
+<span class="sig-name descname"><span class="pre">matrix</span></span><a class="headerlink" href="#czone.transform.strain.HStrain.matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matrix representing homogeneous strain tensor.
+Can be set with 3 (x,y,z), 6 (Voigt notation), or
+9 values (as list or 3x3 array).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.transform.strain.HStrain.apply_strain">
+<span class="sig-name descname"><span class="pre">apply_strain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#czone.transform.strain.HStrain.apply_strain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply strain to a collection of points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – Nx3 array of points in space</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Nx3 array of strained points in space</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id3">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">matrix</span></span><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Homogeneous strain tensor.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="czone.transform.strain.IStrain">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.strain.</span></span><span class="sig-name descname"><span class="pre">IStrain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'generator'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'crystal'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.strain.IStrain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#czone.transform.strain.BaseStrain" title="czone.transform.strain.BaseStrain"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.transform.strain.BaseStrain</span></code></a></p>
+<p>Strain class for applying inhomogenous strain fields to generators.</p>
+<p>IStrain objects can be attached to generators, and transform the coordinates
+of the atoms post-generation of the supercell via arbitrary strain functions.
+IStrain fields apply strain in crystal coordinate system by default.</p>
+<p>User must input a custom strain function; strain functions by default should
+accept only points as positional arguments and can take any kwargs.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.transform.strain.IStrain.fun_kwargs">
+<span class="sig-name descname"><span class="pre">fun_kwargs</span></span><a class="headerlink" href="#czone.transform.strain.IStrain.fun_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p>kwargs to pass to custom strain function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.transform.strain.IStrain.strain_fun">
+<span class="sig-name descname"><span class="pre">strain_fun</span></span><a class="headerlink" href="#czone.transform.strain.IStrain.strain_fun" title="Permalink to this definition">¶</a></dt>
+<dd><p>strain function F: R3 -&gt; R3 for
+np.arrays of shape (N,3)-&gt;(N,3)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.transform.strain.IStrain.apply_strain">
+<span class="sig-name descname"><span class="pre">apply_strain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#czone.transform.strain.IStrain.apply_strain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply strain to a collection of points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – Nx3 array of points in space</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Nx3 array of strained points in space</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id4">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">fun_kwargs</span></span><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
+<dd><p>kwargs passed to custom strain function upon application of strain.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id5">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">strain_fun</span></span><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inhomogenous strain function to apply to coordinates.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-czone.transform.transform">
 <span id="czone-transform-transform-module"></span><h2>czone.transform.transform module<a class="headerlink" href="#module-czone.transform.transform" title="Permalink to this headline">¶</a></h2>
@@ -265,20 +459,20 @@ generalized matrix transformations.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id0">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">basis_only</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id6">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">basis_only</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#id6" title="Permalink to this definition">¶</a></dt>
 <dd><p>Boolean value indicating whether or not transformation applied only to basis of Generators.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id1">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">locked</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id7">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">locked</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
 <dd><p>Boolean value indicating whether or not transformation jointly applied to Volumes and Generators.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id2">
-<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">params</span></span><em class="property"><span class="pre">:</span> <span class="pre">tuple</span></em><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id8">
+<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">params</span></span><em class="property"><span class="pre">:</span> <span class="pre">tuple</span></em><a class="headerlink" href="#id8" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return parameters describing transformation.</p>
 </dd></dl>
 
@@ -381,14 +575,14 @@ transformation is applied</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id3">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">matrix</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id9">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">matrix</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#id9" title="Permalink to this definition">¶</a></dt>
 <dd><p>3x3 array representing matrix transformation</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id4">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">origin</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id10">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">origin</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#id10" title="Permalink to this definition">¶</a></dt>
 <dd><p>Point in R3 representing relative origin of transformation</p>
 </dd></dl>
 
@@ -503,8 +697,8 @@ only the generator basis</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id5">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">locked</span></span><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id11">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">locked</span></span><a class="headerlink" href="#id11" title="Permalink to this definition">¶</a></dt>
 <dd><p>Boolean value indicating whether or not any of transformations applies jointly.</p>
 </dd></dl>
 
@@ -515,8 +709,8 @@ only the generator basis</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id6">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">transforms</span></span><a class="headerlink" href="#id6" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id12">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">transforms</span></span><a class="headerlink" href="#id12" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sequence of individual transformations to apply</p>
 </dd></dl>
 
@@ -570,8 +764,8 @@ that have special setters which ensure validity of their respective transformati
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id7">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">plane</span></span><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id13">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">plane</span></span><a class="headerlink" href="#id13" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -665,8 +859,8 @@ that have special setters which ensure validity of their respective transformati
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id8">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">shift</span></span><a class="headerlink" href="#id8" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id14">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">shift</span></span><a class="headerlink" href="#id14" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

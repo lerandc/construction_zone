@@ -85,17 +85,10 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">czone.generator package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-czone.generator.amorphous_algorithms">czone.generator.amorphous_algorithms module</a></li>
-<li><a class="reference internal" href="#czone-generator-generator-module">czone.generator.generator module</a></li>
-<li><a class="reference internal" href="#module-contents">Module contents</a></li>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/czone.html">czone</a></li>
 </ul>
-</li>
-</ul>
-</div>
+
             
           
         </div>
@@ -194,11 +187,142 @@ Density in atoms per cubic angstrom</p>
 <dd></dd></dl>
 
 </div>
-<div class="section" id="czone-generator-generator-module">
-<h2>czone.generator.generator module<a class="headerlink" href="#czone-generator-generator-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-czone.generator.generator">
+<span id="czone-generator-generator-module"></span><h2>czone.generator.generator module<a class="headerlink" href="#module-czone.generator.generator" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="czone.generator.generator.AmorphousGenerator">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.generator.generator.</span></span><span class="sig-name descname"><span class="pre">AmorphousGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1103075</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">species</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.generator.generator.AmorphousGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#czone.generator.generator.BaseGenerator" title="czone.generator.generator.BaseGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.generator.generator.BaseGenerator</span></code></a></p>
+<p>Currently supports only monatomic, periodically uniformly disrtributed blocks</p>
+<p>Defaults to carbon properties</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.generator.generator.AmorphousGenerator.density">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#czone.generator.generator.AmorphousGenerator.density" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.generator.generator.AmorphousGenerator.min_dist">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">min_dist</span></span><a class="headerlink" href="#czone.generator.generator.AmorphousGenerator.min_dist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.generator.generator.AmorphousGenerator.old_result">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">old_result</span></span><a class="headerlink" href="#czone.generator.generator.AmorphousGenerator.old_result" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.generator.generator.AmorphousGenerator.origin">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">origin</span></span><a class="headerlink" href="#czone.generator.generator.AmorphousGenerator.origin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.generator.generator.AmorphousGenerator.species">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">species</span></span><a class="headerlink" href="#czone.generator.generator.AmorphousGenerator.species" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.generator.generator.AmorphousGenerator.supply_atoms">
+<span class="sig-name descname"><span class="pre">supply_atoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bbox</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.generator.generator.AmorphousGenerator.supply_atoms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="czone.generator.generator.BaseGenerator">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.generator.generator.</span></span><span class="sig-name descname"><span class="pre">BaseGenerator</span></span><a class="headerlink" href="#czone.generator.generator.BaseGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.generator.generator.BaseGenerator.from_generator">
+<span class="sig-name descname"><span class="pre">from_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.generator.generator.BaseGenerator.from_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct a generator from another generator
+<a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs encodes relationship</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.generator.generator.BaseGenerator.supply_atoms">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">supply_atoms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.generator.generator.BaseGenerator.supply_atoms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="czone.generator.generator.Generator">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.generator.generator.</span></span><span class="sig-name descname"><span class="pre">Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strain_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.generator.generator.Generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#czone.generator.generator.BaseGenerator" title="czone.generator.generator.BaseGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.generator.generator.BaseGenerator</span></code></a></p>
+<p>Generator class for crystal systems
+Utilizes pymatgen Lattice and Structure to supply relevant methods</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.generator.generator.Generator.coords">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">coords</span></span><a class="headerlink" href="#czone.generator.generator.Generator.coords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.generator.generator.Generator.from_spacegroup">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_spacegroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellDims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellAngs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sgn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.generator.generator.Generator.from_spacegroup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.generator.generator.Generator.from_unit_cell">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_unit_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellDims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[2.5,</span> <span class="pre">2.5,</span> <span class="pre">2.5]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellAngs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[90,</span> <span class="pre">90,</span> <span class="pre">90]</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.generator.generator.Generator.from_unit_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define simple translating unit</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.generator.generator.Generator.lattice">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">lattice</span></span><a class="headerlink" href="#czone.generator.generator.Generator.lattice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.generator.generator.Generator.orientation">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">orientation</span></span><a class="headerlink" href="#czone.generator.generator.Generator.orientation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.generator.generator.Generator.origin">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">origin</span></span><a class="headerlink" href="#czone.generator.generator.Generator.origin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.generator.generator.Generator.rotate">
+<span class="sig-name descname"><span class="pre">rotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.generator.generator.Generator.rotate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.generator.generator.Generator.species">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">species</span></span><a class="headerlink" href="#czone.generator.generator.Generator.species" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.generator.generator.Generator.strain_field">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">strain_field</span></span><a class="headerlink" href="#czone.generator.generator.Generator.strain_field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.generator.generator.Generator.structure">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">structure</span></span><a class="headerlink" href="#czone.generator.generator.Generator.structure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.generator.generator.Generator.supply_atoms">
+<span class="sig-name descname"><span class="pre">supply_atoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bbox</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.generator.generator.Generator.supply_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add atoms to bounding box region</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="czone.generator.generator.Generator.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transformation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.generator.generator.Generator.transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.generator.generator.Generator.voxel">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">voxel</span></span><a class="headerlink" href="#czone.generator.generator.Generator.voxel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-czone.generator">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-czone.generator" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 

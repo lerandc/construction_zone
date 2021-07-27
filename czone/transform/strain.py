@@ -1,7 +1,7 @@
+from __future__ import annotations
 import numpy as np
 from abc import ABC, abstractmethod
-from collections.abc import Callable
-from ..generator import BaseGenerator
+from typing import Callable
 import copy
 
 class BaseStrain(ABC):
@@ -38,7 +38,7 @@ class BaseStrain(ABC):
         """Helper method to grab origin and bases from host generator.
 
         Args:
-            obj (Generator): generator to grabparameters from
+            obj (BaseGenerator): generator to grab parameters from
         """
         if self.mode == "crystal":
             self._bases = np.copy(obj.voxel.sbases)
