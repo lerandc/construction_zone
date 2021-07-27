@@ -13,7 +13,7 @@ import itertools
 ########## Generator Classes ########
 #####################################
 
-class BaseGenerator():
+class BaseGenerator(ABC):
 
     @abstractmethod
     def supply_atoms(self):

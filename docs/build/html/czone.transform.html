@@ -85,10 +85,17 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/czone.html">czone</a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">czone.transform package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#czone-transform-strain-module">czone.transform.strain module</a></li>
+<li><a class="reference internal" href="#module-czone.transform.transform">czone.transform.transform module</a></li>
+<li><a class="reference internal" href="#module-czone.transform">Module contents</a></li>
 </ul>
-
+</li>
+</ul>
+</div>
             
           
         </div>
@@ -159,86 +166,8 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-czone.transform.strain">
-<span id="czone-transform-strain-module"></span><h2>czone.transform.strain module<a class="headerlink" href="#module-czone.transform.strain" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="czone.transform.strain.BaseStrain">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.strain.</span></span><span class="sig-name descname"><span class="pre">BaseStrain</span></span><a class="headerlink" href="#czone.transform.strain.BaseStrain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="czone.transform.strain.BaseStrain.apply_strain">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">apply_strain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.strain.BaseStrain.apply_strain" title="Permalink to this definition">¶</a></dt>
-<dd><p>F: R^3 -&gt; R^3</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="czone.transform.strain.BaseStrain.bases">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">bases</span></span><a class="headerlink" href="#czone.transform.strain.BaseStrain.bases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="czone.transform.strain.BaseStrain.mode">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">mode</span></span><a class="headerlink" href="#czone.transform.strain.BaseStrain.mode" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="czone.transform.strain.BaseStrain.origin">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">origin</span></span><a class="headerlink" href="#czone.transform.strain.BaseStrain.origin" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="czone.transform.strain.BaseStrain.scrape_params">
-<span class="sig-name descname"><span class="pre">scrape_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.strain.BaseStrain.scrape_params" title="Permalink to this definition">¶</a></dt>
-<dd><p>grab origin and bases from generator if needed</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="czone.transform.strain.HStrain">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.strain.</span></span><span class="sig-name descname"><span class="pre">HStrain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'generator'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'crystal'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.strain.HStrain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#czone.transform.strain.BaseStrain" title="czone.transform.strain.BaseStrain"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.transform.strain.BaseStrain</span></code></a></p>
-<p>Homogenous strain field
-Applies strain in crystal coordinates by default with respect to generator origin
-TODO: add species selectivity filter</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="czone.transform.strain.HStrain.apply_strain">
-<span class="sig-name descname"><span class="pre">apply_strain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.strain.HStrain.apply_strain" title="Permalink to this definition">¶</a></dt>
-<dd><p>F: R^3 -&gt; R^3</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="czone.transform.strain.HStrain.matrix">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">matrix</span></span><a class="headerlink" href="#czone.transform.strain.HStrain.matrix" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="czone.transform.strain.IStrain">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.strain.</span></span><span class="sig-name descname"><span class="pre">IStrain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'generator'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'crystal'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.strain.IStrain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#czone.transform.strain.BaseStrain" title="czone.transform.strain.BaseStrain"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.transform.strain.BaseStrain</span></code></a></p>
-<p>Inhomogenous strain field
-Applies strain in crystal coordinates by default with respect to generator origin
-User must input a custom strain function F: R^3 -&gt; R^3 for np.arrays of shape (N,3)-&gt;(N,3)</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="czone.transform.strain.IStrain.apply_strain">
-<span class="sig-name descname"><span class="pre">apply_strain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.strain.IStrain.apply_strain" title="Permalink to this definition">¶</a></dt>
-<dd><p>F: R^3 -&gt; R^3</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="czone.transform.strain.IStrain.fun_kwargs">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">fun_kwargs</span></span><a class="headerlink" href="#czone.transform.strain.IStrain.fun_kwargs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="czone.transform.strain.IStrain.strain_fun">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">strain_fun</span></span><a class="headerlink" href="#czone.transform.strain.IStrain.strain_fun" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<div class="section" id="czone-transform-strain-module">
+<h2>czone.transform.strain module<a class="headerlink" href="#czone-transform-strain-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-czone.transform.transform">
 <span id="czone-transform-transform-module"></span><h2>czone.transform.transform module<a class="headerlink" href="#module-czone.transform.transform" title="Permalink to this headline">¶</a></h2>

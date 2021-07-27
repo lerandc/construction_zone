@@ -1,23 +1,44 @@
 import numpy as np
 from abc import ABC, abstractmethod
 from collections.abc import Callable
+from ..generator import BaseGenerator
 import copy
 
 class BaseStrain(ABC):
+    """Base class for strain fields that act on Generators.
+
+    Strain objects can be attached to generators, and transform the coordinates
+    of the atoms post-generation of the supercell. Strain fields apply strain
+    in crystal coordinate system by default.
+
+    Attributes:
+        origin (np.ndarray): origin with which respect coordinates are strained
+        mode (str): "crystal" or "standard", for straining in crystal coordinates
+                    or for straining coordinates with respect to standard R3
+                    orthonromal basis and orientation, respectively
+        bases (np.ndarray): 3x3 array representing generator basis vectors
+    """
 
     def __init__(self):
         self.origin = np.array([0,0,0])
 
     @abstractmethod
-    def apply_strain(self, points):
-        """
-        F: R^3 -> R^3
+    def apply_strain(self, points: np.ndarray) -> np.ndarray:
+        """Apply strain to a collection of points.
+
+        Args:
+            points (np.ndarray): Nx3 array of points in space
+        
+        Returns:
+            np.ndarray: Nx3 array of strained points in space
         """
         pass
 
-    def scrape_params(self, obj):
-        """
-        grab origin and bases from generator if needed
+    def scrape_params(self, obj: BaseGenerator):
+        """Helper method to grab origin and bases from host generator.
+
+        Args:
+            obj (Generator): generator to grabparameters from
         """
         if self.mode == "crystal":
             self._bases = np.copy(obj.voxel.sbases)
@@ -27,33 +48,42 @@ class BaseStrain(ABC):
 
     @property
     def origin(self):
+        """Origin with respect to which strain is applied."""
         return self._origin
 
     @origin.setter
     def origin(self, val):
-        assert(origin.shape == (3,)), "Origin must have shape (3,)"
-        self._origin = np.array(origin)
+        assert(val.shape == (3,)), "Origin must have shape (3,)"
+        self._origin = np.array(val)
 
     @property
     def mode(self):
+        """Coordinate system for strain application, either 'crystal' or 'standard'."""
         return self._mode
 
     @mode.setter
     def mode(self, val):
-        if mode == "crystal" or "standard":
+        if val == "crystal" or "standard":
             self._mode = val
         else:
             raise ValueError("Mode must be either crystal or standard")
 
     @property
     def bases(self):
+        """"Basis vectors of crystal coordinate system."""
         return self._bases
 
 class HStrain(BaseStrain):
-    """
-    Homogenous strain field
-    Applies strain in crystal coordinates by default with respect to generator origin
-    TODO: add species selectivity filter
+    """Strain class for applying homogeneous strain fields to generators.
+
+    HStrain objects can be attached to generators, and transform the coordinates
+    of the atoms post-generation of the supercell via simple strain tensor. 
+    HStrain fields apply strain in crystal coordinate system by default.
+
+    Attributes:
+        matrix (np.ndarray): Matrix representing homogeneous strain tensor.
+                            Can be set with 3 (x,y,z), 6 (Voigt notation), or
+                            9 values (as list or 3x3 array).
     """
 
     def __init__(self, matrix=None, origin="generator", mode="crystal"):
@@ -78,6 +108,7 @@ class HStrain(BaseStrain):
 
     @property
     def matrix(self):
+        """Homogeneous strain tensor."""
         return self._matrix
 
     @matrix.setter
@@ -101,7 +132,7 @@ class HStrain(BaseStrain):
     ##############
     ### Methods ##
     ##############
-    def apply_strain(self, points):
+    def apply_strain(self, points: np.ndarray) -> np.ndarray:
 
         # get points relative to origin
         sp = np.copy(points)-self.origin
@@ -120,10 +151,19 @@ class HStrain(BaseStrain):
 
 
 class IStrain(BaseStrain):
-    """
-    Inhomogenous strain field
-    Applies strain in crystal coordinates by default with respect to generator origin
-    User must input a custom strain function F: R^3 -> R^3 for np.arrays of shape (N,3)->(N,3)
+    """Strain class for applying inhomogenous strain fields to generators.
+
+    IStrain objects can be attached to generators, and transform the coordinates
+    of the atoms post-generation of the supercell via arbitrary strain functions. 
+    IStrain fields apply strain in crystal coordinate system by default.
+
+    User must input a custom strain function; strain functions by default should
+    accept only points as positional arguments and can take any kwargs.
+
+    Attributes:
+        fun_kwargs (dict): kwargs to pass to custom strain function
+        strain_fun (Callable): strain function F: R3 -> R3 for 
+                                np.arrays of shape (N,3)->(N,3)
     """
     def __init__(self, fun=None, origin="generator", mode="crystal", **kwargs):
         if not fun is None:
@@ -148,23 +188,21 @@ class IStrain(BaseStrain):
     
     @property
     def fun_kwargs(self):
+        """kwargs passed to custom strain function upon application of strain."""
         return self._fun_kwargs
 
     @fun_kwargs.setter
-    def fun_kwargs(self, kwargs_dict):
+    def fun_kwargs(self, kwargs_dict: dict):
         assert(isinstance(kwargs_dict, dict)), "Must supply dictionary for arbirtrary extra kwargs"
         self._fun_kwargs = kwargs_dict
 
     @property
     def strain_fun(self):
+        """Inhomogenous strain function to apply to coordinates."""
         return self._strain_fun
 
     @strain_fun.setter
-    def strain_fun(self, fun) -> np.ndarray:
-        """
-        Strain function should take in nparray of shape (N,3) and arbitrary kwargs (including basis)
-        """
-        # def strain_fun(self, fun: Callable [[np.ndarray], np.ndarray]) -> np.ndarray:
+    def strain_fun(self, fun: Callable[[np.ndarray], np.ndarray]):
         try:
             ref_arr = np.random.rand((100,3))
             test_arr = fun(ref_arr, **self.fun_kwargs)
@@ -177,8 +215,7 @@ class IStrain(BaseStrain):
     ##############
     ### Methods ##
     ##############
-
-    def apply_strain(self, points):
+    def apply_strain(self, points: np.ndarray) -> np.ndarray:
 
         # get points relative to origin
         sp = np.copy(points)-self.origin
@@ -197,6 +234,6 @@ class IStrain(BaseStrain):
             sp = self.strain_fun(sp, **self.fun_kwargs)
         
         # shift back w.r.t. origin
-        s_points += self.origin
+        sp += self.origin
 
         return sp

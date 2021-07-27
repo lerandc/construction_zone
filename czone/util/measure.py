@@ -194,6 +194,7 @@ def calc_rdf(coords, cutoff=20.0, px=True, py=True, pz=True):
     # get periodic distance calculation
     f_sdist = get_sdist_fun(dims, px, py, pz)
 
+    # assign coords to voxels
     parts = []
     part_ids = np.arange(coords.shape[0])
     for i in range(np.prod(N)):
@@ -201,15 +202,21 @@ def calc_rdf(coords, cutoff=20.0, px=True, py=True, pz=True):
 
     # do 3D arrays so that distances are broadcasted/batched
     counts = np.zeros(int(cutoff/0.1))
+
+    # for each voxel, calculate distance of owned particles to all possible 
+    # neighbors within cutoff distance
     for i in range(np.prod(N)):
         cur_parts = coords[parts[i],:][:,:,None]
 
         for n in nn[box_idx[i]]:
             neighbor_parts = (coords[parts[n],:].T)[None,:,:]
             dist = np.sqrt(f_sdist(cur_parts, neighbor_parts))
+
+            # use histogram to get counts for RDF
             tmp_counts, _ = np.histogram(dist, bins=counts.shape[0], range=(0.0, cutoff))
             counts += tmp_counts
 
+    # correct for self interactions
     counts[0] = 0.0
 
     return counts
