@@ -244,85 +244,230 @@ User must input a custom strain function F: R^3 -&gt; R^3 for np.arrays of shape
 <span id="czone-transform-transform-module"></span><h2>czone.transform.transform module<a class="headerlink" href="#module-czone.transform.transform" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="czone.transform.transform.BaseTransform">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">BaseTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">locked</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.BaseTransform" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">BaseTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">locked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_only</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.BaseTransform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class for transformation objects which manipulate Generators and Volumes.</p>
+<p>Transformation objects contain logic and parameters for manipulating the
+different types of objects used in Construction Zone, namely, Generators and
+Volumes. BaseTransform is typically not created directly. Use MatrixTransform for
+generalized matrix transformations.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.transform.transform.BaseTransform.locked">
+<span class="sig-name descname"><span class="pre">locked</span></span><a class="headerlink" href="#czone.transform.transform.BaseTransform.locked" title="Permalink to this definition">¶</a></dt>
+<dd><p>whether or not transformation applies jointly to volumes containing generators</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.transform.transform.BaseTransform.basis_only">
+<span class="sig-name descname"><span class="pre">basis_only</span></span><a class="headerlink" href="#czone.transform.transform.BaseTransform.basis_only" title="Permalink to this definition">¶</a></dt>
+<dd><p>whether or not transformation applies only to basis of generators</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.transform.transform.BaseTransform.params">
+<span class="sig-name descname"><span class="pre">params</span></span><a class="headerlink" href="#czone.transform.transform.BaseTransform.params" title="Permalink to this definition">¶</a></dt>
+<dd><p>parameters describing transformation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.transform.transform.BaseTransform.applyTransformation">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">applyTransformation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.BaseTransform.applyTransformation" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">applyTransformation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#czone.transform.transform.BaseTransform.applyTransformation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply transformation to a collection of points in space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – Nx3 array of points to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Nx3 array of transformed points.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.transform.transform.BaseTransform.applyTransformation_alg">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">applyTransformation_alg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alg_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.BaseTransform.applyTransformation_alg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">applyTransformation_alg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alg_object</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="czone.volume.html#czone.volume.algebraic.BaseAlgebraic" title="czone.volume.algebraic.BaseAlgebraic"><span class="pre">czone.volume.algebraic.BaseAlgebraic</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="czone.volume.html#czone.volume.algebraic.BaseAlgebraic" title="czone.volume.algebraic.BaseAlgebraic"><span class="pre">czone.volume.algebraic.BaseAlgebraic</span></a></span></span><a class="headerlink" href="#czone.transform.transform.BaseTransform.applyTransformation_alg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply transformation to algebraic object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>alg_object</strong> (<a class="reference internal" href="czone.volume.html#czone.volume.algebraic.BaseAlgebraic" title="czone.volume.algebraic.BaseAlgebraic"><em>BaseAlgebraic</em></a>) – Algebraic object to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Transformed object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="czone.volume.html#czone.volume.algebraic.BaseAlgebraic" title="czone.volume.algebraic.BaseAlgebraic">BaseAlgebraic</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.transform.transform.BaseTransform.applyTransformation_bases">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">applyTransformation_bases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.BaseTransform.applyTransformation_bases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">applyTransformation_bases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#czone.transform.transform.BaseTransform.applyTransformation_bases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply transformation to bases of a generator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – 3x3 array of bases from generator voxel.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>transformed 3x3 array of bases.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.transform.transform.BaseTransform.basis_only">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">basis_only</span></span><a class="headerlink" href="#czone.transform.transform.BaseTransform.basis_only" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">basis_only</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean value indicating whether or not transformation applied only to basis of Generators.</p>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.transform.transform.BaseTransform.locked">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">locked</span></span><a class="headerlink" href="#czone.transform.transform.BaseTransform.locked" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id1">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">locked</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean value indicating whether or not transformation jointly applied to Volumes and Generators.</p>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.transform.transform.BaseTransform.params">
-<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">params</span></span><a class="headerlink" href="#czone.transform.transform.BaseTransform.params" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id2">
+<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">params</span></span><em class="property"><span class="pre">:</span> <span class="pre">tuple</span></em><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return parameters describing transformation.</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="czone.transform.transform.Inversion">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">Inversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locked</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.Inversion" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">Inversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_only</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.Inversion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#czone.transform.transform.MatrixTransform" title="czone.transform.transform.MatrixTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.transform.transform.MatrixTransform</span></code></a></p>
-<p>Inherits everything about MatrixTransform; just has a special matrix</p>
+<p>Transformation which applies inversion about an origin.</p>
+<p>Inversion, Rotation, and Reflection classes are derived classes of MatrixTransform
+that have special setters which ensure validity of their respective transformations.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="czone.transform.transform.Inversion.matrix">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">matrix</span></span><a class="headerlink" href="#czone.transform.transform.Inversion.matrix" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Inversion matrix. Cannot be altered.</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="czone.transform.transform.MatrixTransform">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">MatrixTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locked</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.MatrixTransform" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">MatrixTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_only</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.MatrixTransform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#czone.transform.transform.BaseTransform" title="czone.transform.transform.BaseTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.transform.transform.BaseTransform</span></code></a></p>
+<p>Transformation object that applies arbitrary matrix transformations.</p>
+<p>Inversion, Rotation, and Reflection classes are derived classes of MatrixTransform
+that have special setters which ensure validity of their respective transformations.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.transform.transform.MatrixTransform.matrix">
+<span class="sig-name descname"><span class="pre">matrix</span></span><a class="headerlink" href="#czone.transform.transform.MatrixTransform.matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>3x3 matrix representing transformation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.transform.transform.MatrixTransform.origin">
+<span class="sig-name descname"><span class="pre">origin</span></span><a class="headerlink" href="#czone.transform.transform.MatrixTransform.origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>point in R3 representing relative origin in which
+transformation is applied</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.transform.transform.MatrixTransform.applyTransformation">
 <span class="sig-name descname"><span class="pre">applyTransformation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.MatrixTransform.applyTransformation" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Apply transformation to a collection of points in space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – Nx3 array of points to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Nx3 array of transformed points.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.transform.transform.MatrixTransform.applyTransformation_alg">
 <span class="sig-name descname"><span class="pre">applyTransformation_alg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alg_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.MatrixTransform.applyTransformation_alg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Apply transformation to algebraic object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>alg_object</strong> (<a class="reference internal" href="czone.volume.html#czone.volume.algebraic.BaseAlgebraic" title="czone.volume.algebraic.BaseAlgebraic"><em>BaseAlgebraic</em></a>) – Algebraic object to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Transformed object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="czone.volume.html#czone.volume.algebraic.BaseAlgebraic" title="czone.volume.algebraic.BaseAlgebraic">BaseAlgebraic</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.transform.transform.MatrixTransform.applyTransformation_bases">
 <span class="sig-name descname"><span class="pre">applyTransformation_bases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.MatrixTransform.applyTransformation_bases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Apply transformation to bases of a generator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – 3x3 array of bases from generator voxel.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>transformed 3x3 array of bases.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.transform.transform.MatrixTransform.matrix">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">matrix</span></span><a class="headerlink" href="#czone.transform.transform.MatrixTransform.matrix" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id3">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">matrix</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
+<dd><p>3x3 array representing matrix transformation</p>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.transform.transform.MatrixTransform.origin">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">origin</span></span><a class="headerlink" href="#czone.transform.transform.MatrixTransform.origin" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id4">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">origin</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point in R3 representing relative origin of transformation</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="czone.transform.transform.MatrixTransform.params">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">params</span></span><a class="headerlink" href="#czone.transform.transform.MatrixTransform.params" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return parameters describing transformation.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -330,132 +475,289 @@ User must input a custom strain function F: R^3 -&gt; R^3 for np.arrays of shape
 <dt class="sig sig-object py" id="czone.transform.transform.MultiTransform">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">MultiTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transforms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.MultiTransform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#czone.transform.transform.BaseTransform" title="czone.transform.transform.BaseTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.transform.transform.BaseTransform</span></code></a></p>
+<p>Transformation sequence which applies a numeruous transformations in succession.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.transform.transform.MultiTransform.transforms">
+<span class="sig-name descname"><span class="pre">transforms</span></span><a class="headerlink" href="#czone.transform.transform.MultiTransform.transforms" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of individual transformations applied</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="#czone.transform.transform.BaseTransform" title="czone.transform.transform.BaseTransform">BaseTransform</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.transform.transform.MultiTransform.locked">
+<span class="sig-name descname"><span class="pre">locked</span></span><a class="headerlink" href="#czone.transform.transform.MultiTransform.locked" title="Permalink to this definition">¶</a></dt>
+<dd><p>whether any of transformations applied is a joint transformation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.transform.transform.MultiTransform.basic_only">
+<span class="sig-name descname"><span class="pre">basic_only</span></span><a class="headerlink" href="#czone.transform.transform.MultiTransform.basic_only" title="Permalink to this definition">¶</a></dt>
+<dd><p>whether any of transformations applied transforms
+only the generator basis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.transform.transform.MultiTransform.add_transform">
 <span class="sig-name descname"><span class="pre">add_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.MultiTransform.add_transform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Add a transformation to sequence of transformations</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.transform.transform.MultiTransform.applyTransformation">
 <span class="sig-name descname"><span class="pre">applyTransformation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.MultiTransform.applyTransformation" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Apply transformation to a collection of points in space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – Nx3 array of points to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Nx3 array of transformed points.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.transform.transform.MultiTransform.applyTransformation_alg">
 <span class="sig-name descname"><span class="pre">applyTransformation_alg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alg_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.MultiTransform.applyTransformation_alg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Apply transformation to algebraic object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>alg_object</strong> (<a class="reference internal" href="czone.volume.html#czone.volume.algebraic.BaseAlgebraic" title="czone.volume.algebraic.BaseAlgebraic"><em>BaseAlgebraic</em></a>) – Algebraic object to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Transformed object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="czone.volume.html#czone.volume.algebraic.BaseAlgebraic" title="czone.volume.algebraic.BaseAlgebraic">BaseAlgebraic</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.transform.transform.MultiTransform.applyTransformation_bases">
 <span class="sig-name descname"><span class="pre">applyTransformation_bases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.MultiTransform.applyTransformation_bases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Apply transformation to bases of a generator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – 3x3 array of bases from generator voxel.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>transformed 3x3 array of bases.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="czone.transform.transform.MultiTransform.basis_only">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">basis_only</span></span><a class="headerlink" href="#czone.transform.transform.MultiTransform.basis_only" title="Permalink to this definition">¶</a></dt>
-<dd><p>Needs to signal to generator that at least one of its transforms will transform the origin
-Should instead pass the voxel to the transformation objects and handle it internally per transform
-because if not all of them affect the origin, the origin will get wrongly manipulated.</p>
+<dd><p>Boolean value indicating whether or not any of transformations applies only to basis of generator</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.transform.transform.MultiTransform.locked">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">locked</span></span><a class="headerlink" href="#czone.transform.transform.MultiTransform.locked" title="Permalink to this definition">¶</a></dt>
-<dd><p>Needs to signal to volume that at least one of its transforms will transform the generator</p>
+<dt class="sig sig-object py" id="id5">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">locked</span></span><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean value indicating whether or not any of transformations applies jointly.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="czone.transform.transform.MultiTransform.params">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">params</span></span><a class="headerlink" href="#czone.transform.transform.MultiTransform.params" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return parameters describing transformation.</p>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.transform.transform.MultiTransform.transforms">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">transforms</span></span><a class="headerlink" href="#czone.transform.transform.MultiTransform.transforms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id6">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">transforms</span></span><a class="headerlink" href="#id6" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sequence of individual transformations to apply</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="czone.transform.transform.Reflection">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">Reflection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locked</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.Reflection" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">Reflection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_only</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.Reflection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#czone.transform.transform.MatrixTransform" title="czone.transform.transform.MatrixTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.transform.transform.MatrixTransform</span></code></a></p>
+<p>Transformation which applies a relfection about an arbitrary plane.</p>
+<p>Inversion, Rotation, and Reflection classes are derived classes of MatrixTransform
+that have special setters which ensure validity of their respective transformations.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.transform.transform.Reflection.plane">
+<span class="sig-name descname"><span class="pre">plane</span></span><a class="headerlink" href="#czone.transform.transform.Reflection.plane" title="Permalink to this definition">¶</a></dt>
+<dd><p>plane about which reflection is performed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="czone.volume.html#czone.volume.algebraic.Plane" title="czone.volume.algebraic.Plane">Plane</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.transform.transform.Reflection.applyTransformation_alg">
 <span class="sig-name descname"><span class="pre">applyTransformation_alg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alg_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.Reflection.applyTransformation_alg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Apply transformation to algebraic object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>alg_object</strong> (<a class="reference internal" href="czone.volume.html#czone.volume.algebraic.BaseAlgebraic" title="czone.volume.algebraic.BaseAlgebraic"><em>BaseAlgebraic</em></a>) – Algebraic object to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Transformed object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="czone.volume.html#czone.volume.algebraic.BaseAlgebraic" title="czone.volume.algebraic.BaseAlgebraic">BaseAlgebraic</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="czone.transform.transform.Reflection.matrix">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">matrix</span></span><a class="headerlink" href="#czone.transform.transform.Reflection.matrix" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">matrix</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#czone.transform.transform.Reflection.matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>3x3 array representing matrix transformation</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="czone.transform.transform.Reflection.params">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">params</span></span><a class="headerlink" href="#czone.transform.transform.Reflection.params" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return parameters describing transformation.</p>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.transform.transform.Reflection.plane">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">plane</span></span><a class="headerlink" href="#czone.transform.transform.Reflection.plane" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id7">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">plane</span></span><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="czone.transform.transform.Rotation">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">Rotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locked</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.Rotation" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">Rotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_only</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.Rotation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#czone.transform.transform.MatrixTransform" title="czone.transform.transform.MatrixTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.transform.transform.MatrixTransform</span></code></a></p>
+<p>Transformation which applies a rotation about an origin.</p>
+<p>Inversion, Rotation, and Reflection classes are derived classes of MatrixTransform
+that have special setters which ensure validity of their respective transformations.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="czone.transform.transform.Rotation.matrix">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">matrix</span></span><a class="headerlink" href="#czone.transform.transform.Rotation.matrix" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">matrix</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#czone.transform.transform.Rotation.matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>3x3 array representing matrix transformation</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="czone.transform.transform.Translation">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">Translation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locked</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.Translation" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">Translation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_only</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.Translation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#czone.transform.transform.BaseTransform" title="czone.transform.transform.BaseTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.transform.transform.BaseTransform</span></code></a></p>
+<p>Transformation object that applies translatiosn to Generators and Volumes.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.transform.transform.Translation.shift">
+<span class="sig-name descname"><span class="pre">shift</span></span><a class="headerlink" href="#czone.transform.transform.Translation.shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translation vector in 3D space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.transform.transform.Translation.applyTransformation">
 <span class="sig-name descname"><span class="pre">applyTransformation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.Translation.applyTransformation" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Apply transformation to a collection of points in space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – Nx3 array of points to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Nx3 array of transformed points.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.transform.transform.Translation.applyTransformation_alg">
 <span class="sig-name descname"><span class="pre">applyTransformation_alg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alg_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.Translation.applyTransformation_alg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Apply transformation to algebraic object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>alg_object</strong> (<a class="reference internal" href="czone.volume.html#czone.volume.algebraic.BaseAlgebraic" title="czone.volume.algebraic.BaseAlgebraic"><em>BaseAlgebraic</em></a>) – Algebraic object to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Transformed object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="czone.volume.html#czone.volume.algebraic.BaseAlgebraic" title="czone.volume.algebraic.BaseAlgebraic">BaseAlgebraic</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.transform.transform.Translation.applyTransformation_bases">
 <span class="sig-name descname"><span class="pre">applyTransformation_bases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.Translation.applyTransformation_bases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Apply transformation to bases of a generator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – 3x3 array of bases from generator voxel.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>transformed 3x3 array of bases.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="czone.transform.transform.Translation.params">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">params</span></span><a class="headerlink" href="#czone.transform.transform.Translation.params" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return parameters describing transformation.</p>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.transform.transform.Translation.shift">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">shift</span></span><a class="headerlink" href="#czone.transform.transform.Translation.shift" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id8">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">shift</span></span><a class="headerlink" href="#id8" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="czone.transform.transform.rot_align">
-<span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">rot_align</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.rot_align" title="Permalink to this definition">¶</a></dt>
-<dd><p>Align two sets of vectors
-Used for matching orientations to eachother
-Inputs:</p>
-<blockquote>
-<div><p>v: Nx3 set of vectors
-vt: Nx3 set of corresponding target vectors</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Outputs:</dt><dd><p>R: 3x3 rotation matrix</p>
+<span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">rot_align</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#czone.transform.transform.rot_align" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate rotation aligning two sets of ordered vectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v</strong> (<em>np.ndarray</em>) – Nx3 set of vectors</p></li>
+<li><p><strong>vt</strong> (<em>np.ndarray</em>) – Nx3 set of corresponding target vectors</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>3x3 rotation matrix</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -463,59 +765,101 @@ vt: Nx3 set of corresponding target vectors</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="czone.transform.transform.rot_v">
 <span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">rot_v</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.rot_v" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rotate about an arbitary vector.
-Inputs:</p>
-<blockquote>
-<div><p>v: rotation axis
-theta: radians</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Outputs:</dt><dd><p>R: 3x3 rotation matrix</p>
+<dd><p>Calculate rotation about an arbitary vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v</strong> (<em>np.ndarray</em>) – axis of rotation</p></li>
+<li><p><strong>theta</strong> (<em>float</em>) – angle of rotation in radians</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>3x3 rotation matrix</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="czone.transform.transform.rot_vtv">
-<span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">rot_vtv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.rot_vtv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Vector-to-vector rotation.
-Inputs:</p>
-<blockquote>
-<div><p>v: 1x3 original vector
-vt: 1x3 target vector into which v is rotated</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Outputs:</dt><dd><p>R: 3x3 rotation matrix</p>
+<span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">rot_vtv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#czone.transform.transform.rot_vtv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate rotation to align one vector to another.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v</strong> (<em>np.ndarray</em>) – 1x3 original vector</p></li>
+<li><p><strong>vt</strong> (<em>np.ndarray</em>) – 1x3 target vector into which v is rotated</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>3x3 rotation matrix</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>
-<p>Use cross product to get axis of rotation, then develop matrix form of
-Rodrigues rotation of formula</p>
-<p>sources:
-<a class="reference external" href="https://math.stackexchange.com/questions/293116/rotating-one-3d-vector-to-another">https://math.stackexchange.com/questions/293116/rotating-one-3d-vector-to-another</a>
-<a class="reference external" href="https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula">https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula</a></p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="czone.transform.transform.rot_zxz">
-<span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">rot_zxz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convention</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'intrinsic'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.rot_zxz" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rotate to orientation described by zxz euler angles
-Inputs:</p>
-<blockquote>
-<div><p>alpha: rotation around z in radians
-beta: rotation around x’ in radians
-gammma: rotation around z’’ in radians
-convention: “intrinsic” or “extrinsic” (default: “intrinsic”)</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Outputs:</dt><dd><p>R: 3x3 rotation matrix</p>
+<span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">rot_zxz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convention</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'intrinsic'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#czone.transform.transform.rot_zxz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate to orientation described by zxz euler angles.</p>
+<p>Calculate rotation matrix as determined by zxz Euler angles. Convention can
+be either intrinsic, in which rotations are performed on the moving coordinate
+system XYZ in reference to a fixed coordinate system xyz, or extrinsic,
+in which the rotations are performed about the fixed coordinate system xyz.
+Intrisic rotations are performed alpha-beta-gamma, while extrinsic rotations
+are perfomed gamma-beta-alpha.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> (<em>float</em>) – rotation around Z / z in radians</p></li>
+<li><p><strong>beta</strong> (<em>float</em>) – rotation around X’/ x in radians</p></li>
+<li><p><strong>gammma</strong> (<em>float</em>) – rotation around Z’’/ z in radians</p></li>
+<li><p><strong>convention</strong> (<em>float</em>) – “intrinsic” or “extrinsic” (default: “intrinsic”)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>3x3 rotation matrix</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="czone.transform.transform.s2s_alignment">
-<span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">s2s_alignment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M_plane</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="czone.volume.html#czone.volume.algebraic.Plane" title="czone.volume.algebraic.Plane"><span class="pre">czone.volume.algebraic.Plane</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_plane</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="czone.volume.html#czone.volume.algebraic.Plane" title="czone.volume.algebraic.Plane"><span class="pre">czone.volume.algebraic.Plane</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">M_point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_point</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.transform.transform.s2s_alignment" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">czone.transform.transform.</span></span><span class="sig-name descname"><span class="pre">s2s_alignment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M_plane</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="czone.volume.html#czone.volume.algebraic.Plane" title="czone.volume.algebraic.Plane"><span class="pre">czone.volume.algebraic.Plane</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_plane</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="czone.volume.html#czone.volume.algebraic.Plane" title="czone.volume.algebraic.Plane"><span class="pre">czone.volume.algebraic.Plane</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">M_point</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_point</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#czone.transform.transform.MultiTransform" title="czone.transform.transform.MultiTransform"><span class="pre">czone.transform.transform.MultiTransform</span></a></span></span><a class="headerlink" href="#czone.transform.transform.s2s_alignment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates a transformation aligning two surfaces to eachother.</p>
+<p>Aligns two surfaces, represented by algebraic plane objects, such that
+their normal vectors are anti-parallel. The translational degree of freedom
+is resolved by minimizing the distance of a point in the target alignment to
+a transformed point from the moving frame. Returned Transformation sequence
+is a rotation followed by translation.</p>
+<p>Specifically, given a point in the moving frame M_p with plane M and a
+point in the target frame T_p with plane T, calculate rotation R such that
+(R &#64; M.normal ) .* T.normal = -1 and translation vector T_t under the
+constraint T_t = min T_t ||R &#64; M_p - T_p||</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>M_plane</strong> (<a class="reference internal" href="czone.volume.html#czone.volume.algebraic.Plane" title="czone.volume.algebraic.Plane"><em>Plane</em></a>) – Moving plane to align to another surface</p></li>
+<li><p><strong>T_plane</strong> (<a class="reference internal" href="czone.volume.html#czone.volume.algebraic.Plane" title="czone.volume.algebraic.Plane"><em>Plane</em></a>) – Target plane to which M_plane is aligned</p></li>
+<li><p><strong>M_point</strong> (<em>np.ndarray</em>) – Point in moving plane reference frame</p></li>
+<li><p><strong>T_point</strong> (<em>np.ndarray</em>) – Point in target plane reference frame</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Transformation routine represented by surface alignment.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#czone.transform.transform.MultiTransform" title="czone.transform.transform.MultiTransform">MultiTransform</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="module-czone.transform">

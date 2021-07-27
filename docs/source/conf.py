@@ -32,7 +32,8 @@ release = 'v0.0.1'
 # ones.
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.autosummary',
-              'sphinx.ext.napoleon']
+              'sphinx.ext.napoleon',
+              'sphinx.ext.imgmath']
 
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 
