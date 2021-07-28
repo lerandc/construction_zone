@@ -90,7 +90,7 @@ class BaseTransform(ABC):
         self._basis_only = basis_only
 
 class Translation(BaseTransform):
-    """Transformation object that applies translatiosn to Generators and Volumes.
+    """Transformation object that applies translations to Generators and Volumes.
 
     Attributes:
         shift (np.ndarray): Translation vector in 3D space.

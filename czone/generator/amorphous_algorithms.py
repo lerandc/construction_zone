@@ -1,13 +1,12 @@
 import numpy as np
+from typing import List
 
 ############################
 ######### Utilities ########
 ############################
 
 def get_p_dist(coords, new_coord, dims):
-    """
-    calculate squared periodic distance between a coordinate and all other coordinates in a set
-    """
+    """Calculate squared periodic distance between a coordinate and all other coordinates in a set."""
 
     dist_0 = np.abs(coords-new_coord)
     dist_1 = dims-dist_0
@@ -22,12 +21,12 @@ def get_tuples(tx, ty, tz):
                 
     return tlist
 
-
 ############################################
 ######## Periodic Uniform Algorithm ########
 ############################################
         
 def get_voxels(min_dist, dims):
+    """Get voxel and neighbor list."""
     num_blocks = np.ceil(dims/(min_dist)).astype(int)
     voxels = []
     neighbors = []
@@ -54,25 +53,44 @@ def get_voxels(min_dist, dims):
                 
     return voxels, neighbors
     
-def gen_p_substrate(dims, min_dist=1.4, density=.1103075, print_progress=True):
-    """
-    Dims in angstrom
-    Min dist in angstrom
-    Density in atoms per cubic angstrom
+def gen_p_substrate(dims: List[float], min_dist: float=1.4, 
+                    density=.1103075, print_progress=True):
+    """Generate a uniformly random distributed collection of atoms with PBC.
 
-    Defaults are values for amor. carbon
+    Given the size of a rectangular prism, a minimum bond distance, and a target
+    density, generate a uniformly random collection of atoms obeying periodic
+    boundary conditions in X and Y. Dimensions, minimum distance, and density
+    should all be in units of angstroms but can be input in any consistent unit 
+    scheme. Default values are for amorphous carbon.
+
+    Generation algorithm loosely follows:
+        1. Get total number  of atoms N to generate.
+        2. While substrate contains < N atoms,
+            a. Generate uniformly random coordinate
+            b. Check distance against nearest neighbor atoms to for violation
+                of bond distance
+            c. If not too close to other atoms, add to substrate; else, regenerate
+
+    Generation utilizes voxel grid in 3D space for linear scaling of distance
+    calculations and therefore generation time should loosely scale linearly
+    with the volume of the substrate.
+
+    Args:
+        dims (List[float]): Size of rectangular prism substrate in [x,y,z]
+        min_dist (float): Minimum seperation between atoms.
+        density (float): Density of substrate.
+
+    Returns:
+        np.ndarray: coordinates of atoms in periodic substrate
     """
-    # print(dims)
     dims = np.array(dims)
     min_dist_2 = min_dist**2.0
     dim_x = dims[0]
     dim_y = dims[1]
     dim_z = dims[2]
     sub_vol = dim_x*dim_y*dim_z
-    # print(sub_vol)
 
     num_c = np.round(sub_vol*density).astype(int)
-    # print(num_c)
     coords = np.zeros((num_c,3))
     dims = np.array([dim_x, dim_y, dim_z])
     

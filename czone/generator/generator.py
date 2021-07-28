@@ -1,5 +1,5 @@
 from .amorphous_algorithms import *
-from ..transform import BaseTransform, Translation
+from ..transform import BaseTransform
 from ..transform.strain import BaseStrain
 from ..volume.voxel import Voxel
 import copy
@@ -16,7 +16,7 @@ import itertools
 class BaseGenerator(ABC):
 
     @abstractmethod
-    def supply_atoms(self):
+    def supply_atoms(self, bbox):
         pass
 
     def from_generator(self, **kwargs):
