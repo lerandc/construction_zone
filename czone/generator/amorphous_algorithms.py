@@ -63,13 +63,13 @@ def gen_p_substrate(dims: List[float], min_dist: float=1.4,
     should all be in units of angstroms but can be input in any consistent unit 
     scheme. Default values are for amorphous carbon.
 
-    Generation algorithm loosely follows:
-        1. Get total number  of atoms N to generate.
-        2. While substrate contains < N atoms,
-            a. Generate uniformly random coordinate
-            b. Check distance against nearest neighbor atoms to for violation
-                of bond distance
-            c. If not too close to other atoms, add to substrate; else, regenerate
+    Generation algorithm loosely follows
+      1. Get total number  of atoms N to generate.
+      2. While substrate contains < N atoms
+        a. Generate uniformly random coordinate
+        b. Check distance against nearest neighbor atoms to for violation
+          of bond distance
+        c. If not too close to other atoms, add to substrate; else, regenerate
 
     Generation utilizes voxel grid in 3D space for linear scaling of distance
     calculations and therefore generation time should loosely scale linearly
@@ -83,6 +83,8 @@ def gen_p_substrate(dims: List[float], min_dist: float=1.4,
     Returns:
         np.ndarray: coordinates of atoms in periodic substrate
     """
+
+    # get number of carbon atoms to generate
     dims = np.array(dims)
     min_dist_2 = min_dist**2.0
     dim_x = dims[0]
@@ -96,11 +98,15 @@ def gen_p_substrate(dims: List[float], min_dist: float=1.4,
     
     if print_progress:
         print("Getting neighbors")
+
+    # get voxel grid and list of local voxel neighbors
     voxels, neighbors = get_voxels(min_dist, dims)
     
+
     coords[0,:] = np.random.random_sample((1,3))*dims
     if print_progress:
         print("Starting particle loop for %i particles" % num_c)
+
 
     for i in range(1,num_c):
         if print_progress and (not (i % (num_c//5))):
