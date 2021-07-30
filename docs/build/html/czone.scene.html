@@ -161,85 +161,149 @@
 </div>
 <div class="section" id="module-czone.scene.scene">
 <span id="czone-scene-scene-module"></span><h2>czone.scene.scene module<a class="headerlink" href="#module-czone.scene.scene" title="Permalink to this headline">¶</a></h2>
-<p>Scene Class
-Luis Rangel DaCosta</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="czone.scene.scene.Scene">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.scene.scene.</span></span><span class="sig-name descname"><span class="pre">Scene</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.scene.scene.Scene" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Scene classes manage multiple objects interacting in space with cell boundaries.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.scene.scene.Scene.bounds">
+<span class="sig-name descname"><span class="pre">bounds</span></span><a class="headerlink" href="#czone.scene.scene.Scene.bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>2x3 array defining rectangular bounds of scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.scene.scene.Scene.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><a class="headerlink" href="#czone.scene.scene.Scene.objects" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of all objects currently in scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="czone.volume.html#czone.volume.volume.BaseVolume" title="czone.volume.volume.BaseVolume">BaseVolume</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.scene.scene.Scene.all_atoms">
+<span class="sig-name descname"><span class="pre">all_atoms</span></span><a class="headerlink" href="#czone.scene.scene.Scene.all_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>coordinates of all atoms in scene after precedence checks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.scene.scene.Scene.all_species">
+<span class="sig-name descname"><span class="pre">all_species</span></span><a class="headerlink" href="#czone.scene.scene.Scene.all_species" title="Permalink to this definition">¶</a></dt>
+<dd><p>atomic numbers of all atoms in scene after precedence checks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.scene.scene.Scene.ase_atoms">
+<span class="sig-name descname"><span class="pre">ase_atoms</span></span><a class="headerlink" href="#czone.scene.scene.Scene.ase_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>collection of atoms in scene as ASE Atoms object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Atoms</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.scene.scene.Scene.add_object">
-<span class="sig-name descname"><span class="pre">add_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ob</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.scene.scene.Scene.add_object" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">add_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ob</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="czone.volume.html#czone.volume.volume.BaseVolume" title="czone.volume.volume.BaseVolume"><span class="pre">czone.volume.volume.BaseVolume</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.scene.scene.Scene.add_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an object to the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ob</strong> (<a class="reference internal" href="czone.volume.html#czone.volume.volume.BaseVolume" title="czone.volume.volume.BaseVolume"><em>BaseVolume</em></a>) – object to add to scene.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.scene.scene.Scene.all_atoms">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">all_atoms</span></span><a class="headerlink" href="#czone.scene.scene.Scene.all_atoms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">all_atoms</span></span><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Positions of all atoms currently in the scene after evaluating conflict resolution.</p>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.scene.scene.Scene.all_species">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">all_species</span></span><a class="headerlink" href="#czone.scene.scene.Scene.all_species" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id1">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">all_species</span></span><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Atomic numbers of all atoms currently in the scene after evaluating conflict resolution.</p>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.scene.scene.Scene.ase_atoms">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ase_atoms</span></span><a class="headerlink" href="#czone.scene.scene.Scene.ase_atoms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id2">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ase_atoms</span></span><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collection of atoms in scene as ASE Atoms object.</p>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.scene.scene.Scene.bounds">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">bounds</span></span><a class="headerlink" href="#czone.scene.scene.Scene.bounds" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id3">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">bounds</span></span><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Current boundaries of nanoscale scene.</p>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.scene.scene.Scene.checks">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">checks</span></span><a class="headerlink" href="#czone.scene.scene.Scene.checks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="czone.scene.scene.Scene.get_priorities">
-<span class="sig-name descname"><span class="pre">get_priorities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.scene.scene.Scene.get_priorities" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="czone.scene.scene.Scene.objects">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">objects</span></span><a class="headerlink" href="#czone.scene.scene.Scene.objects" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id4">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">objects</span></span><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of objects in current scene.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.scene.scene.Scene.populate">
 <span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.scene.scene.Scene.populate" title="Permalink to this definition">¶</a></dt>
-<dd><p>First, every object populates atoms against its own boundaries</p>
-<p>Then, gather the list of priorities from all the objects
-For each object:</p>
-<blockquote>
-<div><ol class="arabic simple">
-<li><p>Generate a True array of length ob.atoms</p></li>
-<li><dl class="simple">
-<dt>For each object in the same priority level or lower, perform</dt><dd><p>interiority check and repeatedly perform logical_and to see if
-atoms belong in scene</p>
-</dd>
-</dl>
-</li>
-</ol>
-</div></blockquote>
-<p>-&gt; Lower priority numbers supercede objects with high priority numbers
--&gt; Objects on the same priority level will not supply atoms to the scene</p>
-<blockquote>
-<div><p>in their volume intersections</p>
-</div></blockquote>
+<dd><p>Populate the scene with atoms according to Volumes and priority levels.</p>
+<p>First, every object populates atoms against its own boundaries.
+Then, gather the list of priorities from all the objects.
+For each object, generate a True array of length ob.atoms.
+For each object in the same priority level or lower, perform interiority
+check and repeatedly perform logical_and to see if atoms belong in scene.</p>
+<ul class="simple">
+<li><p>Lower priority numbers supercede objects with high priority numbers.</p></li>
+<li><p>Objects on the same priority level will not supply atoms to the scene in their volume intersections.</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.scene.scene.Scene.species_from_object">
-<span class="sig-name descname"><span class="pre">species_from_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.scene.scene.Scene.species_from_object" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">species_from_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.scene.scene.Scene.species_from_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grab all the atoms from contributing object at idx.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Numpy array of all positions of atoms contributed by object at idx.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.scene.scene.Scene.to_file">
 <span class="sig-name descname"><span class="pre">to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.scene.scene.Scene.to_file" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Write atomic scene to an output file, using ASE write utilities.</p>
+<p>If format=”prismatic”, will default to Debye-Waller factors of 0.1 RMS
+displacement in squared angstroms, unless dictionary of debye-waller factors
+is otherwise supplied.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) – output file name.</p></li>
+<li><p><strong>**kwargs</strong> – any key word arguments otherwise accepted by ASE write.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
