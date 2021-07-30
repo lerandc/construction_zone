@@ -165,10 +165,21 @@
 <dt class="sig sig-object py" id="czone.prefab.prefab.BasePrefab">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.prefab.prefab.</span></span><span class="sig-name descname"><span class="pre">BasePrefab</span></span><a class="headerlink" href="#czone.prefab.prefab.BasePrefab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base abstract class for Prefab objects.</p>
+<p>Prefab objects are objects and classes that can run predesigned algorithms
+for generating certain classes of regular objects, typically with
+sampleable features or properties. For example, planar defects in FCC
+systems are easily described in algorithmic form– a series of {111} planes
+can be chosen to put a defect on.</p>
+<p>Prefab objects will generally take in at least a base Generator object defining
+the system of interest and potentially take in Volume objects. They will return
+Volumes, or, more likely, MultiVolume objects which contains the resultant
+structure defined by the prefab routine.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.prefab.prefab.BasePrefab.build_object">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">build_object</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.prefab.BasePrefab.build_object" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">build_object</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="czone.volume.html#czone.volume.volume.BaseVolume" title="czone.volume.volume.BaseVolume"><span class="pre">czone.volume.volume.BaseVolume</span></a></span></span><a class="headerlink" href="#czone.prefab.prefab.BasePrefab.build_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct and return a prefabicated structure.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -176,13 +187,12 @@
 <dt class="sig sig-object py" id="czone.prefab.prefab.SimpleGrainBoundary">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.prefab.prefab.</span></span><span class="sig-name descname"><span class="pre">SimpleGrainBoundary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.prefab.SimpleGrainBoundary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#czone.prefab.prefab.BasePrefab" title="czone.prefab.prefab.BasePrefab"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.prefab.prefab.BasePrefab</span></code></a></p>
+<p>Prefab routine for crystalline grain boundaries.</p>
+<p>Under development.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.prefab.prefab.SimpleGrainBoundary.build_object">
 <span class="sig-name descname"><span class="pre">build_object</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.prefab.SimpleGrainBoundary.build_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>make two generator copies
-rotate to respective zone axes
-add split plane
-return multi volume</p>
+<dd><p>Construct and return a prefabicated structure.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -199,97 +209,256 @@ return multi volume</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="czone.prefab.prefab.fccMixedTwinSF">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.prefab.prefab.</span></span><span class="sig-name descname"><span class="pre">fccMixedTwinSF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.prefab.fccMixedTwinSF" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.prefab.prefab.</span></span><span class="sig-name descname"><span class="pre">fccMixedTwinSF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator"><span class="pre">czone.generator.generator.Generator</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="czone.volume.html#czone.volume.volume.BaseVolume" title="czone.volume.volume.BaseVolume"><span class="pre">czone.volume.volume.BaseVolume</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ratio</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_sep</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.prefab.fccMixedTwinSF" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#czone.prefab.prefab.BasePrefab" title="czone.prefab.prefab.BasePrefab"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.prefab.prefab.BasePrefab</span></code></a></p>
-<dl class="py property">
+<p>Prefab routine for returning FCC volume with mixed stacking fault and twin defects.</p>
+<p>Given a volume with an attached generator (assumed to be FCC symmetry),
+return a MultiVolume with a series of twin defects and stacking faults.
+Defects can be placed on any plane in the {111} family, and are uniformly
+randomly distributed on the available (111) planes with a minimum separation.
+Types of defects are uniformly randomly sampled, as well, according to a ratio
+of twin defects to stacking faults.</p>
+<dl class="py attribute">
 <dt class="sig sig-object py" id="czone.prefab.prefab.fccMixedTwinSF.N">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">N</span></span><a class="headerlink" href="#czone.prefab.prefab.fccMixedTwinSF.N" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">N</span></span><a class="headerlink" href="#czone.prefab.prefab.fccMixedTwinSF.N" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of defects to attempt to place into volume</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.prefab.fccMixedTwinSF.plane">
+<span class="sig-name descname"><span class="pre">plane</span></span><a class="headerlink" href="#czone.prefab.prefab.fccMixedTwinSF.plane" title="Permalink to this definition">¶</a></dt>
+<dd><p>Length 3 tuple of Miller indices representing set of
+planes to put defects on</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Tuple[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.prefab.fccMixedTwinSF.ratio">
+<span class="sig-name descname"><span class="pre">ratio</span></span><a class="headerlink" href="#czone.prefab.prefab.fccMixedTwinSF.ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ratio of stacking faults:total defects. A ratio of 1.0
+will produce only stacking faults, while a ratio of 0.0
+will produce only twin defects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.prefab.fccMixedTwinSF.generator">
+<span class="sig-name descname"><span class="pre">generator</span></span><a class="headerlink" href="#czone.prefab.prefab.fccMixedTwinSF.generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator object representing FCC crystal system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator">Generator</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.prefab.fccMixedTwinSF.volume">
+<span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#czone.prefab.prefab.fccMixedTwinSF.volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Volume object representing bounds of object in which
+defects will be placed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="czone.volume.html#czone.volume.volume.Volume" title="czone.volume.volume.Volume">Volume</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">N</span></span><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of defects to place in volume.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.prefab.prefab.fccMixedTwinSF.build_object">
 <span class="sig-name descname"><span class="pre">build_object</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.prefab.fccMixedTwinSF.build_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>general algorithm:</p>
+<dd><p>Construct and return a prefabicated structure.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.prefab.prefab.fccMixedTwinSF.plane">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">plane</span></span><a class="headerlink" href="#czone.prefab.prefab.fccMixedTwinSF.plane" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id1">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">generator</span></span><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crystalline geneartor used to sample planes for defects.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="czone.prefab.prefab.fccMixedTwinSF.min_sep">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">min_sep</span></span><a class="headerlink" href="#czone.prefab.prefab.fccMixedTwinSF.min_sep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum seperation between defects in numbers of planes.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id2">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">plane</span></span><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Miller indices of defect planes.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id3">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ratio</span></span><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
+<dd><p>total defects placed into object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Ratio of stacking faults</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id4">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Volume used to defined outer bounds of defected object.</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="czone.prefab.prefab.fccStackingFault">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.prefab.prefab.</span></span><span class="sig-name descname"><span class="pre">fccStackingFault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">species</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.prefab.fccStackingFault" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#czone.prefab.prefab.BasePrefab" title="czone.prefab.prefab.BasePrefab"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.prefab.prefab.BasePrefab</span></code></a></p>
-<dl class="py property">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.prefab.prefab.</span></span><span class="sig-name descname"><span class="pre">fccStackingFault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator"><span class="pre">czone.generator.generator.Generator</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="czone.volume.html#czone.volume.volume.BaseVolume" title="czone.volume.volume.BaseVolume"><span class="pre">czone.volume.volume.BaseVolume</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_sep</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.prefab.fccStackingFault" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#czone.prefab.prefab.fccMixedTwinSF" title="czone.prefab.prefab.fccMixedTwinSF"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.prefab.prefab.fccMixedTwinSF</span></code></a></p>
+<p>Prefab routine for returning FCC volume with stacking fault defects.</p>
+<p>Given a volume with an attached generator (assumed to be FCC symmetry),
+return a MultiVolume with a series of. stacking faults. Defects can be placed
+on any plane in the {111} family, and are uniformly randomly distributed on
+the available (111) planes with a minimum separation.</p>
+<dl class="py attribute">
 <dt class="sig sig-object py" id="czone.prefab.prefab.fccStackingFault.N">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">N</span></span><a class="headerlink" href="#czone.prefab.prefab.fccStackingFault.N" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">N</span></span><a class="headerlink" href="#czone.prefab.prefab.fccStackingFault.N" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of defects to attempt to place into volume</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="czone.prefab.prefab.fccStackingFault.a">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">a</span></span><a class="headerlink" href="#czone.prefab.prefab.fccStackingFault.a" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.prefab.fccStackingFault.plane">
+<span class="sig-name descname"><span class="pre">plane</span></span><a class="headerlink" href="#czone.prefab.prefab.fccStackingFault.plane" title="Permalink to this definition">¶</a></dt>
+<dd><p>Length 3 tuple of Miller indices representing set of
+planes to put defects on/</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Tuple[int]</p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="czone.prefab.prefab.fccStackingFault.basis">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">basis</span></span><a class="headerlink" href="#czone.prefab.prefab.fccStackingFault.basis" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.prefab.fccStackingFault.generator">
+<span class="sig-name descname"><span class="pre">generator</span></span><a class="headerlink" href="#czone.prefab.prefab.fccStackingFault.generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator object representing FCC crystal system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator">Generator</a></p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="czone.prefab.prefab.fccStackingFault.build_object">
-<span class="sig-name descname"><span class="pre">build_object</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.prefab.fccStackingFault.build_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>general algorithm:</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.prefab.fccStackingFault.volume">
+<span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#czone.prefab.prefab.fccStackingFault.volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Volume object representing bounds of object in which
+defects will be placed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="czone.volume.html#czone.volume.volume.Volume" title="czone.volume.volume.Volume">Volume</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.prefab.prefab.fccStackingFault.plane">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">plane</span></span><a class="headerlink" href="#czone.prefab.prefab.fccStackingFault.plane" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="czone.prefab.prefab.fccStackingFault.species">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">species</span></span><a class="headerlink" href="#czone.prefab.prefab.fccStackingFault.species" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="czone.prefab.prefab.fccStackingFault.ratio">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ratio</span></span><a class="headerlink" href="#czone.prefab.prefab.fccStackingFault.ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>total defects placed into object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Ratio of stacking faults</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="czone.prefab.prefab.fccTwin">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.prefab.prefab.</span></span><span class="sig-name descname"><span class="pre">fccTwin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">species</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.prefab.fccTwin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#czone.prefab.prefab.BasePrefab" title="czone.prefab.prefab.BasePrefab"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.prefab.prefab.BasePrefab</span></code></a></p>
-<dl class="py property">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.prefab.prefab.</span></span><span class="sig-name descname"><span class="pre">fccTwin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator"><span class="pre">czone.generator.generator.Generator</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="czone.volume.html#czone.volume.volume.BaseVolume" title="czone.volume.volume.BaseVolume"><span class="pre">czone.volume.volume.BaseVolume</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_sep</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.prefab.fccTwin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#czone.prefab.prefab.fccMixedTwinSF" title="czone.prefab.prefab.fccMixedTwinSF"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.prefab.prefab.fccMixedTwinSF</span></code></a></p>
+<p>Prefab routine for returning FCC volume with twin defects.</p>
+<p>Given a volume with an attached generator (assumed to be FCC symmetry),
+return a MultiVolume with a series of. stacking faults. Defects can be placed
+on any plane in the {111} family, and are uniformly randomly distributed on
+the available (111) planes with a minimum separation.</p>
+<dl class="py attribute">
 <dt class="sig sig-object py" id="czone.prefab.prefab.fccTwin.N">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">N</span></span><a class="headerlink" href="#czone.prefab.prefab.fccTwin.N" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">N</span></span><a class="headerlink" href="#czone.prefab.prefab.fccTwin.N" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of defects to attempt to place into volume</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="czone.prefab.prefab.fccTwin.a">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">a</span></span><a class="headerlink" href="#czone.prefab.prefab.fccTwin.a" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.prefab.fccTwin.plane">
+<span class="sig-name descname"><span class="pre">plane</span></span><a class="headerlink" href="#czone.prefab.prefab.fccTwin.plane" title="Permalink to this definition">¶</a></dt>
+<dd><p>Length 3 tuple of Miller indices representing set of
+planes to put defects on/</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Tuple[int]</p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="czone.prefab.prefab.fccTwin.basis">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">basis</span></span><a class="headerlink" href="#czone.prefab.prefab.fccTwin.basis" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.prefab.fccTwin.generator">
+<span class="sig-name descname"><span class="pre">generator</span></span><a class="headerlink" href="#czone.prefab.prefab.fccTwin.generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator object representing FCC crystal system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator">Generator</a></p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="czone.prefab.prefab.fccTwin.build_object">
-<span class="sig-name descname"><span class="pre">build_object</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.prefab.fccTwin.build_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>general algorithm:</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.prefab.fccTwin.volume">
+<span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#czone.prefab.prefab.fccTwin.volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Volume object representing bounds of object in which
+defects will be placed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="czone.volume.html#czone.volume.volume.Volume" title="czone.volume.volume.Volume">Volume</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.prefab.prefab.fccTwin.plane">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">plane</span></span><a class="headerlink" href="#czone.prefab.prefab.fccTwin.plane" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="czone.prefab.prefab.fccTwin.species">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">species</span></span><a class="headerlink" href="#czone.prefab.prefab.fccTwin.species" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="czone.prefab.prefab.fccTwin.ratio">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ratio</span></span><a class="headerlink" href="#czone.prefab.prefab.fccTwin.ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>total defects placed into object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Ratio of stacking faults</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -300,40 +469,128 @@ return multi volume</p>
 <dt class="sig sig-object py" id="czone.prefab.wulff.WulffBase">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.prefab.wulff.</span></span><span class="sig-name descname"><span class="pre">WulffBase</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffBase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<dl class="py property">
+<p>Base class for Wulff constructions, as adapted from WulffPack.</p>
+<p>Wulff constructions are energetic constructions of single crystals. From a
+list of surfaces and corresponding surface energies, the equilibirium shape
+minimizing the total surface energy for a given volume is determined. The
+equilbirium shape is looseley the inner surface of the intersection of the
+supplied surfaces, where the supplied surfaces are translated from the origin
+along their normal directions by their relative surface energies.</p>
+<dl class="py attribute">
 <dt class="sig sig-object py" id="czone.prefab.wulff.WulffBase.generator">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">generator</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffBase.generator" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">generator</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffBase.generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crystalline generator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator">Generator</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.wulff.WulffBase.p_atoms">
+<span class="sig-name descname"><span class="pre">p_atoms</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffBase.p_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Primitive structure of generator, as ASE Atoms object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Atoms</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.wulff.WulffBase.natoms">
+<span class="sig-name descname"><span class="pre">natoms</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffBase.natoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Approximate size of particle in number of atoms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.wulff.WulffBase.surface_energies">
+<span class="sig-name descname"><span class="pre">surface_energies</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffBase.surface_energies" title="Permalink to this definition">¶</a></dt>
+<dd><p>dictionary of surfaces and corresponding
+surface energies, where keys are
+tuples of miller indices and values
+are surfaces energies as floats</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Dict[Tuple, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id5">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">generator</span></span><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator object representing crystal system.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.prefab.wulff.WulffBase.get_construction">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">get_construction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.wulff.WulffBase.get_construction" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>For a given crystal and set of surface energies, return a Wulff construction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Volume or MultiVolume with planes and generator with object prescribed
+by given Wulff Construction.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.prefab.wulff.WulffBase.natoms">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">natoms</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffBase.natoms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id6">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">natoms</span></span><a class="headerlink" href="#id6" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size of particle in approximate number of atoms.</p>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.prefab.wulff.WulffBase.p_atoms">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">p_atoms</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffBase.p_atoms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id7">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">p_atoms</span></span><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
+<dd><p>Primitive structure of generator as ASE Atoms object.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.prefab.wulff.WulffBase.planes_from_form">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">planes_from_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wulff_form</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.wulff.WulffBase.planes_from_form" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return facets of a full Wulff construction as list of Planes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wulff</strong> (<em>BaseParticle</em>) – WulffPack particle.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of Planes representing facets of Wulff constructions.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.prefab.wulff.WulffBase.planes_from_wulff">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">planes_from_wulff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wulff</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.wulff.WulffBase.planes_from_wulff" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return facets of a full Wulff construction as list of Planes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wulff</strong> (<em>BaseParticle</em>) – WulffPack particle.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of Planes representing facets of Wulff constructions.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.prefab.wulff.WulffBase.surface_energies">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">surface_energies</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffBase.surface_energies" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id8">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">surface_energies</span></span><a class="headerlink" href="#id8" title="Permalink to this definition">¶</a></dt>
+<dd><p>surface energy pairs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Dictionary of surface</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -341,15 +598,90 @@ return multi volume</p>
 <dt class="sig sig-object py" id="czone.prefab.wulff.WulffDecahedron">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.prefab.wulff.</span></span><span class="sig-name descname"><span class="pre">WulffDecahedron</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator"><span class="pre">czone.generator.generator.Generator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_energies</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twin_energy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">natoms</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.wulff.WulffDecahedron" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#czone.prefab.wulff.WulffBase" title="czone.prefab.wulff.WulffBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.prefab.wulff.WulffBase</span></code></a></p>
+<p>Prefab routine for constructing strained Decahedra for FCC systems.</p>
+<p>Decahedral nanoparticles cannot be created in a defect-free, strain-free manner;
+however, relatively simple, physically close models can be generated through
+simple strain and twin defect models with Wulff constructions defining
+tetrahedral units. Construction algorithm is an adapatation of that found
+in WulffPack.</p>
+<p>See L. D. Marks,  Modified Wulff constructions for twinned particles,
+J. Cryst. Growth 61, 556 (1983), doi: 10.1016/0022-0248(83)90184-7 for
+background.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.wulff.WulffDecahedron.generator">
+<span class="sig-name descname"><span class="pre">generator</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffDecahedron.generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crystalline generator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator">Generator</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.wulff.WulffDecahedron.p_atoms">
+<span class="sig-name descname"><span class="pre">p_atoms</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffDecahedron.p_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Primitive structure of generator, as ASE Atoms object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Atoms</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.wulff.WulffDecahedron.natoms">
+<span class="sig-name descname"><span class="pre">natoms</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffDecahedron.natoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Approximate size of particle in number of atoms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.wulff.WulffDecahedron.surface_energies">
+<span class="sig-name descname"><span class="pre">surface_energies</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffDecahedron.surface_energies" title="Permalink to this definition">¶</a></dt>
+<dd><p>dictionary of surfaces and corresponding
+surface energies, where keys are
+tuples of miller indices and values
+are surfaces energies as floats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Dict[Tuple, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.wulff.WulffDecahedron.twin_energy">
+<span class="sig-name descname"><span class="pre">twin_energy</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffDecahedron.twin_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>surface energy of twin boundaries in system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.prefab.wulff.WulffDecahedron.get_construction">
 <span class="sig-name descname"><span class="pre">get_construction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.wulff.WulffDecahedron.get_construction" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>For a given crystal and set of surface energies, return a Wulff construction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Volume or MultiVolume with planes and generator with object prescribed
+by given Wulff Construction.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.prefab.wulff.WulffDecahedron.twin_energy">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">twin_energy</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffDecahedron.twin_energy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id9">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">twin_energy</span></span><a class="headerlink" href="#id9" title="Permalink to this definition">¶</a></dt>
+<dd><p>Surface energy of twin boundary defects.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -357,19 +689,88 @@ return multi volume</p>
 <dt class="sig sig-object py" id="czone.prefab.wulff.WulffIcosahedron">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.prefab.wulff.</span></span><span class="sig-name descname"><span class="pre">WulffIcosahedron</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator"><span class="pre">czone.generator.generator.Generator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_energies</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twin_energy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">natoms</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.wulff.WulffIcosahedron" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#czone.prefab.wulff.WulffDecahedron" title="czone.prefab.wulff.WulffDecahedron"><code class="xref py py-class docutils literal notranslate"><span class="pre">czone.prefab.wulff.WulffDecahedron</span></code></a></p>
+<p>Prefab routine for constructing strained Decahedra for FCC systems.</p>
+<p>Icosahedral nanoparticles cannot be created in a defect-free, strain-free manner;
+however, relatively simple, physically close models can be generated through
+simple strain and twin defect models with Wulff constructions defining
+tetrahedral units. Construction algorithm is an adapatation of that found
+in WulffPack.</p>
+<p>See L. D. Marks,  Modified Wulff constructions for twinned particles,
+J. Cryst. Growth 61, 556 (1983), doi: 10.1016/0022-0248(83)90184-7 for
+background.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.wulff.WulffIcosahedron.generator">
+<span class="sig-name descname"><span class="pre">generator</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffIcosahedron.generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crystalline generator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator">Generator</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.wulff.WulffIcosahedron.p_atoms">
+<span class="sig-name descname"><span class="pre">p_atoms</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffIcosahedron.p_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Primitive structure of generator, as ASE Atoms object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Atoms</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.wulff.WulffIcosahedron.natoms">
+<span class="sig-name descname"><span class="pre">natoms</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffIcosahedron.natoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Approximate size of particle in number of atoms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.wulff.WulffIcosahedron.surface_energies">
+<span class="sig-name descname"><span class="pre">surface_energies</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffIcosahedron.surface_energies" title="Permalink to this definition">¶</a></dt>
+<dd><p>dictionary of surfaces and corresponding
+surface energies, where keys are
+tuples of miller indices and values
+are surfaces energies as floats</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Dict[Tuple, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.prefab.wulff.WulffIcosahedron.twin_energy">
+<span class="sig-name descname"><span class="pre">twin_energy</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffIcosahedron.twin_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>surface energy of twin boundaries in system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.prefab.wulff.WulffIcosahedron.get_construction">
 <span class="sig-name descname"><span class="pre">get_construction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.wulff.WulffIcosahedron.get_construction" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>For a given crystal and set of surface energies, return a Wulff construction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Volume or MultiVolume with planes and generator with object prescribed
+by given Wulff Construction.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="czone.prefab.wulff.WulffIcosahedron.icosahedral_scale_factor">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">icosahedral_scale_factor</span></span><a class="headerlink" href="#czone.prefab.wulff.WulffIcosahedron.icosahedral_scale_factor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="czone.prefab.wulff.WulffIcosahedron.strain_from_111">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">strain_from_111</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([[1.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0],</span> <span class="pre">[0.0,</span> <span class="pre">1.0,</span> <span class="pre">0.0],</span> <span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">1.0]])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.wulff.WulffIcosahedron.strain_from_111" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -381,38 +782,105 @@ return multi volume</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.prefab.wulff.WulffSingle.cube">
 <em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator"><span class="pre">czone.generator.generator.Generator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">natoms</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.wulff.WulffSingle.cube" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Convenience constructor for cubic nanoparticles with Wulff construction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>generator</strong> (<a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator"><em>Generator</em></a>) – crystalline system for Wulff construction.</p></li>
+<li><p><strong>natoms</strong> (<em>int</em>) – approximate size of particle in atoms.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Wulff construction for a cubic nanoparticle.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.prefab.wulff.WulffSingle.cuboctohedron">
 <em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">cuboctohedron</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator"><span class="pre">czone.generator.generator.Generator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">natoms</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.wulff.WulffSingle.cuboctohedron" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Convenience constructor for cuboctohedra; nanoparticles with Wulff construction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>generator</strong> (<a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator"><em>Generator</em></a>) – crystalline system for Wulff construction.</p></li>
+<li><p><strong>natoms</strong> (<em>int</em>) – approximate size of particle in atoms.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Wulff construction for a cuboctohedral nanoparticle.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.prefab.wulff.WulffSingle.get_construction">
 <span class="sig-name descname"><span class="pre">get_construction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.wulff.WulffSingle.get_construction" title="Permalink to this definition">¶</a></dt>
-<dd><p>for single crystals, base particles
--provide generator
--get primitive structure as Atoms object
--use wulffpack constructors
--convert facets to CZ planes-&gt; place w.r.t. generator origin and orientation
--return volume with original generator attached</p>
+<dd><p>For a given crystal and set of surface energies, return a Wulff construction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Volume or MultiVolume with planes and generator with object prescribed
+by given Wulff Construction.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.prefab.wulff.WulffSingle.octohedron">
 <em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">octohedron</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator"><span class="pre">czone.generator.generator.Generator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">natoms</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.wulff.WulffSingle.octohedron" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Convenience constructor for octohedral nanoparticles with Wulff construction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>generator</strong> (<a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator"><em>Generator</em></a>) – crystalline system for Wulff construction.</p></li>
+<li><p><strong>natoms</strong> (<em>int</em>) – approximate size of particle in atoms.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Wulff construction for a octohedral nanoparticle.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.prefab.wulff.WulffSingle.truncated_octohedron">
 <em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">truncated_octohedron</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator"><span class="pre">czone.generator.generator.Generator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">natoms</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.wulff.WulffSingle.truncated_octohedron" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Convenience constructor for truncted octohedral nanoparticles with Wulff construction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>generator</strong> (<a class="reference internal" href="czone.generator.html#czone.generator.generator.Generator" title="czone.generator.generator.Generator"><em>Generator</em></a>) – crystalline system for Wulff construction.</p></li>
+<li><p><strong>natoms</strong> (<em>int</em>) – approximate size of particle in atoms.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Wulff construction for a truncated octohedral nanoparticle.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.prefab.wulff.WulffSingle.winterbottom">
-<span class="sig-name descname"><span class="pre">winterbottom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interface</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interface_energy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.wulff.WulffSingle.winterbottom" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">winterbottom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interface</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interface_energy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.prefab.wulff.WulffSingle.winterbottom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct Winterbottom construction for single crystals.</p>
+<p>A Winterbottom construction is analagous to a Wulff construction, in that
+it is the shape for a single crystal particle that minimizes the surface
+energy when the particle is in contact with another surface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>interface</strong> (<em>Tuple</em><em>[</em><em>int</em><em>]</em>) – Miller indices of interfacial surface</p></li>
+<li><p><strong>interface_energy</strong> – Relative surface energy of interface. Must be
+less than or equal to half of the smallest surface
+energy for the other surfaces.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Volume with shape described by Winterbottom construction for given
+surfce energies.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

@@ -237,6 +237,10 @@ class fccTwin(fccMixedTwinSF):
 
 
 class SimpleGrainBoundary(BasePrefab):
+    """Prefab routine for crystalline grain boundaries.
+
+    Under development.
+    """
 
     def __init__(self, z1, r1, z2=None, r2=None, plane=None, point=None, volume=None, generator=None):
         """
@@ -276,12 +280,6 @@ class SimpleGrainBoundary(BasePrefab):
             self._z2 = z2
 
     def build_object(self):
-        """
-        make two generator copies
-        rotate to respective zone axes
-        add split plane
-        return multi volume
-        """
         
         zv = np.array([0,0,1])
         z1v = self.generator.voxel.sbases @ self.z1

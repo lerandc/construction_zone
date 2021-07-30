@@ -8,6 +8,7 @@ from ..transform.strain import HStrain, IStrain
 from ase import Atoms
 from abc import ABC, abstractmethod
 import numpy as np
+from typing import List, Dict, Tuple
 
 """
 Submodule provides convenience constructors for returning Wulff constructions
@@ -16,6 +17,24 @@ Construction Zone volumes and generators
 """
 
 class WulffBase(ABC):
+    """Base class for Wulff constructions, as adapted from WulffPack.
+    
+    Wulff constructions are energetic constructions of single crystals. From a 
+    list of surfaces and corresponding surface energies, the equilibirium shape
+    minimizing the total surface energy for a given volume is determined. The
+    equilbirium shape is looseley the inner surface of the intersection of the 
+    supplied surfaces, where the supplied surfaces are translated from the origin
+    along their normal directions by their relative surface energies.
+
+    Attributes:
+        generator (Generator): Crystalline generator.
+        p_atoms (Atoms): Primitive structure of generator, as ASE Atoms object.
+        natoms (int): Approximate size of particle in number of atoms.
+        surface_energies (Dict[Tuple, float]): dictionary of surfaces and corresponding
+                                            surface energies, where keys are
+                                            tuples of miller indices and values
+                                            are surfaces energies as floats
+    """
 
     @abstractmethod
     def __init__(self):
@@ -27,6 +46,7 @@ class WulffBase(ABC):
 
     @property
     def generator(self):
+        """Generator object representing crystal system."""
         return self._generator
 
     @generator.setter
@@ -38,10 +58,12 @@ class WulffBase(ABC):
 
     @property
     def p_atoms(self):
+        """Primitive structure of generator as ASE Atoms object."""
         return self._p_atoms
 
     @property
     def natoms(self):
+        """Size of particle in approximate number of atoms."""
         return self._natoms
 
     @natoms.setter
@@ -53,6 +75,7 @@ class WulffBase(ABC):
     
     @property
     def surface_energies(self):
+        """Dictionary of surface: surface energy pairs."""
         return self._surface_energies
     
     @surface_energies.setter
@@ -69,14 +92,36 @@ class WulffBase(ABC):
 
     @staticmethod
     def planes_from_wulff(wulff):
+        """Return facets of a full Wulff construction as list of Planes.
+
+        Args:
+            wulff (BaseParticle): WulffPack particle.
+
+        Returns:
+            List of Planes representing facets of Wulff constructions.
+        """
         return [Plane(f.normal, f.normal*f.distance_from_origin) for f in wulff._yield_facets()]
 
     @staticmethod
     def planes_from_form(wulff_form):
+        """Return facets of a full Wulff construction as list of Planes.
+
+        Args:
+            wulff (BaseParticle): WulffPack particle.
+
+        Returns:
+            List of Planes representing facets of Wulff constructions.
+        """
         return [Plane(f.normal, f.normal*f.distance_from_origin) for f in wulff_form.facets]
 
     @abstractmethod
     def get_construction(self):
+        """For a given crystal and set of surface energies, return a Wulff construction.
+
+        Returns:
+            Volume or MultiVolume with planes and generator with object prescribed 
+            by given Wulff Construction.
+        """
         pass
 
 class WulffSingle(WulffBase):
@@ -95,43 +140,88 @@ class WulffSingle(WulffBase):
     ####################
 
     def get_construction(self):
-        """
-        for single crystals, base particles
-        -provide generator
-        -get primitive structure as Atoms object
-        -use wulffpack constructors
-        -convert facets to CZ planes-> place w.r.t. generator origin and orientation
-        -return volume with original generator attached
-        """
         wulff = SingleCrystal(self.surface_energies, self.p_atoms, self.natoms)
+        planes = self.planes_from_wulff(wulff)
         return Volume(alg_objects=planes, generator=self.generator)
 
-    def winterbottom(self, interface: tuple, interface_energy: float):
+    def winterbottom(self, interface: Tuple[int], interface_energy: float):
+        """Construct Winterbottom construction for single crystals.
+        
+        A Winterbottom construction is analagous to a Wulff construction, in that
+        it is the shape for a single crystal particle that minimizes the surface
+        energy when the particle is in contact with another surface.
+
+        Args:
+            interface (Tuple[int]): Miller indices of interfacial surface
+            interface_energy: Relative surface energy of interface. Must be 
+                            less than or equal to half of the smallest surface
+                            energy for the other surfaces.
+
+        Returns:
+            Volume with shape described by Winterbottom construction for given 
+            surfce energies.
+        """
         wulff = Winterbottom(self.surface_energies, interface, interface_energy, self.p_atoms, self.natoms)
-        planes = planes_from_wulff(wulff)
+        planes = self.planes_from_wulff(wulff)
 
         return Volume(alg_objects=planes, generator=self.generator)
 
     @classmethod
     def cube(cls, generator: Generator, natoms: int = 1000):
+        """Convenience constructor for cubic nanoparticles with Wulff construction.
+        
+        Args:
+            generator (Generator): crystalline system for Wulff construction.
+            natoms (int): approximate size of particle in atoms.
+
+        Returns:
+            Wulff construction for a cubic nanoparticle.
+        """
         energies = {(1,0,0):1.0}
         wulff = cls(generator, natoms)
         return wulff.get_construction(energies)
 
     @classmethod
     def cuboctohedron(cls, generator: Generator, natoms: int = 1000):
+        """Convenience constructor for cuboctohedra; nanoparticles with Wulff construction.
+
+        Args:
+            generator (Generator): crystalline system for Wulff construction.
+            natoms (int): approximate size of particle in atoms.
+
+        Returns:
+            Wulff construction for a cuboctohedral nanoparticle.
+        """
         energies = {(1,0,0):1.0, (1,1,1):1.15}
         wulff = cls(generator, natoms)
         return wulff.get_construction(energies)
 
     @classmethod
     def octohedron(cls, generator: Generator, natoms: int = 1000):
+        """Convenience constructor for octohedral nanoparticles with Wulff construction.
+        
+        Args:
+            generator (Generator): crystalline system for Wulff construction.
+            natoms (int): approximate size of particle in atoms.
+
+        Returns:
+            Wulff construction for a octohedral nanoparticle.
+        """
         energies = {(1,1,1):1.0}
         wulff = cls(generator, natoms)
         return wulff.get_construction(energies)
 
     @classmethod
     def truncated_octohedron(cls, generator: Generator, natoms: int = 1000):
+        """Convenience constructor for truncted octohedral nanoparticles with Wulff construction.
+        
+        Args:
+            generator (Generator): crystalline system for Wulff construction.
+            natoms (int): approximate size of particle in atoms.
+
+        Returns:
+            Wulff construction for a truncated octohedral nanoparticle.
+        """
         energies = {(1,0,0):1.1, (1,1,0):1.15, (1,1,1):1.0}
         wulff = cls(generator, natoms)
         return wulff.get_construction(energies)
@@ -166,6 +256,28 @@ Strategy for replication of Decahedron:
 """
 
 class WulffDecahedron(WulffBase):
+    """Prefab routine for constructing strained Decahedra for FCC systems.
+    
+    Decahedral nanoparticles cannot be created in a defect-free, strain-free manner;
+    however, relatively simple, physically close models can be generated through
+    simple strain and twin defect models with Wulff constructions defining 
+    tetrahedral units. Construction algorithm is an adapatation of that found
+    in WulffPack. 
+    
+    See L. D. Marks,  Modified Wulff constructions for twinned particles,
+    J. Cryst. Growth 61, 556 (1983), doi: 10.1016/0022-0248(83)90184-7 for 
+    background.
+
+    Attributes:
+        generator (Generator): Crystalline generator.
+        p_atoms (Atoms): Primitive structure of generator, as ASE Atoms object.
+        natoms (int): Approximate size of particle in number of atoms.
+        surface_energies (Dict[Tuple, float]): dictionary of surfaces and corresponding
+                                            surface energies, where keys are
+                                            tuples of miller indices and values
+                                            are surfaces energies as floats.
+        twin_energy (float): surface energy of twin boundaries in system.
+    """
 
     def __init__(self, generator: Generator,
                         surface_energies: dict,
@@ -178,6 +290,7 @@ class WulffDecahedron(WulffBase):
 
     @property
     def twin_energy(self):
+        """Surface energy of twin boundary defects."""
         return self._twin_energy
     
     @twin_energy.setter
@@ -186,11 +299,11 @@ class WulffDecahedron(WulffBase):
         self._twin_energy = val
 
     def get_construction(self):
-        wulff = Dechedraon(self.surface_energies, self.twin_energy, self.p_atoms, self.natoms)
+        wulff = Decahedron(self.surface_energies, self.twin_energy, self.p_atoms, self.natoms)
         sf = wulff._get_dechedral_scale_factor()
         planes_lists = [[],[],[],[],[]]
         for form in wulff.forms:
-            planes = planes_from_form(form)
+            planes = self.planes_from_form(form)
             len_p = len(planes)
             for i, p in enumerate(planes):
                 # there will always be a multiple 5 planes in planes
@@ -221,6 +334,28 @@ class WulffDecahedron(WulffBase):
         return MultiVolume(volumes=vols)
 
 class WulffIcosahedron(WulffDecahedron):
+    """Prefab routine for constructing strained Decahedra for FCC systems.
+    
+    Icosahedral nanoparticles cannot be created in a defect-free, strain-free manner;
+    however, relatively simple, physically close models can be generated through
+    simple strain and twin defect models with Wulff constructions defining 
+    tetrahedral units. Construction algorithm is an adapatation of that found
+    in WulffPack. 
+    
+    See L. D. Marks,  Modified Wulff constructions for twinned particles,
+    J. Cryst. Growth 61, 556 (1983), doi: 10.1016/0022-0248(83)90184-7 for 
+    background.
+
+    Attributes:
+        generator (Generator): Crystalline generator.
+        p_atoms (Atoms): Primitive structure of generator, as ASE Atoms object.
+        natoms (int): Approximate size of particle in number of atoms.
+        surface_energies (Dict[Tuple, float]): dictionary of surfaces and corresponding
+                                            surface energies, where keys are
+                                            tuples of miller indices and values
+                                            are surfaces energies as floats
+        twin_energy (float): surface energy of twin boundaries in system.
+    """
 
     @property
     def icosahedral_scale_factor(self):
@@ -228,7 +363,17 @@ class WulffIcosahedron(WulffDecahedron):
         return np.sqrt(2 / (3 * k - 1))
 
     @staticmethod
-    def strain_from_111(points, basis=np.eye(3).astype(float), sf=1):
+    def _strain_from_111(points, basis=np.eye(3).astype(float), sf=1):
+        """Inhomogenous strain function to strain atoms away from [111] axis.
+        
+        Args:
+            points (np.ndarray): Nx3 array of points
+            basis (np.ndarray): 3x3 array representing crystal basis vectors
+            sf (float): scale factor for icosahedral particle.
+
+        Returns:
+            np.ndarray: Nx3 set of strained points
+        """
         vec_111 = basis @ np.array([[1.0,1.0,1.0]]).T
         vec_111 /= np.linalg.norm(vec_111)
 
@@ -242,7 +387,7 @@ class WulffIcosahedron(WulffDecahedron):
         planes_lists = [[] for x in range(20)]
         
         for form in wulff.forms:
-            planes = planes_from_form(form)
+            planes = self.planes_from_form(form)
             len_p = len(planes)
             for i, p in enumerate(planes):
                 # there will always be a multiple 20 planes in planes
@@ -254,7 +399,7 @@ class WulffIcosahedron(WulffDecahedron):
             vols.append(Volume(alg_objects=plist))
 
         # get strained and rotated generators for the 20 tetrahedral grains
-        strain_field = IStrain(fun=strain_from_111(), sf=self.icosahedral_scale_factor())
+        strain_field = IStrain(fun=self._strain_from_111(), sf=self.icosahedral_scale_factor())
 
         sym_mats = [MatrixTransform(np.eye(3))] + \
                     [MatrixTransform(m) for m in wulff._get_all_symmetry_operations()]
