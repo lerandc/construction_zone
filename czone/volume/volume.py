@@ -1,7 +1,3 @@
-"""
-Volume Class
-Luis Rangel DaCosta
-"""
 from .algebraic import BaseAlgebraic, Plane, Sphere
 from .algebraic import get_bounding_box as get_bounding_box_planes
 from ..generator import BaseGenerator, AmorphousGenerator
@@ -14,11 +10,30 @@ from ase.io import write as ase_write
 import numpy as np
 import copy
 
+from typing import List
+
 ############################
 ###### Volume Classes ######
 ############################
 
 class BaseVolume(ABC):
+    """Base abstract class for Volume objects.
+    
+    Volume objects are subtractive components in Construction Zone. When designing
+    nanostructures, Volumes contain information about where atoms should and
+    should not be placed. Semantically, volumes can be thought of as singular
+    objects in space.
+
+    BaseVolumes are typically not created directly. Use the Volume class for
+    generalized convex objects, and the MultiVolume class for unions of convex
+    objects.
+
+    Attributes:
+        atoms (np.ndarray): Nx3 array of atom positions of atoms lying within volume.
+        species (np.ndarray): Nx1 array of atomic numbers of atoms lying within volume.
+        ase_atoms (Atoms): Collection of atoms in volume as ASE Atoms object.
+        priority (int): Relative generation precedence of volume.
+    """
 
     @abstractmethod
     def __init__(self, **kwargs):
@@ -26,18 +41,22 @@ class BaseVolume(ABC):
 
     @property
     def atoms(self):
+        """Array of atomic positions of atoms lying within volume."""
         return self._atoms
 
     @property
     def species(self):
+        """Array of atomic numbers of atoms lying within volume."""
         return self._species
 
     @property
     def ase_atoms(self):
+        """Collection of atoms in volume as ASE Atoms object."""
         return Atoms(symbols=self.species, positions=self.atoms)
 
     @property
     def priority(self):
+        """Relative generation precedence of volume."""
         return self._priority
     
     @priority.setter
@@ -49,30 +68,69 @@ class BaseVolume(ABC):
 
     @abstractmethod
     def transform(self, transformation):
+        """Transform volume with given transformation.
+
+        Args:
+            transformation (BaseTransform): transformation to apply to volume.
+        """
         pass
 
     @abstractmethod
     def populate_atoms(self):
+        """Fill volume with atoms. """
         pass
 
     @abstractmethod
-    def checkIfInterior(self):
+    def checkIfInterior(self, testPoints: np.ndarray):
+        """Check points to see if they lie in interior of volume.
+        
+        Returns:
+            Logical array indicating which points lie inside the volume.
+        """
         pass
 
     def to_file(self, fname, **kwargs):
+        """Write object to an output file, using ASE write utilities.
+
+        Args:
+            fname (str): output file name.
+            **kwargs: any key word arguments otherwise accepted by ASE write.
+        """
         ase_write(filename=fname, images=self.ase_atoms, **kwargs)
 
 
 class Volume(BaseVolume):
+    """Volume object for representing convex spaces.
+    
+    Volume objects are subtractive components in Construction Zone. When designing
+    nanostructures, Volumes contain information about where atoms should and
+    should not be placed. Semantically, volumes can be thought of as singular
+    objects in space. In order to supply atoms, Volumes must be given a Generator.
 
-    def __init__(self, points=None, alg_objects=None, generator=None, priority=None, **kwargs):
-        """
-        points is N x 3 numpy array of coordinates (x,y,z)
-        Default orientation of a volume is aligned with global orthonormal system
-        """
+    Volumes can be created with a series of points in space, in which the 
+    interior of the volume is taken as the convex hull of the points in space.
+    They can also be created with a series of algebraic surfaces, such as planes
+    and spheres. Both points and algebraic objects can be used to define a Volume,
+    in which the interior of the Volume is taken as the intersection of the 
+    interior region defined by the convex hull of the points and the interior
+    regions of the algebraic objects.
+
+    Attributes:
+        points (np.ndarray): Nx3 array of points used to defined convex hull.
+        alg_objects (List[BaseAlgebraic]): Algebraic objects used to define convex region.
+        hull (ConvexHull): Convex hull of points defining volume.
+        tri (Delaunay): Delaunay triangulation of facets of convex hull.
+        generator (Generator): Generator object associated with volume that supplies atoms.
+        atoms (np.ndarray): Nx3 array of atom positions of atoms lying within volume.
+        species (np.ndarray): Nx1 array of atomic numbers of atoms lying within volume.
+        ase_atoms (Atoms): Collection of atoms in volume as ASE Atoms object.
+        priority (int): Relative generation precedence of volume.
+    """
+
+    def __init__(self, points: np.ndarray=None, alg_objects: np.ndarray=None,
+                generator: BaseGenerator=None, priority: int=0, **kwargs):
         self._points = None
         self._hull = None
-        self._orientation = np.array([[1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,1.0]])
         self._generator = None
         self._atoms = None
         self._tri = None
@@ -91,8 +149,7 @@ class Volume(BaseVolume):
             else:
                 self.add_generator(generator)
 
-        if not (priority is None):
-            self.priority = priority
+        self.priority = priority
 
         if not (alg_objects is None):
             for obj in alg_objects:
@@ -103,6 +160,7 @@ class Volume(BaseVolume):
     """
     @property
     def points(self):
+        """Nx3 array of points used to defined convex hull."""
         return self._points
 
     @points.setter
@@ -115,63 +173,31 @@ class Volume(BaseVolume):
 
     @property
     def alg_objects(self):
+        """Algebraic objects used to define convex region."""
         return self._alg_objects
 
-    def add_alg_object(self, obj):
+    def add_alg_object(self, obj: BaseAlgebraic):
+        """Add an algebraic surface to the volume.
+        
+        Args:
+            obj (BaseAlgebraic): Algebraic surface to add to volume.
+        """
         assert(isinstance(obj, (BaseAlgebraic))), "Must be adding algebraic objects from derived BaseAlgebraic class"
         self._alg_objects.append(copy.deepcopy(obj))
         
     @property
     def hull(self):
+        """Convex hull of points defining volume."""
         return self._hull
     
     @property
     def tri(self):
+        """Delaunay triangulation of facets of convex hull."""
         return self._tri
-
-    @property
-    def centroid(self):
-        """
-        Return heuristic centroid-- works okay if convex hull has points well distributed on surface.
-        Used to track translations and apply rotations if no center is specified.
-        """
-        try:
-            return np.mean(self.hull.points,axis=0)
-        except AttributeError:
-            raise AttributeError("No hull has been created.")
     
     @property
-    def volume(self):
-        """
-        Return volume of convex hull defined by volume points
-        """
-        try:
-            return (self.hull.volume)
-        except AttributeError:
-            raise AttributeError("No hull has been created.")
-
-    @property
-    def area(self):
-        """
-        Return surface area of convex hull defined by volume points
-        """
-        try:
-            return (self.hull.area)
-        except AttributeError:
-            raise AttributeError("No hull has been created.")
-
-    @property
-    def orientation(self):
-        """
-        Return orientation of volume as orthonormal 3x3 matrix, representing
-        current orientations of local X/Y/Z vectors.
-        Each row is direction the original X/Y/Z now points, in terms of a 
-        global othornomal system.
-        """
-        return self._orientation
-
-    @property
     def generator(self):
+        """Generator object associated with volume that supplies atoms."""
         return self._generator
 
     def add_generator(self, generator, origin=None):
@@ -190,17 +216,17 @@ class Volume(BaseVolume):
     Methods
     """
     def createHull(self):
-        """
-        Create convex hull of volume boundaries
-        """
+        """Create convex hull from points defining volume boundaries."""
         #check to make sure there are N>3 points in point list
         assert(self.points.shape[0] > 3), "must have more than 3 points to create hull"
         self._hull = ConvexHull(self.points,incremental=True)
         self._tri = Delaunay(self.hull.points[self.hull.vertices])
 
-    def addPoints(self, points):
-        """
-        expects points as an Nx3 numpy array 
+    def addPoints(self, points: np.ndarray):
+        """Add points to list of points defining convex hull and update hull.
+
+        Args:
+            points (np.ndarray): Nx3 array of points to add to hull.
         """
         assert(points.shape[-1]==3), "points must be N x 3 numpy array (x,y,z)"
         assert(len(points.shape)<3), "points must be N x 3 numpy array (x,y,z)"
@@ -221,7 +247,8 @@ class Volume(BaseVolume):
         except AttributeError:
             self.createHull()
 
-    def transform(self, transformation):
+    def transform(self, transformation: BaseTransform):
+
         assert(isinstance(transformation, BaseTransform)), "Supplied transformation not transformation object."
 
         if not(self.points is None):
@@ -236,11 +263,7 @@ class Volume(BaseVolume):
             self.generator.transform(transformation)
 
 
-    def checkIfInterior(self, testPoints):
-        """
-        Checks if points in testPoints lie within convex hull
-        testPoints should be Nx3 numpy array
-        """
+    def checkIfInterior(self, testPoints: np.ndarray):
         assert(testPoints.shape[-1]==3), "testPoints must be N x 3 numpy array (x,y,z)"
         assert(len(testPoints.shape)<3), "testPoints must be N x 3 numpy array (x,y,z)"
         if(len(testPoints.shape)==1):
@@ -258,6 +281,11 @@ class Volume(BaseVolume):
         return check
 
     def get_bounding_box(self):
+        """Get some minimal bounding box defining extremities of regions.
+        
+        Returns:
+            Nx3 array of points defining extremities of region enclosed by volume.
+        """
         if not(self.points is None):
             return self.points
         else:
@@ -275,9 +303,6 @@ class Volume(BaseVolume):
                 return get_bounding_box_planes(planes)
 
     def populate_atoms(self):
-        """
-        Fill bounding space with atoms then remove atoms falling outside 
-        """
         bbox = self.get_bounding_box()
         coords, species = self.generator.supply_atoms(bbox)
         check = self.checkIfInterior(coords)
@@ -286,9 +311,14 @@ class Volume(BaseVolume):
         self._species = species[check]
 
     def from_volume(self, **kwargs):
-        """
-        Construct a volume from another volume
-        **kwargs encodes relationship
+        """Constructor for new Volumes based on existing Volume object.
+
+        Args:
+            **kwargs: 
+                    - transformation=List[BaseTransformation] to apply a series
+                     of transfomrations to copied Volume.
+                    - generator=BaseGenerator to replace generator associated with volume.
+                    - Any kwargs accepted in creation of Volume object.
         """
         new_volume = Volume(points=self.points, alg_objects=self.alg_objects, priority=self.priority)
         if "generator" in kwargs.keys():
@@ -303,8 +333,28 @@ class Volume(BaseVolume):
         return new_volume
 
 class MultiVolume(BaseVolume):
+    """Volume object for representing arbitrary union of convex spaces.
 
-    def __init__(self, volumes=None, priority=None):
+    Volume objects are subtractive components in Construction Zone. When designing
+    nanostructures, Volumes contain information about where atoms should and
+    should not be placed. Semantically, volumes can be thought of as singular
+    objects in space. In order to supply atoms, Volumes must be given a Generator.
+
+    MultiVolumes group multiple Volume objects together into a single semantic object.
+    Within the MultiVolume, Volume intersection is handled with relative precedence levels, 
+    analagous to the precedence relationships that are used to handle conflict
+    resolution between Volumes in scenes. Transformations applied to a MultiVolume
+    are applied to every owned volume. MultiVolumes can be nested.
+
+    Attributes:
+        volumes (np.ndarray): Nx3 array of points used to defined convex hull.
+        atoms (np.ndarray): Nx3 array of atom positions of atoms lying within volume.
+        species (np.ndarray): Nx1 array of atomic numbers of atoms lying within volume.
+        ase_atoms (Atoms): Collection of atoms in volume as ASE Atoms object.
+        priority (int): Relative generation precedence of volume.
+    """
+
+    def __init__(self, volumes: List[BaseVolume]=None, priority: int=None):
         self._priority = 0
         self._volumes = []
         if not (volumes is None):
@@ -313,23 +363,17 @@ class MultiVolume(BaseVolume):
         if not (priority is None):
             self.priority = priority
 
-
-    """
-    Propeties
-    """
     @property
     def volumes(self):
+        """Collection of volumes grouped in MultiVolume."""
         return self._volumes
 
-    @property
-    def atoms(self):
-        return self._atoms
-
-    """
-    Methods
-    """
-
-    def add_volume(self, volume):
+    def add_volume(self, volume: BaseVolume):
+        """Add volume to MultiVolume.
+        
+        Args:
+            volume (BaseVolume): Volume object to add to MultiVolume.
+        """
         if hasattr(volume, '__iter__'):
             for v in volume:
                 assert(isinstance(v, BaseVolume)), "volumes must be volume objects"
@@ -338,7 +382,16 @@ class MultiVolume(BaseVolume):
             assert(isinstance(volume, BaseVolume)), "volumes must be volume objects"
             self._volumes.append(volume)
 
-    def get_priorities(self):
+    def _get_priorities(self):
+        """Grab priority levels of all volumes in MultiVolume to determine precedence relationship.
+
+        Returns:
+            List of relative priority levels and offsets. Relative priority levels
+            and offsets are used to determine which objects whill be checked
+            for the inclusion of atoms in the scene of the atoms contributed by
+            another object.
+        """
+        
         # get all priority levels active first
         self.volumes.sort(key=lambda ob: ob.priority)
         plevels = np.array([x.priority for x in self.volumes]) 
@@ -353,13 +406,13 @@ class MultiVolume(BaseVolume):
 
         return rel_plevels, offsets
 
-    def transform(self, transformation):
+    def transform(self, transformation: BaseTransform):
         assert(isinstance(transformation, BaseTransform)), "Supplied transformation not transformation object."
 
         for vol in self.volumes:
             vol.transform(transformation)
 
-    def checkIfInterior(self, testPoints):
+    def checkIfInterior(self, testPoints: np.ndarray):
         assert(testPoints.shape[-1]==3), "testPoints must be N x 3 numpy array (x,y,z)"
         assert(len(testPoints.shape)<3), "testPoints must be N x 3 numpy array (x,y,z)"
         if(len(testPoints.shape)==1):
@@ -373,13 +426,11 @@ class MultiVolume(BaseVolume):
         return check
 
     def populate_atoms(self):
-        """
-        routine is modified form of scene atom population
-        """
+        #routine is modified form of scene atom population
         for vol in self.volumes:
             vol.populate_atoms()
 
-        rel_plevels, offsets = self.get_priorities()
+        rel_plevels, offsets = self._get_priorities()
 
         checks = []
 
@@ -398,9 +449,16 @@ class MultiVolume(BaseVolume):
         self._species = np.hstack([vol.species[checks[i]] for i, vol in enumerate(self.volumes)])
 
     def from_volume(self, **kwargs):
-        """
-        Construct a volume from another volume
-        **kwargs encodes relationship
+        """Constructor for new MultiVolume based on existing MultiVolume object.
+
+        **kwargs passed to volume are applied to every owned Volume individually.
+
+        Args:
+            **kwargs: 
+                    - transformation=List[BaseTransformation] to apply a series
+                     of transfomrations to copied Volume.
+                    - generator=BaseGenerator to replace generator associated with volume.
+                    - Any kwargs accepted in creation of Volume object.
         """
         new_vols = []
         for vol in self.volumes:
@@ -414,28 +472,19 @@ class MultiVolume(BaseVolume):
 #### Utility functions #####
 ############################
 
-
-def checkCollisionHulls(volumeA, volumeB):
-    """
-    Expects two volume objects.
-    Checks to see if any region is interior to two separate convex hulls.
-    Uses interior point check with vertice list of Volume B
-    to check for intersection of hulls. Checks both lists for 
-    the case where one volume is entirely interior to the other.
-
-    TODO: add tolerance, i.e., check shell around a volume
-    """
-    #check point interiority, i.e., if addition of point defines new vertices
-    if volumeA.checkIfInterior(volumeB.points) or volumeB.checkIfInterior(volumeA.points):
-        return True
-    
-    return False
-
 def makeRectPrism(a,b,c,center=None):
-    """
-    Returns 8x3 numpy array of 8 points defining a rectangular prism in space.
-    a,b,c are floats defining sidelength.
-    center is midpoint of prism
+    """Create rectangular prism.
+
+    Args:
+        a (float): dimension of prism along x
+        b (float): dimension of prism along y
+        c (float): dimension of prism along z
+        center (np.ndarray): center of prism, default None. If None, corner of
+                            prism is at origin. Else, prism is translated to 
+                            have midpoint at center.
+
+    Returns:
+        8x3 numpy array of 8 points defining a rectangular prism in space.
     """
     points = np.array([[0,0,0],[1,0,0],[0,1,0],[0,0,1],
                         [1,1,0],[1,0,1],[0,1,1],[1,1,1]],dtype=np.float64)
@@ -448,23 +497,3 @@ def makeRectPrism(a,b,c,center=None):
         #translate prism to desired center if specified
         cur_center = np.mean(points,axis=0)
         return points + (center-cur_center)
-
-def from_volume(orig: Volume, **kwargs) -> Volume:
-    """
-    Construct a volume from another volume
-    **kwargs encodes relationship
-    """
-    if not isinstance(orig, Volume):
-            raise TypeError("Supplied volume is not of Volume() class")
-
-    new_volume = Volume(points=orig.points, alg_objects=orig.alg_objects)
-    if "generator" in kwargs.keys():
-        new_volume.generator = kwargs["generator"]
-    else:
-        new_volume.generator = copy.deepcopy(orig.generator)
-        
-    if "transformation" in kwargs.keys():
-        for t in kwargs["transformation"]:
-            new_volume.transform(t)
-
-    return new_volume

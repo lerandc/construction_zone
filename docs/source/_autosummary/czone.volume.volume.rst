@@ -1,4 +1,4 @@
-czone.volume.volume
+﻿czone.volume.volume
 ===================
 
 .. automodule:: czone.volume.volume
@@ -13,8 +13,6 @@ czone.volume.volume
 
    .. autosummary::
    
-      checkCollisionHulls
-      from_volume
       makeRectPrism
    
    

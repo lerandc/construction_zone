@@ -10,10 +10,10 @@ class Scene():
 
     Attributes:
         bounds (np.ndarray): 2x3 array defining rectangular bounds of scene.
-        objects (List[BaseVolume]): list of all objects currently in scene.
-        all_atoms (np.ndarray): coordinates of all atoms in scene after precedence checks.
-        all_species (np.ndarray): atomic numbers of all atoms in scene after precedence checks.
-        ase_atoms (Atoms): collection of atoms in scene as ASE Atoms object
+        objects (List[BaseVolume]): List of all objects currently in scene.
+        all_atoms (np.ndarray): Coordinates of all atoms in scene after precedence checks.
+        all_species (np.ndarray): Atomic numbers of all atoms in scene after precedence checks.
+        ase_atoms (Atoms): Collection of atoms in scene as ASE Atoms object.
     """
 
     def __init__(self, bounds=None, objects=None):

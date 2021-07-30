@@ -178,8 +178,6 @@
             
   <div class="section" id="module-czone.volume.volume">
 <span id="czone-volume-volume"></span><h1>czone.volume.volume<a class="headerlink" href="#module-czone.volume.volume" title="Permalink to this headline">¶</a></h1>
-<p>Volume Class
-Luis Rangel DaCosta</p>
 <p class="rubric">Functions</p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -187,14 +185,8 @@ Luis Rangel DaCosta</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../czone.volume.html#czone.volume.volume.checkCollisionHulls" title="czone.volume.volume.checkCollisionHulls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">checkCollisionHulls</span></code></a>(volumeA, volumeB)</p></td>
-<td><p>Expects two volume objects.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../czone.volume.html#czone.volume.volume.from_volume" title="czone.volume.volume.from_volume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_volume</span></code></a>(orig, **kwargs)</p></td>
-<td><p>Construct a volume from another volume <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs encodes relationship</p></td>
-</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../czone.volume.html#czone.volume.volume.makeRectPrism" title="czone.volume.volume.makeRectPrism"><code class="xref py py-obj docutils literal notranslate"><span class="pre">makeRectPrism</span></code></a>(a, b, c[, center])</p></td>
-<td><p>Returns 8x3 numpy array of 8 points defining a rectangular prism in space.</p></td>
+<td><p>Create rectangular prism.</p></td>
 </tr>
 </tbody>
 </table>
@@ -206,13 +198,13 @@ Luis Rangel DaCosta</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="../czone.volume.html#czone.volume.volume.BaseVolume" title="czone.volume.volume.BaseVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseVolume</span></code></a>(**kwargs)</p></td>
-<td><p></p></td>
+<td><p>Base abstract class for Volume objects.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../czone.volume.html#czone.volume.volume.MultiVolume" title="czone.volume.volume.MultiVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiVolume</span></code></a>([volumes, priority])</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../czone.volume.html#czone.volume.volume.MultiVolume" title="czone.volume.volume.MultiVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiVolume</span></code></a>(volumes, priority)</p></td>
+<td><p>Volume object for representing arbitrary union of convex spaces.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../czone.volume.html#czone.volume.volume.Volume" title="czone.volume.volume.Volume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Volume</span></code></a>([points, alg_objects, generator, …])</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../czone.volume.html#czone.volume.volume.Volume" title="czone.volume.volume.Volume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Volume</span></code></a>(points, alg_objects, generator, …)</p></td>
+<td><p>Volume object for representing convex spaces.</p></td>
 </tr>
 </tbody>
 </table>
