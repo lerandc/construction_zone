@@ -8,10 +8,8 @@ Subpackages
    :maxdepth: 4
 
    czone.generator
-   czone.io
    czone.prefab
    czone.scene
-   czone.tests
    czone.transform
    czone.util
    czone.viz

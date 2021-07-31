@@ -1,4 +1,4 @@
-﻿czone.util.misc
+czone.util.misc
 ===============
 
 .. automodule:: czone.util.misc

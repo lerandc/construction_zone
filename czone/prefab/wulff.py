@@ -85,7 +85,7 @@ class WulffBase(ABC):
     @surface_energies.setter
     def surface_energies(self, vals):
         for key, val in vals.items():
-            assert(isintance(key, tuple) and isinstance(val, float)), \
+            assert(isinstance(key, tuple) and isinstance(val, float)), \
                 "surface energies must be passed as tuple pairs of miller indices and floats"
 
         self._surface_energies = vals
