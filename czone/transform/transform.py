@@ -1,7 +1,10 @@
 import copy
-import numpy as np
 from abc import ABC, abstractmethod
-from scipy.spatial.transform import Rotation as scRotation  #avoid namespace conflicts
+
+import numpy as np
+from scipy.spatial.transform import \
+    Rotation as scRotation  # avoid namespace conflicts
+
 from ..volume.algebraic import BaseAlgebraic, Plane, Sphere
 
 #####################################

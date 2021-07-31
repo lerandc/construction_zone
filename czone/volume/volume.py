@@ -1,16 +1,16 @@
-from .algebraic import BaseAlgebraic, Plane, Sphere
-from .algebraic import get_bounding_box as get_bounding_box_planes
-from ..generator import BaseGenerator, AmorphousGenerator
-from ..transform import BaseTransform
+import copy
 from abc import ABC, abstractmethod
-from scipy.spatial import ConvexHull, Delaunay
-from ase import Atoms
-from ase.io import write as ase_write
+from typing import List
 
 import numpy as np
-import copy
+from ase import Atoms
+from ase.io import write as ase_write
+from scipy.spatial import ConvexHull, Delaunay
 
-from typing import List
+from ..generator import AmorphousGenerator, BaseGenerator
+from ..transform import BaseTransform
+from .algebraic import BaseAlgebraic, Plane, Sphere
+from .algebraic import get_bounding_box as get_bounding_box_planes
 
 ############################
 ###### Volume Classes ######

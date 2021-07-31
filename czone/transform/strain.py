@@ -1,8 +1,10 @@
 from __future__ import annotations
-import numpy as np
+
+import copy
 from abc import ABC, abstractmethod
 from typing import Callable
-import copy
+
+import numpy as np
 
 
 class BaseStrain(ABC):

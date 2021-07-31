@@ -1,14 +1,16 @@
-from .amorphous_algorithms import *
+import copy
+import itertools
+from abc import ABC, abstractmethod
+from typing import List, Tuple
+
+import numpy as np
+from pymatgen.core import Lattice, Structure
+from pymatgen.symmetry.groups import SpaceGroup, sg_symbol_from_int_number
+
 from ..transform import BaseTransform
 from ..transform.strain import BaseStrain
 from ..volume.voxel import Voxel
-import copy
-import numpy as np
-from abc import ABC, abstractmethod
-from pymatgen.core import Structure, Lattice
-from pymatgen.symmetry.groups import SpaceGroup, sg_symbol_from_int_number
-import itertools
-from typing import List, Tuple
+from .amorphous_algorithms import *
 
 #####################################
 ########## Generator Classes ########

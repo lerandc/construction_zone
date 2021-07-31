@@ -1,9 +1,11 @@
-import numpy as np
 from abc import ABC, abstractmethod
+from typing import Generator, List, Tuple
+
+import numpy as np
 from scipy.optimize import linprog
 from scipy.spatial import HalfspaceIntersection
+
 from ..util.misc import round_away
-from typing import Generator, Tuple, List
 
 #####################################
 ##### Geometric Surface Classes #####

@@ -1,9 +1,11 @@
-from ..volume import BaseVolume, makeRectPrism
+from typing import List
+
 import numpy as np
 from ase import Atoms
-from ase.symbols import Symbols
 from ase.io import write as ase_write
-from typing import List
+from ase.symbols import Symbols
+
+from ..volume import BaseVolume, makeRectPrism
 
 
 class Scene():

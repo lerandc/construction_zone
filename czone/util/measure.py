@@ -1,6 +1,7 @@
-import numpy as np
-from typing import List, Tuple
 from collections.abc import Callable
+from typing import List, Tuple
+
+import numpy as np
 
 
 def get_voxel_grid(dim: Tuple[int],

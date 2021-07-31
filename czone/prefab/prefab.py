@@ -1,12 +1,14 @@
 import copy
-import numpy as np
 from abc import ABC, abstractmethod
-from ..volume import BaseVolume, Volume, MultiVolume
-from ..volume.algebraic import Plane, snap_plane_near_point
-from ..generator import Generator
-from ..util.misc import get_N_splits
-from ..transform import *
 from typing import Tuple
+
+import numpy as np
+
+from ..generator import Generator
+from ..transform import *
+from ..util.misc import get_N_splits
+from ..volume import BaseVolume, MultiVolume, Volume
+from ..volume.algebraic import Plane, snap_plane_near_point
 
 
 class BasePrefab(ABC):

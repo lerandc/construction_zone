@@ -1,6 +1,7 @@
+from typing import List, Union
+
 import numpy as np
 from numpy.typing import ArrayLike
-from typing import Union, List
 
 
 def round_away(x: float) -> float:
