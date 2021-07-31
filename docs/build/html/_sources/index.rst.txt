@@ -12,11 +12,3 @@ Construction Zone
    references
    license
    acknowledgment
-
-
-.. autosummary::
-   :toctree: _autosummary
-   :recursive:
-   :caption: API
-
-   czone
