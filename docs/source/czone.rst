@@ -1,24 +1,14 @@
-czone package
-=============
-
-Subpackages
------------
+Construction Zone
+==============================
 
 .. toctree::
    :maxdepth: 4
 
    czone.generator
-   czone.prefab
+   czone.volume
    czone.scene
    czone.transform
+   czone.prefab
    czone.util
    czone.viz
-   czone.volume
-
-Module contents
----------------
-
-.. automodule:: czone
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   

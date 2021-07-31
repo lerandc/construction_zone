@@ -1,21 +1,13 @@
-czone.viz package
-=================
+Visualization Module
+========================
 
 Submodules
 ----------
 
-czone.viz.viz module
+Visualization
 --------------------
 
 .. automodule:: czone.viz.viz
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: czone.viz
    :members:
    :undoc-members:
    :show-inheritance:

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>czone package &mdash; Construction Zone v0.0.1 documentation</title>
+  <title>Construction Zone &mdash; Construction Zone v0.0.1 documentation</title>
   
 
   
@@ -40,7 +40,9 @@
 
     
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Generator Module" href="czone.generator.html" />
+    <link rel="prev" title="Modules" href="modules.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -85,7 +87,29 @@
               
             
             
-              <p class="caption" role="heading"><span class="caption-text">API</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Intro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Construction Zone</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="czone.generator.html">Generator Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="czone.volume.html">Volume Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="czone.scene.html">Scene Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="czone.transform.html">Transformation Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="czone.prefab.html">Prefab Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="czone.util.html">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="czone.viz.html">Visualization Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgment.html">Acknowledgment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="_autosummary/czone.html">czone</a></li>
 </ul>
@@ -136,7 +160,9 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>czone package</li>
+          <li><a href="modules.html">Modules</a> &raquo;</li>
+        
+      <li>Construction Zone</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -155,65 +181,46 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="czone-package">
-<h1>czone package<a class="headerlink" href="#czone-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="construction-zone">
+<h1>Construction Zone<a class="headerlink" href="#construction-zone" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="czone.generator.html">czone.generator package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="czone.generator.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.generator.html#module-czone.generator.amorphous_algorithms">czone.generator.amorphous_algorithms module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.generator.html#module-czone.generator.generator">czone.generator.generator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.generator.html#module-czone.generator">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="czone.generator.html">Generator Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="czone.generator.html#module-czone.generator.generator">Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="czone.generator.html#module-czone.generator.amorphous_algorithms">Amorphous Algorithms</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="czone.prefab.html">czone.prefab package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="czone.prefab.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.prefab.html#module-czone.prefab.prefab">czone.prefab.prefab module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.prefab.html#module-czone.prefab.wulff">czone.prefab.wulff module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.prefab.html#module-czone.prefab">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="czone.volume.html">Volume Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="czone.volume.html#module-czone.volume.volume">Volumes and MultiVolumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="czone.volume.html#module-czone.volume.algebraic">Algebraic Surfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="czone.volume.html#module-czone.volume.voxel">Voxels</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="czone.scene.html">czone.scene package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="czone.scene.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.scene.html#module-czone.scene.scene">czone.scene.scene module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.scene.html#module-czone.scene">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="czone.scene.html">Scene Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="czone.scene.html#module-czone.scene.scene">Scenes</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="czone.transform.html">czone.transform package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="czone.transform.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.transform.html#module-czone.transform.strain">czone.transform.strain module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.transform.html#module-czone.transform.transform">czone.transform.transform module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.transform.html#module-czone.transform">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="czone.transform.html">Transformation Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="czone.transform.html#module-czone.transform.transform">General Transformations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="czone.transform.html#module-czone.transform.strain">Strain Fields</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="czone.util.html">czone.util package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="czone.util.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.util.html#module-czone.util.measure">czone.util.measure module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.util.html#module-czone.util.misc">czone.util.misc module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.util.html#module-czone.util">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="czone.prefab.html">Prefab Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="czone.prefab.html#module-czone.prefab.prefab">Prefab Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="czone.prefab.html#module-czone.prefab.wulff">Wulff Constructions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="czone.viz.html">czone.viz package</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="czone.util.html">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="czone.util.html#module-czone.util.measure">Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="czone.util.html#module-czone.util.misc">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="czone.viz.html">Visualization Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="czone.viz.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.viz.html#module-czone.viz.viz">czone.viz.viz module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.viz.html#module-czone.viz">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="czone.volume.html">czone.volume package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="czone.volume.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.volume.html#module-czone.volume.algebraic">czone.volume.algebraic module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.volume.html#module-czone.volume.volume">czone.volume.volume module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.volume.html#module-czone.volume.voxel">czone.volume.voxel module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="czone.volume.html#module-czone.volume">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="czone.viz.html#module-czone.viz.viz">Visualization</a></li>
 </ul>
 </li>
 </ul>
-</div>
-</div>
-<div class="section" id="module-czone">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-czone" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -222,6 +229,10 @@
            
           </div>
           <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="czone.generator.html" class="btn btn-neutral float-right" title="Generator Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="modules.html" class="btn btn-neutral float-left" title="Modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 

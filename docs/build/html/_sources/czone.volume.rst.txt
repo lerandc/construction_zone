@@ -1,18 +1,7 @@
-czone.volume package
+Volume Module
 ====================
 
-Submodules
-----------
-
-czone.volume.algebraic module
------------------------------
-
-.. automodule:: czone.volume.algebraic
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-czone.volume.volume module
+Volumes and MultiVolumes
 --------------------------
 
 .. automodule:: czone.volume.volume
@@ -20,18 +9,18 @@ czone.volume.volume module
    :undoc-members:
    :show-inheritance:
 
-czone.volume.voxel module
--------------------------
+Algebraic Surfaces
+-----------------------------
 
-.. automodule:: czone.volume.voxel
+.. automodule:: czone.volume.algebraic
    :members:
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
+Voxels
+-------------------------
 
-.. automodule:: czone.volume
+.. automodule:: czone.volume.voxel
    :members:
    :undoc-members:
    :show-inheritance:

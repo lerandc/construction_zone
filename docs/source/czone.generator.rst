@@ -1,18 +1,7 @@
-czone.generator package
+Generator Module
 =======================
 
-Submodules
-----------
-
-czone.generator.amorphous\_algorithms module
---------------------------------------------
-
-.. automodule:: czone.generator.amorphous_algorithms
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-czone.generator.generator module
+Generators
 --------------------------------
 
 .. automodule:: czone.generator.generator
@@ -20,10 +9,10 @@ czone.generator.generator module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
+Amorphous Algorithms
+--------------------------------------------
 
-.. automodule:: czone.generator
+.. automodule:: czone.generator.amorphous_algorithms
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,21 +1,10 @@
-czone.scene package
+Scene Module
 ===================
 
-Submodules
-----------
-
-czone.scene.scene module
+Scenes
 ------------------------
 
 .. automodule:: czone.scene.scene
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: czone.scene
    :members:
    :undoc-members:
    :show-inheritance:

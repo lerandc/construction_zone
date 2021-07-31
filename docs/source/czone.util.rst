@@ -1,10 +1,7 @@
-czone.util package
+Utilities
 ==================
 
-Submodules
-----------
-
-czone.util.measure module
+Measurements
 -------------------------
 
 .. automodule:: czone.util.measure
@@ -12,18 +9,11 @@ czone.util.measure module
    :undoc-members:
    :show-inheritance:
 
-czone.util.misc module
+Miscellaneous
 ----------------------
 
 .. automodule:: czone.util.misc
    :members:
    :undoc-members:
    :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: czone.util
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   

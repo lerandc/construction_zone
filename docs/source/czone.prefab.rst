@@ -1,10 +1,7 @@
-czone.prefab package
+Prefab Module
 ====================
 
-Submodules
-----------
-
-czone.prefab.prefab module
+Prefab Objects
 --------------------------
 
 .. automodule:: czone.prefab.prefab
@@ -12,18 +9,10 @@ czone.prefab.prefab module
    :undoc-members:
    :show-inheritance:
 
-czone.prefab.wulff module
+Wulff Constructions
 -------------------------
 
 .. automodule:: czone.prefab.wulff
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: czone.prefab
    :members:
    :undoc-members:
    :show-inheritance:

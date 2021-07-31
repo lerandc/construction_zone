@@ -1,18 +1,7 @@
-czone.transform package
+Transformation Module
 =======================
 
-Submodules
-----------
-
-czone.transform.strain module
------------------------------
-
-.. automodule:: czone.transform.strain
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-czone.transform.transform module
+General Transformations
 --------------------------------
 
 .. automodule:: czone.transform.transform
@@ -20,10 +9,10 @@ czone.transform.transform module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
+Strain Fields
+-----------------------------
 
-.. automodule:: czone.transform
+.. automodule:: czone.transform.strain
    :members:
    :undoc-members:
    :show-inheritance:
