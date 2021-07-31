@@ -223,7 +223,6 @@ of surface.</p>
 <p>Algebraic surface for circular cylinders in R3.</p>
 <p>Cylinders are defined with vectors, pointing parallel to central axis;
 points, lying along central axis; and radii, defining size of cylinder.</p>
-<p>TODO: Write transformations for handling cylinder parameters.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="czone.volume.algebraic.Cylinder.axis">
 <span class="sig-name descname"><span class="pre">axis</span></span><a class="headerlink" href="#czone.volume.algebraic.Cylinder.axis" title="Permalink to this definition">¶</a></dt>
@@ -1067,63 +1066,116 @@ have midpoint at center.</p></li>
 </div>
 <div class="section" id="module-czone.volume.voxel">
 <span id="czone-volume-voxel-module"></span><h2>czone.volume.voxel module<a class="headerlink" href="#module-czone.volume.voxel" title="Permalink to this headline">¶</a></h2>
-<p>Voxel Class
-Luis Rangel DaCosta</p>
-<p>defines a voxel in 3D cartesian space based on a linear basis set</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="czone.volume.voxel.Voxel">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.volume.voxel.</span></span><span class="sig-name descname"><span class="pre">Voxel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([[1.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0],</span> <span class="pre">[0.0,</span> <span class="pre">1.0,</span> <span class="pre">0.0],</span> <span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">1.0]])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([1])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0])</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.voxel.Voxel" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">czone.volume.voxel.</span></span><span class="sig-name descname"><span class="pre">Voxel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bases</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">array([[1.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0],</span> <span class="pre">[0.0,</span> <span class="pre">1.0,</span> <span class="pre">0.0],</span> <span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">1.0]])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">array([1])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">array([0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0])</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.voxel.Voxel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py property">
+<p>Voxel class used to span space for generators and track transformations.</p>
+<p>Voxels provide an alterable view of bases and orientation of crystalline
+generators and are the actual transformed object, not Generators.
+This is in contrst to applying transformations directly to the underlying
+pymatgen Structure object, for speed and ease of manipulation.
+Voxels also help determine how much of a “block” to a Generator needs to
+build for the purpose of supplying atoms to a larger volume.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.scale">
+<span class="sig-name descname"><span class="pre">scale</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scaling factor of basis set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="czone.volume.voxel.Voxel.bases">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">bases</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.bases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">bases</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.bases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basis vectors defining crystal unit cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.sbases">
+<span class="sig-name descname"><span class="pre">sbases</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.sbases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scaled basis set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.reciprocal_bases">
+<span class="sig-name descname"><span class="pre">reciprocal_bases</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.reciprocal_bases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basis vectors defining unit cell of reciprocal lattice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.origin">
+<span class="sig-name descname"><span class="pre">origin</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Origin of Voxel grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.corners">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">corners</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.corners" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns 8 corners comprising all single unit linear combinations of basis set</p>
+<dt class="sig sig-object py" id="id21">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">bases</span></span><a class="headerlink" href="#id21" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basis vectors defining crystal unit cell. Vectors are rows of matrix.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="czone.volume.voxel.Voxel.get_extents">
-<span class="sig-name descname"><span class="pre">get_extents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">box</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.voxel.Voxel.get_extents" title="Permalink to this definition">¶</a></dt>
-<dd><p>determine minimum contiguous block of voxels that fully covers a space</p>
-<p>solves for vector extents to corners of a simple rectangular bounding box</p>
-<p>box is 8x3 np array</p>
+<span class="sig-name descname"><span class="pre">get_extents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">box</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.voxel.Voxel.get_extents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine minimum contiguous block of voxels that fully covers a space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>box</strong> (<em>np.ndarray</em>) – Set of points defining extremities of space.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tuple of minimum extents and maximum extents indicating how many
+voxels to tile in space, and where, to span a given region.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.midpoint">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">midpoint</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.midpoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>return midpoint of voxel defined by basis set</p>
+<dt class="sig sig-object py" id="id22">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">origin</span></span><a class="headerlink" href="#id22" title="Permalink to this definition">¶</a></dt>
+<dd><p>Origin of Voxel grid in space.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.origin">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">origin</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.origin" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.reciprocal_bases">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">reciprocal_bases</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.reciprocal_bases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.rotate">
-<span class="sig-name descname"><span class="pre">rotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#czone.volume.voxel.Voxel.rotate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.sbases">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">sbases</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.sbases" title="Permalink to this definition">¶</a></dt>
-<dd><p>scaled basis set</p>
+<dt class="sig sig-object py" id="id23">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">reciprocal_bases</span></span><a class="headerlink" href="#id23" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basis vectors defining unit cell of reciprocal lattice.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="czone.volume.voxel.Voxel.scale">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">scale</span></span><a class="headerlink" href="#czone.volume.voxel.Voxel.scale" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="id24">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">sbases</span></span><a class="headerlink" href="#id24" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basis vectors defining crystal unit cell, scaled by scaling factor.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id25">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">scale</span></span><a class="headerlink" href="#id25" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scaling factor of basis set.</p>
+</dd></dl>
 
 </dd></dl>
 

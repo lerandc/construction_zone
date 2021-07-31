@@ -198,14 +198,14 @@ class Cylinder(BaseAlgebraic):
     Cylinders are defined with vectors, pointing parallel to central axis;
     points, lying along central axis; and radii, defining size of cylinder.
 
-    TODO: Write transformations for handling cylinder parameters.
-
     Attributes:
         axis (np.ndarray): vector parallel to central axis of cylinder.
         point (np.ndarray): point which lies along central axis of cylinder.
         radius (float): radius of cylinder.
         tol (float): Tolerance value for interiority check. Default is 1e-5.
     """
+
+    #TODO: Write transformations for handling cylinder parameters.
 
     def __init__(self, axis: np.ndarray=[0,0,1], point: np.ndarray=[0,0,0], 
                         radius: float=1.0, tol: float =1e-5):
