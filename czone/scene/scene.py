@@ -5,6 +5,7 @@ from ase.symbols import Symbols
 from ase.io import write as ase_write
 from typing import List
 
+
 class Scene():
     """Scene classes manage multiple objects interacting in space with cell boundaries.
 
@@ -21,8 +22,8 @@ class Scene():
         self._objects = None
         self._checks = None
 
-        if not(objects is None):
-            if(hasattr(objects, "__iter__")):
+        if not (objects is None):
+            if (hasattr(objects, "__iter__")):
                 for ob in objects:
                     self.add_object(ob)
             else:
@@ -30,8 +31,10 @@ class Scene():
 
         if bounds is None:
             #default bounding box is 10 angstrom cube
-            bbox = makeRectPrism(10,10,10)
-            self.bounds = np.vstack([np.min(bbox,axis=0), np.max(bbox,axis=0)])
+            bbox = makeRectPrism(10, 10, 10)
+            self.bounds = np.vstack(
+                [np.min(bbox, axis=0),
+                 np.max(bbox, axis=0)])
         else:
             self.bounds = bounds
 
@@ -43,7 +46,7 @@ class Scene():
     @bounds.setter
     def bounds(self, bounds: np.ndarray):
         bounds = np.array(bounds)
-        assert(bounds.shape == (2,3))
+        assert (bounds.shape == (2, 3))
         self._bounds = bounds
 
     @property
@@ -72,18 +75,22 @@ class Scene():
     @property
     def all_atoms(self):
         """Positions of all atoms currently in the scene after evaluating conflict resolution."""
-        return np.vstack([ob.atoms[self._checks[i],:] for i, ob in enumerate(self.objects)])
+        return np.vstack(
+            [ob.atoms[self._checks[i], :] for i, ob in enumerate(self.objects)])
 
     @property
     def all_species(self):
         """Atomic numbers of all atoms currently in the scene after evaluating conflict resolution."""
-        return np.hstack([ob.species[self._checks[i]] for i, ob in enumerate(self.objects)])
+        return np.hstack(
+            [ob.species[self._checks[i]] for i, ob in enumerate(self.objects)])
 
     @property
     def ase_atoms(self):
         """Collection of atoms in scene as ASE Atoms object."""
-        cell_dims = self.bounds[1,:]-self.bounds[0,:]
-        return Atoms(symbols=self.all_species, positions=self.all_atoms, cell=cell_dims)
+        cell_dims = self.bounds[1, :] - self.bounds[0, :]
+        return Atoms(symbols=self.all_species,
+                     positions=self.all_atoms,
+                     cell=cell_dims)
 
     def species_from_object(self, idx: int):
         """Grab all the atoms from contributing object at idx.
@@ -91,7 +98,7 @@ class Scene():
         Returns:
             Numpy array of all positions of atoms contributed by object at idx.
         """
-        return self.objects[idx].atoms[self._checks[idx],:]
+        return self.objects[idx].atoms[self._checks[idx], :]
 
     def _get_priorities(self):
         """Grab priority levels of all objects in Scene to determine precedence relationship.
@@ -105,7 +112,7 @@ class Scene():
         """
         # get all priority levels active first
         self.objects.sort(key=lambda ob: ob.priority)
-        plevels = np.array([x.priority for x in self.objects]) 
+        plevels = np.array([x.priority for x in self.objects])
 
         # get unique levels and create relative priority array
         __, idx = np.unique(plevels, return_index=True)
@@ -138,11 +145,12 @@ class Scene():
 
         for i, ob in enumerate(self.objects):
             check = np.ones(ob.atoms.shape[0]).astype(bool)
-            eidx = offsets[rel_plevels[i]+1]
+            eidx = offsets[rel_plevels[i] + 1]
 
             for j in range(eidx):
-                if(i != j):
-                    check_against = np.logical_not(self.objects[j].checkIfInterior(ob.atoms))
+                if (i != j):
+                    check_against = np.logical_not(
+                        self.objects[j].checkIfInterior(ob.atoms))
                     check = np.logical_and(check, check_against)
 
             self._checks.append(check)
@@ -161,8 +169,11 @@ class Scene():
         if "format" in kwargs.keys():
             if kwargs["format"] == "prismatic":
                 dwf = set(self.all_species)
-                dw_default = (0.1**2.0)*8*np.pi**2.0
-                dwf = {str(Symbols([x])):dw_default for x in dwf}
-                ase_write(filename=fname, images=self.ase_atoms, debye_waller_factors=dwf, **kwargs)
+                dw_default = (0.1**2.0) * 8 * np.pi**2.0
+                dwf = {str(Symbols([x])): dw_default for x in dwf}
+                ase_write(filename=fname,
+                          images=self.ase_atoms,
+                          debye_waller_factors=dwf,
+                          **kwargs)
         else:
             ase_write(filename=fname, images=self.ase_atoms, **kwargs)

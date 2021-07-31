@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Callable
 import copy
 
+
 class BaseStrain(ABC):
     """Base class for strain fields that act on Generators.
 
@@ -20,7 +21,7 @@ class BaseStrain(ABC):
     """
 
     def __init__(self):
-        self.origin = np.array([0,0,0])
+        self.origin = np.array([0, 0, 0])
 
     @abstractmethod
     def apply_strain(self, points: np.ndarray) -> np.ndarray:
@@ -53,7 +54,7 @@ class BaseStrain(ABC):
 
     @origin.setter
     def origin(self, val):
-        assert(val.shape == (3,)), "Origin must have shape (3,)"
+        assert (val.shape == (3,)), "Origin must have shape (3,)"
         self._origin = np.array(val)
 
     @property
@@ -72,6 +73,7 @@ class BaseStrain(ABC):
     def bases(self):
         """"Basis vectors of crystal coordinate system."""
         return self._bases
+
 
 class HStrain(BaseStrain):
     """Strain class for applying homogeneous strain fields to generators.
@@ -115,11 +117,11 @@ class HStrain(BaseStrain):
     def matrix(self, vals):
         vals = np.squeeze(np.array(vals))
         if vals.shape == (3,):
-            self._matrix = np.eye(3)*vals
-        elif vals.shape == (3,3):
+            self._matrix = np.eye(3) * vals
+        elif vals.shape == (3, 3):
             self._matrix = vals
         elif vals.shape == (9,):
-            self._matrix = np.reshape(vals, (3,3))
+            self._matrix = np.reshape(vals, (3, 3))
         elif vals.shape == (6,):
             # voigt notation
             v = vals
@@ -135,7 +137,7 @@ class HStrain(BaseStrain):
     def apply_strain(self, points: np.ndarray) -> np.ndarray:
 
         # get points relative to origin
-        sp = np.copy(points)-self.origin
+        sp = np.copy(points) - self.origin
 
         if self.mode == "crystal":
             # project onto crystal coordinates, strain, project back into real space
@@ -143,7 +145,7 @@ class HStrain(BaseStrain):
         else:
             # strain
             sp = sp @ self.matrix
-        
+
         # shift back w.r.t. origin
         sp += self.origin
 
@@ -165,12 +167,13 @@ class IStrain(BaseStrain):
         strain_fun (Callable): strain function F: R3 -> R3 for 
                                 np.arrays of shape (N,3)->(N,3)
     """
+
     def __init__(self, fun=None, origin="generator", mode="crystal", **kwargs):
         if not fun is None:
             self.strain_fun = fun
         else:
             # apply no strain
-            self.strain_fun = lambda x: x 
+            self.strain_fun = lambda x: x
 
         self.mode = mode
 
@@ -185,7 +188,7 @@ class IStrain(BaseStrain):
     ##############
     # Properties #
     ##############
-    
+
     @property
     def fun_kwargs(self):
         """kwargs passed to custom strain function upon application of strain."""
@@ -193,7 +196,9 @@ class IStrain(BaseStrain):
 
     @fun_kwargs.setter
     def fun_kwargs(self, kwargs_dict: dict):
-        assert(isinstance(kwargs_dict, dict)), "Must supply dictionary for arbirtrary extra kwargs"
+        assert (isinstance(
+            kwargs_dict,
+            dict)), "Must supply dictionary for arbirtrary extra kwargs"
         self._fun_kwargs = kwargs_dict
 
     @property
@@ -204,24 +209,26 @@ class IStrain(BaseStrain):
     @strain_fun.setter
     def strain_fun(self, fun: Callable[[np.ndarray], np.ndarray]):
         try:
-            ref_arr = np.random.rand((100,3))
+            ref_arr = np.random.rand((100, 3))
             test_arr = fun(ref_arr, **self.fun_kwargs)
-            assert(test_arr.shape == (100,3))
+            assert (test_arr.shape == (100, 3))
         except AssertionError:
-            raise ValueError("Strain function must return numpy arrays with shape (N,3) for input arrays of shape (N,3)")
-        
+            raise ValueError(
+                "Strain function must return numpy arrays with shape (N,3) for input arrays of shape (N,3)"
+            )
+
         self._strain_fun = copy.deepcopy(fun)
-        
+
     ##############
     ### Methods ##
     ##############
     def apply_strain(self, points: np.ndarray) -> np.ndarray:
 
         # get points relative to origin
-        sp = np.copy(points)-self.origin
+        sp = np.copy(points) - self.origin
 
         if self.mode == "crystal":
-            # project onto crystal coordinates 
+            # project onto crystal coordinates
             sp = sp @ np.linalg.inv(self.bases)
 
             # strain
@@ -232,7 +239,7 @@ class IStrain(BaseStrain):
         else:
             # strain
             sp = self.strain_fun(sp, **self.fun_kwargs)
-        
+
         # shift back w.r.t. origin
         sp += self.origin
 

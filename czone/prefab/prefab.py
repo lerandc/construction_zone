@@ -8,6 +8,7 @@ from ..util.misc import get_N_splits
 from ..transform import *
 from typing import Tuple
 
+
 class BasePrefab(ABC):
     """Base abstract class for Prefab objects.
 
@@ -51,9 +52,14 @@ class fccMixedTwinSF(BasePrefab):
                         defects will be placed.
 
     """
-    
-    def __init__(self, generator: Generator =None, volume: BaseVolume=None, 
-                        ratio: float=0.5, N: int=1, min_sep: int = 3, plane: Tuple[int]=(1,1,1)):
+
+    def __init__(self,
+                 generator: Generator = None,
+                 volume: BaseVolume = None,
+                 ratio: float = 0.5,
+                 N: int = 1,
+                 min_sep: int = 3,
+                 plane: Tuple[int] = (1, 1, 1)):
         self._N = None
         self._plane = None
         self._ratio = None
@@ -71,7 +77,7 @@ class fccMixedTwinSF(BasePrefab):
 
         if not volume is None:
             self.volume = volume
-    
+
     @property
     def N(self):
         """Number of defects to place in volume."""
@@ -85,17 +91,19 @@ class fccMixedTwinSF(BasePrefab):
     def min_sep(self):
         """Minimum seperation between defects in numbers of planes."""
         return self._min_sep
-    
+
     @min_sep.setter
     def min_sep(self, val: int):
-        assert(isinstance(val, int)), "Must supply integer number of planes for minimum seperation of defects."
+        assert (
+            isinstance(val, int)
+        ), "Must supply integer number of planes for minimum seperation of defects."
         self._min_sep = val
 
     @property
     def plane(self):
         """Miller indices of defect planes."""
         return self._plane
-    
+
     @plane.setter
     def plane(self, val: Tuple[int]):
         self._plane = val
@@ -107,7 +115,8 @@ class fccMixedTwinSF(BasePrefab):
 
     @ratio.setter
     def ratio(self, val: float):
-        assert(0.0 <= val and val <= 1.0), "Ratio must be value in interval [0,1)."
+        assert (0.0 <= val and
+                val <= 1.0), "Ratio must be value in interval [0,1)."
         self._ratio = val
 
     @property
@@ -117,7 +126,8 @@ class fccMixedTwinSF(BasePrefab):
 
     @generator.setter
     def generator(self, val: Generator):
-        assert(isinstance(val, Generator)), "Must supply crystalline Generator object."
+        assert (isinstance(
+            val, Generator)), "Must supply crystalline Generator object."
         self._generator = val
 
     @property
@@ -126,31 +136,40 @@ class fccMixedTwinSF(BasePrefab):
         return self._volume
 
     @volume.setter
-    def volume(self,val: BaseVolume):
-        assert(isinstance(val, BaseVolume)), "Must supply either Volume or MultiVolume object."
+    def volume(self, val: BaseVolume):
+        assert (isinstance(
+            val,
+            BaseVolume)), "Must supply either Volume or MultiVolume object."
         self._volume = val
 
     def build_object(self):
         # get list of all planes in bounding box
         # TODO: the bounding box isn't necessarily tangent to the valid volume (e.g., spheres)
         # perhaps refine the end points until planes intersect
-        norm_vec = self.generator.voxel.bases @ np.array(self.plane) # fine to use real bases since cubic
+        norm_vec = self.generator.voxel.bases @ np.array(
+            self.plane)  # fine to use real bases since cubic
         norm_vec /= np.linalg.norm(norm_vec)
         bbox = self.volume.get_bounding_box()
-        ci = np.dot(norm_vec.reshape(1,3), bbox.T).T
-        start = bbox[np.argmin(ci),:]
-        finish = bbox[np.argmax(ci),:]
+        ci = np.dot(norm_vec.reshape(1, 3), bbox.T).T
+        start = bbox[np.argmin(ci), :]
+        finish = bbox[np.argmax(ci), :]
 
         if isinstance(self.volume.alg_objects[0], Sphere):
             # override bbox in this special case
-            start = -1.0*self.volume.alg_objects[0].radius*norm_vec
-            finish = self.volume.alg_objects[0].radius*norm_vec
+            start = -1.0 * self.volume.alg_objects[0].radius * norm_vec
+            finish = self.volume.alg_objects[0].radius * norm_vec
 
-        sp = snap_plane_near_point(start, self.generator, self.plane, mode="floor")
-        ep = snap_plane_near_point(finish, self.generator, self.plane, mode="ceil")
+        sp = snap_plane_near_point(start,
+                                   self.generator,
+                                   self.plane,
+                                   mode="floor")
+        ep = snap_plane_near_point(finish,
+                                   self.generator,
+                                   self.plane,
+                                   mode="ceil")
         d_tot = ep.dist_from_plane(sp.point)
         d_hkl = self.generator.lattice.d_hkl(self.plane)
-        N_planes = np.round(d_tot/d_hkl).astype(int)
+        N_planes = np.round(d_tot / d_hkl).astype(int)
         planes = [sp]
         new_point = np.copy(sp.point)
         for i in range(N_planes):
@@ -163,14 +182,15 @@ class fccMixedTwinSF(BasePrefab):
 
         # create sub volumes for final multivolume
         # origins should be successively shifted
-        gen_tmp = self.generator.from_generator() 
+        gen_tmp = self.generator.from_generator()
         vols = [self.volume.from_volume(generator=gen_tmp)]
         vols[0].priority = self.N
         twin_last = 1
         for i in range(self.N):
             if (np.random.rand() < self.ratio):
                 # add stacking fault
-                burger = twin_last * gen_tmp.voxel.sbases @ ((1/3)*np.array([1,1,-2])*np.sign(self.plane))
+                burger = twin_last * gen_tmp.voxel.sbases @ (
+                    (1 / 3) * np.array([1, 1, -2]) * np.sign(self.plane))
                 t = Translation(shift=burger)
             else:
                 # add twin defect
@@ -178,12 +198,14 @@ class fccMixedTwinSF(BasePrefab):
                 twin_last *= -1
             gen_tmp = gen_tmp.from_generator(transformation=[t])
             new_vol = self.volume.from_volume(generator=gen_tmp)
-            plane_tmp = Plane(normal=1.0*planes[splits[i]].normal, point=planes[splits[i]].point)
+            plane_tmp = Plane(normal=1.0 * planes[splits[i]].normal,
+                              point=planes[splits[i]].point)
             new_vol.add_alg_object(plane_tmp)
-            new_vol.priority = self.N-(i+1)
+            new_vol.priority = self.N - (i + 1)
             vols.append(new_vol)
 
-        return  MultiVolume(volumes=vols)
+        return MultiVolume(volumes=vols)
+
 
 class fccStackingFault(fccMixedTwinSF):
     """Prefab routine for returning FCC volume with stacking fault defects.
@@ -201,14 +223,23 @@ class fccStackingFault(fccMixedTwinSF):
         volume (Volume): Volume object representing bounds of object in which
                         defects will be placed.
     """
-    
-    def __init__(self, generator: Generator=None, volume: BaseVolume=None,  
-                    N: int=1,  min_sep: int=3, plane: Tuple[int]=(1,1,1)):
-        super().__init__(generator=generator, volume=volume, N=N, min_sep=min_sep, plane=plane)
+
+    def __init__(self,
+                 generator: Generator = None,
+                 volume: BaseVolume = None,
+                 N: int = 1,
+                 min_sep: int = 3,
+                 plane: Tuple[int] = (1, 1, 1)):
+        super().__init__(generator=generator,
+                         volume=volume,
+                         N=N,
+                         min_sep=min_sep,
+                         plane=plane)
 
     @property
     def ratio(self):
         return 1.0
+
 
 class fccTwin(fccMixedTwinSF):
     """Prefab routine for returning FCC volume with twin defects.
@@ -226,14 +257,22 @@ class fccTwin(fccMixedTwinSF):
         volume (Volume): Volume object representing bounds of object in which
                         defects will be placed.
     """
-    def __init__(self, generator: Generator=None, volume: BaseVolume=None,  
-                    N: int=1, min_sep: int =3, plane: Tuple[int]=(1,1,1)):
-        super().__init__(generator=generator, volume=volume, N=N, min_sep=min_sep, plane=plane)
+
+    def __init__(self,
+                 generator: Generator = None,
+                 volume: BaseVolume = None,
+                 N: int = 1,
+                 min_sep: int = 3,
+                 plane: Tuple[int] = (1, 1, 1)):
+        super().__init__(generator=generator,
+                         volume=volume,
+                         N=N,
+                         min_sep=min_sep,
+                         plane=plane)
 
     @property
     def ratio(self):
         return 0.0
-
 
 
 class SimpleGrainBoundary(BasePrefab):
@@ -242,7 +281,15 @@ class SimpleGrainBoundary(BasePrefab):
     Under development.
     """
 
-    def __init__(self, z1, r1, z2=None, r2=None, plane=None, point=None, volume=None, generator=None):
+    def __init__(self,
+                 z1,
+                 r1,
+                 z2=None,
+                 r2=None,
+                 plane=None,
+                 point=None,
+                 volume=None,
+                 generator=None):
         """
         z1, z2 are zone axes for grains 1, 2
         r1 and r2 are phase about the zone axes, respectively
@@ -263,7 +310,9 @@ class SimpleGrainBoundary(BasePrefab):
     @z1.setter
     def z1(self, z1):
         z1 = np.array(z1)
-        assert(z1.size==3), "Zone axes inputs must be 3-element list, tuple, or numpy array"
+        assert (
+            z1.size == 3
+        ), "Zone axes inputs must be 3-element list, tuple, or numpy array"
         self._z1 = z1
 
     @property
@@ -276,12 +325,14 @@ class SimpleGrainBoundary(BasePrefab):
             self._z2 = self.z1
         else:
             z2 = np.array(z2)
-            assert(z2.size==3), "Zone axes inputs must be 3-element list, tuple, or numpy array"
+            assert (
+                z2.size == 3
+            ), "Zone axes inputs must be 3-element list, tuple, or numpy array"
             self._z2 = z2
 
     def build_object(self):
-        
-        zv = np.array([0,0,1])
+
+        zv = np.array([0, 0, 1])
         z1v = self.generator.voxel.sbases @ self.z1
         z2v = self.generator.voxel.sbases @ self.z2
 

@@ -14,6 +14,7 @@ from typing import List, Tuple
 ########## Generator Classes ########
 #####################################
 
+
 class BaseGenerator(ABC):
     """Base abstract class for Generator objects. 
     
@@ -80,11 +81,14 @@ class Generator(BaseGenerator):
         strain_field (BaseStrain): Strain field applied to atoms supplied by Generator.
 
     """
-    def __init__(self, origin: np.ndarray=None, structure: 
-                Structure=None, strain_field:BaseStrain=None):
+
+    def __init__(self,
+                 origin: np.ndarray = None,
+                 structure: Structure = None,
+                 strain_field: BaseStrain = None):
         self._structure = None
         self._voxel = None
-        self._orientation = np.array([[1,0,0],[0,1,0],[0,0,1]])
+        self._orientation = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         self._strain_field = None
 
         if not structure is None:
@@ -95,10 +99,11 @@ class Generator(BaseGenerator):
 
         if not origin is None:
             self.origin = origin
-        
+
     """
     Properties
     """
+
     @property
     def structure(self):
         """pymatgen Structure object encoding crystallographic details."""
@@ -106,14 +111,17 @@ class Generator(BaseGenerator):
 
     @structure.setter
     def structure(self, structure: Structure):
-        assert(isinstance(structure, Structure)), "Structure must be pymatgen Structure object"
+        assert (isinstance(
+            structure,
+            Structure)), "Structure must be pymatgen Structure object"
         self._structure = structure
-        
+
         # check if voxel exists, if so, copy origin
         if self.voxel is None:
             self.voxel = Voxel(bases=structure.lattice.matrix)
         else:
-            self.voxel = Voxel(bases=structure.lattice.matrix, origin=self.origin)
+            self.voxel = Voxel(bases=structure.lattice.matrix,
+                               origin=self.origin)
 
     @property
     def lattice(self):
@@ -167,36 +175,42 @@ class Generator(BaseGenerator):
 
     @strain_field.setter
     def strain_field(self, field: BaseStrain):
-        assert(isinstance(field, BaseStrain)), "Strain field must be of BaseStrain class"
+        assert (isinstance(
+            field, BaseStrain)), "Strain field must be of BaseStrain class"
         self._strain_field = field
 
     """ 
     Methods
     """
-    def supply_atoms(self, bbox:np.ndarray):
+
+    def supply_atoms(self, bbox: np.ndarray):
         #generation method for pymatgen lattice structure
         min_extent, max_extent = self.voxel.get_extents(bbox)
-        fcoords = np.copy(self.coords) #grab fractional in case bases are rotated
+        fcoords = np.copy(
+            self.coords)  #grab fractional in case bases are rotated
 
         # get matrix representing unit cells as grid
-        l = [range(min_extent[0], max_extent[0]+1),
-            range(min_extent[1], max_extent[1]+1),
-            range(min_extent[2], max_extent[2]+1),
-            [0]]
+        l = [
+            range(min_extent[0], max_extent[0] + 1),
+            range(min_extent[1], max_extent[1] + 1),
+            range(min_extent[2], max_extent[2] + 1), 
+            [0]
+        ]
         ucs = np.array(list(itertools.product(*l)))
 
         # get 4D bases with identity in final index to multiply species list
         bases = np.eye(4)
-        bases[0:3,0:3] = self.voxel.sbases
+        bases[0:3, 0:3] = self.voxel.sbases
         lcoords = bases @ ucs.T
-        scoords = bases @ (np.hstack([fcoords, np.array(self.species)[:,None]])).T
+        scoords = bases @ (np.hstack([fcoords,
+                                      np.array(self.species)[:, None]])).T
 
-        coords = lcoords[:,:,None] + scoords[:,None,:]
-        coords = coords.reshape(4, coords.shape[1]*coords.shape[2])
+        coords = lcoords[:, :, None] + scoords[:, None, :]
+        coords = coords.reshape(4, coords.shape[1] * coords.shape[2])
         coords = coords.T
 
-        out_coords = coords[:,:-1] + self.voxel.origin
-        species = coords[:,-1]
+        out_coords = coords[:, :-1] + self.voxel.origin
+        species = coords[:, -1]
 
         if self.strain_field is None:
             return out_coords, species
@@ -210,17 +224,25 @@ class Generator(BaseGenerator):
         Args:
             transformation (BaseTransform): Transformation object from transforms module.
         """
-        assert(isinstance(transformation, BaseTransform)), "Supplied transformation not transformation object."
-        self.voxel.bases = transformation.applyTransformation_bases(self.voxel.bases)
+        assert (isinstance(transformation, BaseTransform)
+               ), "Supplied transformation not transformation object."
+        self.voxel.bases = transformation.applyTransformation_bases(
+            self.voxel.bases)
 
         if not (transformation.basis_only):
-            new_origin = transformation.applyTransformation(np.reshape(self.voxel.origin,(1,3)))
+            new_origin = transformation.applyTransformation(
+                np.reshape(self.voxel.origin, (1, 3)))
             self.voxel.origin = np.squeeze(new_origin)
 
     @classmethod
-    def from_spacegroup(cls, Z: List[int], coords: np.ndarray, 
-                        cellDims: np.ndarray, cellAngs: np.ndarray,
-                        sgn: int=None, sym: str=None, **kwargs):
+    def from_spacegroup(cls,
+                        Z: List[int],
+                        coords: np.ndarray,
+                        cellDims: np.ndarray,
+                        cellAngs: np.ndarray,
+                        sgn: int = None,
+                        sym: str = None,
+                        **kwargs):
         """Convenience constructor for creating Generator with symmetric unit cell from spacegroup.
         
         Args:
@@ -243,16 +265,23 @@ class Generator(BaseGenerator):
         else:
             sg = SpaceGroup(int_symbol=sym)
 
-        lattice = Lattice.from_parameters(a=cellDims[0], b=cellDims[1], c=cellDims[2],
-                                            alpha=cellAngs[0], beta=cellAngs[1], gamma=cellAngs[2])
+        lattice = Lattice.from_parameters(a=cellDims[0],
+                                          b=cellDims[1],
+                                          c=cellDims[2],
+                                          alpha=cellAngs[0],
+                                          beta=cellAngs[1],
+                                          gamma=cellAngs[2])
 
-        structure = Structure.from_spacegroup(sg.int_number, lattice=lattice, species=Z, coords=coords)
+        structure = Structure.from_spacegroup(sg.int_number,
+                                              lattice=lattice,
+                                              species=Z,
+                                              coords=coords)
 
         return cls(structure=structure, **kwargs)
 
     @classmethod
-    def from_unit_cell(cls, Z: List[int], coords: np.ndarray, 
-                        cellDims: np.ndarray, cellAngs: np.ndarray, **kwargs):
+    def from_unit_cell(cls, Z: List[int], coords: np.ndarray,
+                       cellDims: np.ndarray, cellAngs: np.ndarray, **kwargs):
         """Convenience constructor for creating Generators directly from unit cell data.
 
         Args:
@@ -273,6 +302,7 @@ class Generator(BaseGenerator):
         structure = Structure(tmp_lattice, Z, coords)
 
         return cls(structure=structure, **kwargs)
+
 
 class AmorphousGenerator(BaseGenerator):
     """Generator object for non-crystal systems.
@@ -296,6 +326,7 @@ class AmorphousGenerator(BaseGenerator):
                                to run generation routine again.
 
     """
+
     def __init__(self, origin=None, min_dist=1.4, density=.1103075, species=6):
         self._origin = None
         self._species = None
@@ -313,6 +344,7 @@ class AmorphousGenerator(BaseGenerator):
     """
     Properties
     """
+
     @property
     def origin(self):
         """Local origin of Generator in Cartesian coordinates."""
@@ -321,7 +353,7 @@ class AmorphousGenerator(BaseGenerator):
     @origin.setter
     def origin(self, origin: np.ndarray):
         origin = np.array(origin)
-        assert(origin.size==3), "Origin must be a point in 3D space"
+        assert (origin.size == 3), "Origin must be a point in 3D space"
         self._origin = origin
 
     @property
@@ -340,7 +372,7 @@ class AmorphousGenerator(BaseGenerator):
 
     @density.setter
     def density(self, density):
-        assert(density>0.0)
+        assert (density > 0.0)
         self._density = density
 
     @property
@@ -350,7 +382,7 @@ class AmorphousGenerator(BaseGenerator):
 
     @min_dist.setter
     def min_dist(self, min_dist):
-        assert(min_dist > 0)
+        assert (min_dist > 0)
         self._min_dist = min_dist
 
     @property
@@ -361,11 +393,13 @@ class AmorphousGenerator(BaseGenerator):
     """
     Methods
     """
+
     def supply_atoms(self, bbox):
 
         if self.use_old_result and self._old_result is not None:
             return self.old_result
         else:
-            coords = gen_p_substrate(np.max(bbox,axis=0)-np.min(bbox,axis=0), self.min_dist)
-            self._old_result = (coords, np.ones(coords.shape[0])*self.species)
+            coords = gen_p_substrate(
+                np.max(bbox, axis=0) - np.min(bbox, axis=0), self.min_dist)
+            self._old_result = (coords, np.ones(coords.shape[0]) * self.species)
             return self.old_result
