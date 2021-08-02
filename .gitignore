@@ -3,3 +3,4 @@
 scratch/*
 .ipynb*
 dist/*
+docs/build/*
