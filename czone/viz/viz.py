@@ -1,7 +1,7 @@
-import ipywidgets as widgets
 import matplotlib.pyplot as plt
 import numpy as np
 try:
+    import ipywidgets as widgets
     from ipywidgets import (FloatSlider, Layout, fixed, interact, interact_manual,
                             interactive)
 except:

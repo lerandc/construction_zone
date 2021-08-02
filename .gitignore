@@ -2,3 +2,4 @@
 *pycache*
 scratch/*
 .ipynb*
+dist/*
