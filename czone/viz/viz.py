@@ -1,8 +1,11 @@
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
 import numpy as np
-from ipywidgets import (FloatSlider, Layout, fixed, interact, interact_manual,
-                        interactive)
+try:
+    from ipywidgets import (FloatSlider, Layout, fixed, interact, interact_manual,
+                            interactive)
+except:
+    print("Could not import ipywidgets.")
 
 from ..scene import Scene
 
