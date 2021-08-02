@@ -1,2 +1,2 @@
-Acknowledgment
+Acknowledegment
 =================================

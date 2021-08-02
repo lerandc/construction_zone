@@ -11,4 +11,4 @@ Construction Zone
    modules
    references
    license
-   acknowledgment
+   acknowledgement
