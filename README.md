@@ -61,6 +61,6 @@ necessarily constitute or imply its endorsement, recommendation, or favoring by 
 Government or any agency thereof. The views and opinions of authors expressed herein do not
 necessarily state or reflect those of the United States Government or any agency thereof.
 
-![imgs/csgf_logo.png](https://www.krellinst.org/csgf/)
+[![CSGF Logo](imgs/csgf_logo.png)](https://www.krellinst.org/csgf/)
 
-![imgs/toyota_research_institute.png](https://www.tri.global/)
+[![TRI Logo](imgs/toyota_research_institute.png)](https://www.tri.global/)
