@@ -30,7 +30,10 @@ release = 'v0.0.1'
 # ones.
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',
-              'sphinx.ext.imgmath']
+              'sphinx.ext.imgmath',
+              'sphinxcontrib.bibtex']
+
+bibtex_bibfiles = ['refs.bib']
 
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 
