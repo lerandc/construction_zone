@@ -1,8 +1,14 @@
-/* Sidebar header (and topbar for mobile) EFC469*/
-.wy-side-nav-search, .wy-nav-top {
-  background: #31778B;
+.wy-side-nav-search,
+ .wy-nav-top {
+  background: #6E54C9;
 }
 /* Sidebar */
 .wy-nav-side {
-  background: #2B2459;
+  background: #2A2F37;
 }
+
+.wy-nav-content {
+    background: #F0EDEE;
+}
+
+.wy-menu-vertical a:hover{background-color:#626D7F;cursor:pointer}
