@@ -22,7 +22,7 @@ can apply arbitrary transformations to the structures at hand, like symmetry ope
 or strain fields. 
 
 If you use Construction Zone in your own work, we kindly ask that you cite the following:
-    Zenodo DOI incoming soon!
+Rangel DaCosta, Luis, & Scott, Mary. (2021). Construction Zone (v2021.08.04). Zenodo. https://doi.org/10.5281/zenodo.5161161
 
 .. toctree::
    :maxdepth: 4
