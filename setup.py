@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='czone',
-    version='2021.08.02',
+    version='2021.08.04',
     description='An open source python package for generating nanoscale+ atomic scenes',
     url='https://github.com/lerandc/construction_zone',
     author='Luis Rangel DaCosta',
