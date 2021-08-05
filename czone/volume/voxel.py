@@ -26,8 +26,8 @@ class Voxel():
         self._scale = None
         self._bases = None
         self._origin = None
-        self.scale = scale
         self.bases = bases
+        self.scale = scale
         self.origin = origin
 
     @property
