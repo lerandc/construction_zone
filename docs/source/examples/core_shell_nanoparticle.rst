@@ -17,9 +17,9 @@ First, let's import the routines we need.
     from cz.transform import Rotation, Reflection, Translation, rot_vtv
     from cz.scene import Scene
 
-We downloaded `cif` files from the [Materials Project](https://materialsproject.org/) database 
+We downloaded `cif` files from the `Materials Project <https://materialsproject.org/>`_ database 
 for the unit cell data for the two grain types. Here, we load the the files into 
-[pymatgen](https://pymatgen.org/) Structure objects which serve as the core drivers of our crystalline Generators.
+`pymatgen <https://pymatgen.org/>`_ Structure objects which serve as the core drivers of our crystalline Generators.
 
 .. code-block::
 
