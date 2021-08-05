@@ -3,7 +3,7 @@
 
 Modules for generating nanoscale+ atomic scenes, primarily using pymatgen as generators with S/TEM image simulation in mind.
 
-Full documentation can be found here: [construction-zone.rtfd.io](construction-zone.rtfd.io).
+Full documentation can be found here: [https://construction-zone.readthedocs.io/](https://construction-zone.readthedocs.io/).
 
 If you use Construction Zone in your own work, we kindly ask that you cite the following:
 Rangel DaCosta, Luis, & Scott, Mary. (2021). Construction Zone (v2021.08.04). Zenodo. https://doi.org/10.5281/zenodo.5161161
