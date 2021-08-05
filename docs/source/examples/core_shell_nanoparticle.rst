@@ -163,3 +163,5 @@ accomodating this gap by a simple homogeneous strain that compresses the Mn grai
 until the gap is closed. In Construction Zone, this is also easy to accomplish.
 
 TO COME: Applying a geometrically necessary strain field to the particle.
+
+.. footbibliography::
