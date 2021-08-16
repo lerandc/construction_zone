@@ -18,7 +18,7 @@ pip install czone
 ```
 
 We strongly recommend utilizing an environment manager such as Anaconda, and 
-installing Construction Zone into your environment of choice.
+installing Construction Zone into your environment of choice.  
 
 To install Construction Zone into a clean environment with Anaconda, you could
 do the following:
