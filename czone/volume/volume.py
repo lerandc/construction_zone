@@ -522,7 +522,7 @@ def makeRectPrism(a, b, c, center=None):
                        [1, 0, 1], [0, 1, 1], [1, 1, 1]],
                       dtype=np.float64)
     #stretch unit cube
-    points *= np.array([a, b, c])
+    points *= np.squeeze(np.array([a, b, c]))
 
     if center is None:
         return points

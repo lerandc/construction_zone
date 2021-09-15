@@ -72,7 +72,11 @@ class Scene():
     @property
     def _checks(self):
         """List of logical arrays indicating inclusion of atoms in scene from each object."""
-        return self._checks
+        return self.__checks
+
+    @_checks.setter
+    def _checks(self, val):
+        self.__checks = val
 
     @property
     def all_atoms(self):

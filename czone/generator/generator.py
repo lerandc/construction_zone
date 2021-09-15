@@ -397,7 +397,6 @@ class AmorphousGenerator(BaseGenerator):
     """
 
     def supply_atoms(self, bbox):
-
         if self.use_old_result and self._old_result is not None:
             return self.old_result
         else:

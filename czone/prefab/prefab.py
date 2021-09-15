@@ -144,7 +144,7 @@ class fccMixedTwinSF(BasePrefab):
             BaseVolume)), "Must supply either Volume or MultiVolume object."
         self._volume = val
 
-    def build_object(self):
+    def build_object(self, return_defect_types=False):
         # get list of all planes in bounding box
         # TODO: the bounding box isn't necessarily tangent to the valid volume (e.g., spheres)
         # perhaps refine the end points until planes intersect
@@ -188,16 +188,21 @@ class fccMixedTwinSF(BasePrefab):
         vols = [self.volume.from_volume(generator=gen_tmp)]
         vols[0].priority = self.N
         twin_last = 1
+
+        defect_types = {"twin":False, "stacking_fault":False}
         for i in range(self.N):
             if (np.random.rand() < self.ratio):
                 # add stacking fault
                 burger = twin_last * gen_tmp.voxel.sbases @ (
                     (1 / 3) * np.array([1, 1, -2]) * np.sign(self.plane))
                 t = Translation(shift=burger)
+                defect_types["stacking_fault"] = True
             else:
                 # add twin defect
                 t = Reflection(planes[splits[i]])
                 twin_last *= -1
+                defect_types["twin"] = True
+        
             gen_tmp = gen_tmp.from_generator(transformation=[t])
             new_vol = self.volume.from_volume(generator=gen_tmp)
             plane_tmp = Plane(normal=1.0 * planes[splits[i]].normal,
@@ -206,7 +211,10 @@ class fccMixedTwinSF(BasePrefab):
             new_vol.priority = self.N - (i + 1)
             vols.append(new_vol)
 
-        return MultiVolume(volumes=vols)
+        if return_defect_types:
+            return MultiVolume(volumes=vols), defect_types
+        else:
+            return MultiVolume(volumes=vols)
 
 
 class fccStackingFault(fccMixedTwinSF):
