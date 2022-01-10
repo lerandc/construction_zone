@@ -58,7 +58,6 @@ class BaseGenerator(ABC):
 
         return new_generator
 
-
 class Generator(BaseGenerator):
     """Generator object for crystal systems.
 
@@ -404,3 +403,20 @@ class AmorphousGenerator(BaseGenerator):
                 np.max(bbox, axis=0) - np.min(bbox, axis=0), self.min_dist)
             self._old_result = (coords, np.ones(coords.shape[0]) * self.species)
             return self.old_result
+
+
+class NullGenerator(BaseGenerator):
+    """Generator object for empty space.
+
+    Generator objects are additive components in Construction Zone. When designing
+    nanostructures, Generators contain information about the arrangement of atoms
+    in space and can supply atoms at least where they should exist. 
+
+    The NulLGenerator object handles empty space.
+    """
+
+    def __init__(self):
+        pass
+
+    def supply_atoms(self, bbox):
+        return np.empty((0,3)), np.empty((0,))

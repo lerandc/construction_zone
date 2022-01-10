@@ -17,7 +17,7 @@ def tetrahedron_circumradii(points):
     Returns:
         np.ndarray of circumradii of tetrahedra
     """
-    points = np.array(points)
+    points = np.array(points) #+ np.random.rand(points.shape[0], points.shape[1], points.shape[2])*1e-8 # add small random number to avoid divide by zero
     pts = points[:,1:] - points[:,0,None]
     
     x1 = pts[:,0,0]
@@ -64,7 +64,7 @@ def alpha_shape_alg_3D(points, probe_radius):
     tri = Delaunay(points)
     
     # get cicrcumradii of all tetrahedron in triangulation
-    circumradii = tetrahedron_circumradii(points)
+    circumradii = tetrahedron_circumradii((points+1e-10*np.random.rand(*points.shape))[tri.simplices, :])
     
     # check which tetrahedra in triangulation are part of alpha-shape for given probe radius
     probe_test = circumradii <= probe_radius
@@ -73,11 +73,18 @@ def alpha_shape_alg_3D(points, probe_radius):
     # check which tetrahedra are on outside of triangulation
     outside = np.sum(tri.neighbors >= 0,axis=1) < 4
 
+
     # check which tetrahedra are neighbors to those not in alpha-shape
-    neighbor_fail = np.any(np.logical_not(probe_test[tri.neighbors]),axis=1)
+
+    # however, only want to check neighbors that are on the outside of the triangulation
+    # so that we can avoid counting tetrahedra that fail the probe test on large internal voids
+    neighbor_check_0 = np.logical_not(probe_test[tri.neighbors])
+    neighbor_check_1 = outside[tri.neighbors]
+    neighbor_check = np.any(np.logical_and(neighbor_check_0, neighbor_check_1), axis=1)
+
 
     # get tetrahedra that are on the surface of alpha-shape
-    surface_tris = np.logical_and(probe_test, np.logical_or(outside, neighbor_fail))
+    surface_tris = np.logical_and(probe_test, np.logical_or(outside, neighbor_check))
     
     ## Get outer points of outer elements of alpha-shape
     # determine which points are along the outer edges of tetrahedra/alpha-shape
