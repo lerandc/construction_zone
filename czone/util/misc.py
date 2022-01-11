@@ -2,7 +2,7 @@ from typing import List, Union
 
 import numpy as np
 from numpy.typing import ArrayLike
-
+from pymatgen.core import Element
 
 def round_away(x: float) -> float:
     """Round to float integer away from zero--opposite of np.fix.

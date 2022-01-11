@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
-from ase import Atoms, Molecule
+from ase import Atoms
 from ..transform import BaseTransform
 
 import copy
@@ -31,6 +31,7 @@ class BaseMolecule(ABC):
     def __init__(self, species=None, positions=None, **kwargs) -> None:
         self._atoms = None
         self._species = None
+        self.priority = 0
 
         # both species and positions must be provided
         set_check0 = (species is not None) or (positions is not None)
@@ -170,15 +171,26 @@ class BaseMolecule(ABC):
 
     def reset_orientation(self):
         """Reset orientation to align with global XYZ. Does not transform molecule."""
-
+        ## TODO
         return 
+
+    def populate_atoms(self):
+        return self.atoms
+
+    def check_if_interior(self):
+        ## TODO
+        # have a minimum bond distance
+        # perhaps set heuristically to maximum atomic radius for any of the constiuent atoms?
+        pass
 
     @classmethod
     def from_ase_atoms(cls, atoms):
+        ## TODO
         return
 
     @classmethod
     def from_pmg_molecule(cls, atoms):
+        ## TODO
         return
 
     def from_molecule(self, **kwargs):

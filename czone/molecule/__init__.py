@@ -1,1 +1,1 @@
-from .molecule import Molecule
+from .molecule import *

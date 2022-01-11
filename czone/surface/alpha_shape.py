@@ -47,14 +47,15 @@ def tetrahedron_circumradii(points):
     radius = np.linalg.norm(center,axis=0)
     return radius
 
-def alpha_shape_alg_3D(points, probe_radius):
+def alpha_shape_alg_3D(points, probe_radius, return_alpha_shape=False):
     """Use alpha shape algorithm to determine points on exterior of collection of points.
 
-    Performs alpha-shape algorithm 
+    Performs alpha-shape algorithm ##TODO: cite a source here
 
     Args:
         points (np.ndarray): Nx3 array representing coordinates of points in object
         probe_radius (float): radius of test
+        return_alpha_shape (bool): return dictionary of alpha shape arrays, default False.
     Returns:
         List of indices of points on exterior of surface for given alpha-shape.
     """
@@ -73,15 +74,14 @@ def alpha_shape_alg_3D(points, probe_radius):
     # check which tetrahedra are on outside of triangulation
     outside = np.sum(tri.neighbors >= 0,axis=1) < 4
 
-
     # check which tetrahedra are neighbors to those not in alpha-shape
 
     # however, only want to check neighbors that are on the outside of the triangulation
     # so that we can avoid counting tetrahedra that fail the probe test on large internal voids
-    neighbor_check_0 = np.logical_not(probe_test[tri.neighbors])
-    neighbor_check_1 = outside[tri.neighbors]
-    neighbor_check = np.any(np.logical_and(neighbor_check_0, neighbor_check_1), axis=1)
 
+    neighbor_check_0 = np.logical_not(probe_test[tri.neighbors]) # neighbors that fail probe test
+    neighbor_check_1 = outside[tri.neighbors] # neighbors on the outside
+    neighbor_check = np.any(np.logical_and(neighbor_check_0, neighbor_check_1), axis=1)
 
     # get tetrahedra that are on the surface of alpha-shape
     surface_tris = np.logical_and(probe_test, np.logical_or(outside, neighbor_check))
@@ -92,4 +92,17 @@ def alpha_shape_alg_3D(points, probe_radius):
     sub_neighbors = tri.neighbors[surface_tris,:]
     out_points = sub_points[np.logical_not(np.logical_or(sub_neighbors==-1, np.logical_not(probe_test[sub_neighbors])))]
 
-    return list(set(out_points))
+    if return_alpha_shape:
+        shape_dict = {}
+
+        # return the full triangulation and corresponding surface tris
+        shape_dict["tri"]= tri
+        shape_dict["surface_tris"] = surface_tris
+
+        # also return list of simplices indices for full alpha shape
+        a_tris = np.logical_not(np.logical_and(outside, np.logical_not(probe_test)))
+        shape_dict["a_tris"] = np.nonzero(a_tris)
+
+        return list(set(out_points)), shape_dict
+    else:
+        return list(set(out_points))
