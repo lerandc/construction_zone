@@ -48,7 +48,7 @@ def sparse_matrix_from_tri(simplices):
 
     return csr_matrix(mat)
 
-def find_approximate_normal(points, decay=0.99, tol=1e-5, seed=23, max_steps=1000, **kwargs):
+def find_approximate_normal(points, decay=0.99, tol=1e-5, margin=0, seed=23, max_steps=1000, **kwargs):
     """Use modifeid perception algorithm to find approximate surface normal to set of points.
     
     Assumes points come from local section of alpha-shape, i.e, they are bounded
@@ -72,13 +72,14 @@ def find_approximate_normal(points, decay=0.99, tol=1e-5, seed=23, max_steps=100
     A = points # use matrix notation
 
     # initialize guess to 0
-    w = np.array([0,0,0])
+    w = np.ones(3)*1e-10
 
     # set sequence of iterates
     sequence = rng.integers(0, A.shape[0], max_steps)
 
     converging = True
     i = 0
+    j = 0
     w_list = []
     while(converging):
 
@@ -86,23 +87,24 @@ def find_approximate_normal(points, decay=0.99, tol=1e-5, seed=23, max_steps=100
         x = A[sequence[i],:]
 
         # get new surface normal guess
-        w_new = w - (decay**i)*x
+        if w @ x >= margin:
+            w_new = w - (decay**j)*x
 
-        # store dot product against previous guess
-        w_list.append((w_new @ w)/(np.linalg.norm(w_new)*np.linalg.norm(w)))
+            # store dot product against previous guess
+            w_list.append((w_new @ w)/(np.linalg.norm(w_new)*np.linalg.norm(w)))
         
-        # update and normalize guess
-        w = w_new
-        w = w/np.linalg.norm(w)
+            # update and normalize guess
+            w = w_new
+            w = w/np.linalg.norm(w)
+            j+=1
 
         i += 1
-        if i > 100:
+        if len(w_list) > 5:
             # if last five iterations are all under tolerance, break loop
             if reduce(lambda x,y: x & y, [x > (1-tol) for x in w_list[-5:]]):
                 converging = False
 
         if i == max_steps:
-            print("Surface normal not converged in %i steps. Breaking loop." % max_steps)
             break
 
     return w
@@ -215,10 +217,33 @@ def add_adsorbate(mol: BaseMolecule,
 
     target_idx = rng.choice(valid_indices)
 
+    # grab orientation vectors 
     nn_ind = get_nearest_neighbors(target_idx, shape_dict, **kwargs)
-    nn_pos = volume.atoms[nn_ind,:]
+    nn_pos = volume.atoms[nn_ind,:] - volume.atoms[target_idx,:]
 
-    normal = find_approximate_normal(nn_pos, **kwargs)
+    # normalize so that all vectors are within the unit sphere
+    # and such that closer neighbors have the largest dot products
+    nn_pos_norms = np.linalg.norm(nn_pos, axis=1)[:, None]
+    nn_pos_min = np.min(nn_pos_norms)
+    nn_pos = nn_pos/nn_pos_min/(nn_pos_norms/nn_pos_min)**2.0
+
+    # optimize margin on normal
+    best_margin = 0
+    j = 0
+    while(j < 10):
+        cur_seed = rng.integers(0,10000,1)[0]
+        w = find_approximate_normal(nn_pos, decay=0.95, tol=1e-4, margin=best_margin, seed=cur_seed)
+
+        margins = []
+        for b in nn_pos:
+            margins.append(w @ b)
+
+        j+=1
+        if np.max(margins) < best_margin:
+            best_margin = np.max(margins)
+            j = 0
+
+    normal = w
 
     ##  Rotate target vector in molecule coordinates to align with surface normal.
     # set origin of molecule to adsorbate molecule
