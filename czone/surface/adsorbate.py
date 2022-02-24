@@ -36,7 +36,7 @@ def sparse_matrix_from_tri(simplices):
     Returns:
         NxN array as sparse matrix, where N is the max index in the triangulation.
     """
-    N = np.max(simplices)
+    N = np.max(simplices)+1
     mat = np.zeros((N,N))
     for s in simplices:
         for i in range(4):
@@ -130,9 +130,9 @@ def get_nearest_neighbors(target_idx,
         # reduce selection to atoms that are part of surface tetrahedra
         # do not reduce to solely surface atoms, because roughness is unstable
         # with alpha shape
-        reduced_tri = shape_dict["tri"][shape_dict["surface_tris"],:]
+        reduced_tri = shape_dict["tri"].simplices[shape_dict["surface_tris"],:]
     else:
-        reduced_tri = shape_dict["tri"][shape_dict["a_tris"],:]
+        reduced_tri = shape_dict["tri"].simplices[shape_dict["a_tris"],:]
 
     graph = sparse_matrix_from_tri(reduced_tri)
     v = np.zeros((graph.shape[0],1))
@@ -141,7 +141,8 @@ def get_nearest_neighbors(target_idx,
     for i in range(N_shells):
         v = graph @ v
 
-    return np.nonzero(v)
+    v[target_idx] = 0
+    return np.nonzero(v)[0]
 
 def add_adsorbate(mol: BaseMolecule,
                   adsorbate_idx,
@@ -150,7 +151,8 @@ def add_adsorbate(mol: BaseMolecule,
                   mol_vector=np.array([0,0,1]).T,
                   mol_rotation: float=0.0,
                   probe_radius=2.5,
-                  filters=None,
+                  filters={},
+                  debug=False,
                   **kwargs):
     """Add adsorbate onto surface of a given volume.
 
@@ -187,6 +189,7 @@ def add_adsorbate(mol: BaseMolecule,
     valid_indices[surface_ind] = True
 
     ##  Filter atoms out, e.g., via chemistry or spatial filters
+
     for key, val in filters.items():
         if "element" in key:
             elements = [Element(x).Z if isinstance(x, str) else x for x in val]
@@ -205,8 +208,7 @@ def add_adsorbate(mol: BaseMolecule,
             print("Invalid filter key provided. Must be one of {elementXX, maskXX, indicesXX, spatialXX}.")
             print("Key provided: ", key)
 
-    valid_indices = np.nonzero(valid_indices)
-
+    valid_indices = np.nonzero(valid_indices)[0]
     ## Choose target surface atom and find approximate surface normal 
     if "seed" in kwargs.keys():
         seed = kwargs["seed"]
@@ -243,6 +245,7 @@ def add_adsorbate(mol: BaseMolecule,
             best_margin = np.max(margins)
             j = 0
 
+
     normal = w
 
     ##  Rotate target vector in molecule coordinates to align with surface normal.
@@ -264,7 +267,14 @@ def add_adsorbate(mol: BaseMolecule,
 
     ##  Check for collisions/make sure none of the molecule is in the surface
     if np.all(np.logical_not(volume.checkIfInterior(mol_out.atoms))):
-        return mol_out
+        if debug:
+            return mol_out, target_idx, nn_ind, nn_pos
+        else:
+            return mol_out, True
     else:
         print("Adsorbate placement failed. Molecule landed inside volume.")
         print("Check input parameters.")
+        if debug:
+            return mol_out, target_idx, nn_ind, nn_pos
+        else:
+            return mol_out, False

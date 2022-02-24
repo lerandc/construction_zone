@@ -333,6 +333,7 @@ class AmorphousGenerator(BaseGenerator):
         self._species = None
         self._density = None
         self._min_dist = None
+        self._old_result = None
 
         if not (origin is None):
             self.origin = origin

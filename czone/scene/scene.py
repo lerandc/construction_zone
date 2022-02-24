@@ -5,6 +5,8 @@ from ase import Atoms
 from ase.io import write as ase_write
 from ase.symbols import Symbols
 
+from czone.molecule.molecule import BaseMolecule
+
 from ..volume import BaseVolume, makeRectPrism
 
 
@@ -63,7 +65,7 @@ class Scene():
             ob (BaseVolume): object to add to scene.
         """
         #for now, only volumes are objects
-        if isinstance(ob, BaseVolume):
+        if isinstance(ob, BaseVolume) or isinstance(ob, BaseMolecule):
             if self._objects is None:
                 self._objects = [ob]
             else:

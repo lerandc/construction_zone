@@ -32,6 +32,8 @@ class BaseMolecule(ABC):
         self._atoms = None
         self._species = None
         self.priority = 0
+        self.reset_orientation()
+        self._print_warnings = True
 
         # both species and positions must be provided
         set_check0 = (species is not None) or (positions is not None)
@@ -39,7 +41,16 @@ class BaseMolecule(ABC):
         if set_check0 and set_check1:
             self.set_atoms(species, positions)
 
-        return
+        if "orientation" in kwargs.keys():
+            self.orientation = kwargs["orientation"]
+
+    @property
+    def print_warnings(self):
+        return self._print_warnings
+
+    @print_warnings.setter
+    def print_warnings(self, val):
+        self._print_warnings = val
 
     @property
     def atoms(self):
@@ -54,7 +65,7 @@ class BaseMolecule(ABC):
     def set_atoms(self, species, positions):
         # check size compatibilities; cast appropriately; set variables
         species = np.array(species)
-        species = np.reshape(species, (-1, 1)).astype(int)
+        species = np.reshape(species, (-1,)).astype(int)
         positions = np.array(positions)
         positions = np.reshape(positions, (-1, 3))
 
@@ -131,7 +142,6 @@ class BaseMolecule(ABC):
 
         self._priority = priority
 
-    @abstractmethod
     def transform(self, transformation: BaseTransform, transform_origin=True):
         """Transform molecule with given transformation.
 
@@ -141,13 +151,14 @@ class BaseMolecule(ABC):
         assert (isinstance(transformation, BaseTransform)
                ), "Supplied transformation not transformation object."
 
-        self.atoms = transformation.applyTransformation(self.atoms)
+        self.set_atoms(self.species, transformation.applyTransformation(self.atoms))
 
         if transform_origin:
             if self._origin_tracking:
-                print("Requested to transform molecule, but currently origin is set to track an atom. \
-                     Origin will not be transformed.")
-                print("Molecule is currently tracking origin against atom %i." % self._origin_idx)
+                if self.print_warnings:
+                    print("Requested to transform molecule, but currently origin is set to track an atom. \n \
+                        Origin will not be transformed.")
+                    print("Molecule is currently tracking origin against atom %i." % self._origin_idx)
                 return
             self.set_origin(point=transformation.applyTransformation(self.origin))
         
@@ -169,19 +180,38 @@ class BaseMolecule(ABC):
             self._origin_tracking = True
             self._origin_idx = idx
 
+    @property
+    def orientation(self):
+        return self._orientation
+
+    @orientation.setter
+    def orientation(self, mat):
+        # check for valid rotation matrix
+        # rotation matrix transforms zone axes to global coordinate system
+        assert (mat.shape == (3,
+                              3)), "Input matrix must be square 3x3 numpy array"
+        assert (np.abs(np.linalg.det(mat) - 1.0) < 1e-6
+               ), "Input matrix not a valid rotation matrix. Fails determinant."
+        assert (
+            np.sum(np.abs(mat @ mat.T - np.eye(3))) < 1e-6
+        ), "Input matrix not a valid rotation matrix. Fails orthogonality."
+
+        self._orientation = mat
+
+
     def reset_orientation(self):
         """Reset orientation to align with global XYZ. Does not transform molecule."""
-        ## TODO
-        return 
+        self.orientation = np.eye(3)
 
     def populate_atoms(self):
-        return self.atoms
+        # return self.atoms
+        pass
 
-    def check_if_interior(self):
+    def checkIfInterior(self, testPoints: np.ndarray):
         ## TODO
         # have a minimum bond distance
         # perhaps set heuristically to maximum atomic radius for any of the constiuent atoms?
-        pass
+        return np.zeros(testPoints.shape[0], dtype=bool)
 
     @classmethod
     def from_ase_atoms(cls, atoms):
@@ -209,11 +239,10 @@ class BaseMolecule(ABC):
 
         return new_molecule
 
-
 class Molecule(BaseMolecule):
     """Standard object for representing molecules.
     
     """
 
     def __init__(self, species, positions, **kwargs):
-        super.__init__(species, positions, **kwargs)
+        super().__init__(species, positions, **kwargs)
