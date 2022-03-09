@@ -250,6 +250,9 @@ class fccStackingFault(fccMixedTwinSF):
     def ratio(self):
         return 1.0
 
+    @ratio.setter
+    def ratio(self, val):
+        pass
 
 class fccTwin(fccMixedTwinSF):
     """Prefab routine for returning FCC volume with twin defects.
@@ -283,6 +286,10 @@ class fccTwin(fccMixedTwinSF):
     @property
     def ratio(self):
         return 0.0
+
+    @ratio.setter
+    def ratio(self, val):
+        pass
 
 
 class SimpleGrainBoundary(BasePrefab):
