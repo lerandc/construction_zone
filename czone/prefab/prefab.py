@@ -156,10 +156,11 @@ class fccMixedTwinSF(BasePrefab):
         start = bbox[np.argmin(ci), :]
         finish = bbox[np.argmax(ci), :]
 
-        if isinstance(self.volume.alg_objects[0], Sphere):
-            # override bbox in this special case
-            start = -1.0 * self.volume.alg_objects[0].radius * norm_vec
-            finish = self.volume.alg_objects[0].radius * norm_vec
+        for ao in self.volume.alg_objects:
+            if isinstance(ao, Sphere):
+                # TODO: only override bbox if Sphere is smaller 
+                start = -1.0 * ao.radius * norm_vec
+                finish = ao.radius * norm_vec      
 
         sp = snap_plane_near_point(start,
                                    self.generator,
@@ -291,6 +292,179 @@ class fccTwin(fccMixedTwinSF):
     def ratio(self, val):
         pass
 
+class wurtziteStackingFault(BasePrefab):
+    """Prefab routine for returning Wurtizite volume with I1 stacking faults.
+
+    Given a volume with an attached generator (assumed to be Wurtize symmetry), 
+    return a MultiVolume with a series of stacking faults. 
+    Defects can be placed (002) planes, and are uniformly with a minimum separation.
+
+    Attributes:
+        N (int): Number of defects to attempt to place into volume
+        plane (Tuple[int]): Length 3 tuple of Miller indices representing set of 
+                            planes to put defects on
+        generator (Generator): Generator object representing Wurtzite crystal system.
+                              Assumes c-axis is last axis of bases.
+        volume (Volume): Volume object representing bounds of object in which
+                        defects will be placed.
+
+    """
+    """
+    # TODO: incorporate I2, E stacking faults https://arxiv.org/pdf/1405.1261.pdf
+    # I2, E stacking faults with this method will create a ton of excess generators, volumes
+    # which could make (manual) post manipulation of structures unwieldly
+    # should offer, as an alternative, a less robust but more efficient generator
+    # that maintains an equivalent copy of the zinc blende lattice and creates SF regions that way
+    """
+
+    def __init__(self,
+                 generator: Generator = None,
+                 volume: BaseVolume = None,
+                 N: int = 1,
+                 min_sep: int = 6):
+        self._N = None
+        self._min_sep = None
+        self._generator = None
+        self._volume = None
+
+        self.N = N
+        self.min_sep = min_sep
+
+        if not generator is None:
+            self.generator = generator
+
+        if not volume is None:
+            self.volume = volume
+
+    @property
+    def N(self):
+        """Number of defects to place in volume."""
+        return self._N
+
+    @N.setter
+    def N(self, val):
+        self._N = int(val)
+
+    @property
+    def min_sep(self):
+        """Minimum seperation between defects in numbers of planes."""
+        return self._min_sep
+
+    @min_sep.setter
+    def min_sep(self, val: int):
+        assert (
+            isinstance(val, int)
+        ), "Must supply integer number of planes for minimum seperation of defects."
+        self._min_sep = val
+
+    @property
+    def plane(self):
+        """Miller indices of defect planes."""
+        return (0,0,2)
+
+    @property
+    def generator(self):
+        """Crystalline geneartor used to sample planes for defects."""
+        return self._generator
+
+    @generator.setter
+    def generator(self, val: Generator):
+        assert (isinstance(
+            val, Generator)), "Must supply crystalline Generator object."
+        self._generator = val
+
+    @property
+    def volume(self):
+        """Volume used to defined outer bounds of defected object."""
+        return self._volume
+
+    @volume.setter
+    def volume(self, val: BaseVolume):
+        assert (isinstance(
+            val,
+            BaseVolume)), "Must supply either Volume or MultiVolume object."
+        self._volume = val
+
+    def build_object(self, return_defect_types=False):
+        # get list of all planes in bounding box
+        # TODO: the bounding box isn't necessarily tangent to the valid volume (e.g., spheres)
+        # perhaps refine the end points until planes intersect
+        
+        norm_vec = self.generator.voxel.reciprocal_bases @ np.array(self.plane)
+        norm_vec /= np.linalg.norm(norm_vec)
+        bbox = self.volume.get_bounding_box()
+        ci = np.dot(norm_vec.reshape(1, 3), bbox.T).T
+        start = bbox[np.argmin(ci), :]
+        finish = bbox[np.argmax(ci), :]
+
+        for ao in self.volume.alg_objects:
+            if isinstance(ao, Sphere):
+                # TODO: only override bbox if Sphere is smaller 
+                start = -1.0 * ao.radius * norm_vec
+                finish = ao.radius * norm_vec            
+
+        sp = snap_plane_near_point(start,
+                                   self.generator,
+                                   self.plane,
+                                   mode="floor")
+        ep = snap_plane_near_point(finish,
+                                   self.generator,
+                                   self.plane,
+                                   mode="ceil")
+        d_tot = ep.dist_from_plane(sp.point)
+        d_hkl = self.generator.lattice.d_hkl(self.plane)
+        N_planes = np.round(d_tot / d_hkl).astype(int)
+        planes = [sp]
+        new_point = np.copy(sp.point)
+        for i in range(N_planes):
+            new_point += sp.normal * d_hkl
+            planes.append(Plane(normal=sp.normal, point=new_point))
+
+        # select N planes with min separation apart
+        splits = get_N_splits(self.N, self.min_sep, len(planes))
+        splits.reverse()
+
+        # create sub volumes for final multivolume
+        # origins should be successively shifted
+        gen_tmp = self.generator.from_generator()
+        vols = [self.volume.from_volume(generator=gen_tmp)]
+        vols[0].priority = self.N
+
+        defect_types = {"stacking_fault":True}
+        bz = (0.5)*self.generator.voxel.sbases @ np.array([0, 0, -1])
+
+        polarity = 1
+        for i in range(self.N):
+            # check if 100 or 200 plane in the previous generator
+            cur_plane_pt = planes[splits[i]].point
+
+            plane_100 = snap_plane_near_point(cur_plane_pt, gen_tmp, (0,0,1))
+            plane_200 = snap_plane_near_point(cur_plane_pt, gen_tmp, (0,0,2))
+
+            # adjust shift according to 100 plane vs 200 plane
+            bsf = 2 if np.allclose(plane_100.point, plane_200.point) else 1
+
+            # add stacking fault
+            b = polarity * gen_tmp.voxel.sbases @ ((bsf / 3) * np.array([1, -1, 0]))
+            b = b + bz
+
+            t = Translation(shift=b)
+        
+            gen_tmp = gen_tmp.from_generator(transformation=[t])
+            new_vol = self.volume.from_volume(generator=gen_tmp)
+            plane_tmp = Plane(normal=1.0 * planes[splits[i]].normal,
+                              point=planes[splits[i]].point)
+            new_vol.add_alg_object(plane_tmp)
+            new_vol.priority = self.N - (i + 1)
+            vols.append(new_vol)
+
+            # flip shift direction after every stacking fault
+            polarity *= -1
+
+        if return_defect_types:
+            return MultiVolume(volumes=vols), defect_types
+        else:
+            return MultiVolume(volumes=vols)
 
 class SimpleGrainBoundary(BasePrefab):
     """Prefab routine for crystalline grain boundaries.

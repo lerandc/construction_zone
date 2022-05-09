@@ -62,8 +62,9 @@ def alpha_shape_alg_3D(points, probe_radius, return_alpha_shape=False):
 
     ## Get alpha-shape
     # get delaunay triangulation of points
+
     tri = Delaunay(points)
-    
+
     # get cicrcumradii of all tetrahedron in triangulation
     circumradii = tetrahedron_circumradii((points+1e-10*np.random.rand(*points.shape))[tri.simplices, :])
     

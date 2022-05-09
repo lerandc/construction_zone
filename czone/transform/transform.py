@@ -428,7 +428,7 @@ def rot_v(v, theta):
     Returns:
         np.ndarray: 3x3 rotation matrix
     """
-    v = np.array(v)
+    v = np.array(np.squeeze(v))
     v = v * (theta / np.linalg.norm(v))
 
     return scRotation.from_rotvec(v).as_matrix()
