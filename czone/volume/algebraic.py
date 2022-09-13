@@ -6,6 +6,7 @@ from scipy.optimize import linprog
 from scipy.spatial import HalfspaceIntersection
 
 from ..util.misc import round_away
+from ..transform.strain import HStrain
 
 #####################################
 ##### Geometric Surface Classes #####
@@ -349,8 +350,18 @@ def snap_plane_near_point(point: np.ndarray,
 
     miller_indices = np.array(miller_indices)
 
-    # get point coordinates in generator coordinate system
-    point_fcoord = np.array(np.linalg.solve(generator.voxel.sbases, point))
+
+    # check if generator has a strain field
+    if generator.strain_field is None:
+        # get point coordinates in generator coordinate system
+        point_fcoord = np.array(np.linalg.solve(generator.voxel.sbases, point))
+    else:
+        assert ( isinstance(
+            generator.strain_field, HStrain)), "Finding Miller planes with inhomogenous strain fields is not supported."
+
+        if generator.strain_field.mode == "crystal":
+            H = generator.strain_field.matrix
+            point_fcoord = np.array(np.linalg.solve(H @ generator.voxel.sbases, point))
 
     # get lattice points that are intersected by miller plane
     with np.errstate(divide="ignore"):  #check for infs directly
@@ -374,9 +385,18 @@ def snap_plane_near_point(point: np.ndarray,
             new_point[i,0] = np.fix(point_fcoord[i]/target_fcoord[i])*target_fcoord[i] \
                                 if not np.isinf(target_fcoord[i]) else point_fcoord[i]
 
-    # scale back to real space
-    new_point = generator.voxel.sbases @ new_point
+    if generator.strain_field is None:
+        # scale back to real space
+        new_point = generator.voxel.sbases @ new_point
 
-    # get perpendicular vector
-    normal = generator.voxel.reciprocal_bases.T @ miller_indices
+        # get perpendicular vector
+        normal = generator.voxel.reciprocal_bases.T @ miller_indices
+    else:
+        H = generator.voxel.sbases
+        G = generator.strain_field.matrix
+        new_point = G @ H @ new_point
+
+        # get perpendicular vector
+        normal = np.linalg.inv(H @ G).T @ miller_indices
+
     return Plane(normal=normal, point=new_point)
