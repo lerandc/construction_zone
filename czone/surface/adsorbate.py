@@ -16,7 +16,7 @@ Loose sketch of algorithm:
 import numpy as np
 from functools import reduce
 
-from .alpha_shape import alpha_shape_alg_3D
+from .alpha_shape import alpha_shape_alg_3D, alpha_shape_alg_3D_with_sampling
 from ..molecule import BaseMolecule
 from ..volume import BaseVolume
 from ..transform import rot_v, rot_vtv, Rotation, Translation
@@ -111,7 +111,7 @@ def find_approximate_normal(points, decay=0.99, tol=1e-5, margin=0, seed=23, max
 
 def get_nearest_neighbors(target_idx,
                           shape_dict,
-                          N_shells=2,
+                          N_shells=3,
                           surface_only=True, 
                           **kwargs):
     """Traverse alpha-shape triangulation to get nearest neighbors to surface atom.
@@ -153,6 +153,7 @@ def add_adsorbate(mol: BaseMolecule,
                   probe_radius=2.5,
                   filters={},
                   debug=False,
+                  use_sampling=True,
                   **kwargs):
     """Add adsorbate onto surface of a given volume.
 
@@ -181,9 +182,25 @@ def add_adsorbate(mol: BaseMolecule,
 
     ##  Find all atoms on surface with alpha shape
     ## TODO: test default probe radius from RDF measurement
-    surface_ind, shape_dict = alpha_shape_alg_3D(points=volume.atoms, 
-                                                probe_radius=probe_radius, 
-                                                return_alpha_shape=True)
+
+    if "seed" in kwargs.keys():
+        seed = kwargs["seed"]
+    else:
+        seed = np.random.randint(0,10000)
+
+    rng = np.random.default_rng(seed=seed)
+
+    if use_sampling:
+        surface_ind, shape_dict = alpha_shape_alg_3D_with_sampling(points=volume.atoms, 
+                                                    probe_radius=probe_radius,
+                                                    N_samples=20,
+                                                    seed=seed,
+                                                    rng=rng,
+                                                    return_alpha_shape=True)
+    else:
+        surface_ind, shape_dict = alpha_shape_alg_3D(points=volume.atoms, 
+                                                    probe_radius=probe_radius, 
+                                                    return_alpha_shape=True)
 
     valid_indices = np.zeros(volume.atoms.shape[0], dtype=bool)
     valid_indices[surface_ind] = True
@@ -210,12 +227,7 @@ def add_adsorbate(mol: BaseMolecule,
 
     valid_indices = np.nonzero(valid_indices)[0]
     ## Choose target surface atom and find approximate surface normal 
-    if "seed" in kwargs.keys():
-        seed = kwargs["seed"]
-    else:
-        seed = np.random.randint(0,10000)
 
-    rng = np.random.default_rng(seed=seed)
 
     target_idx = rng.choice(valid_indices)
 
