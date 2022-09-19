@@ -133,6 +133,7 @@ class Volume(BaseVolume):
                  alg_objects: np.ndarray = None,
                  generator: BaseGenerator = None,
                  priority: int = 0,
+                 tolerance: float = 1e-10,
                  **kwargs):
         self._points = None
         self._hull = None
@@ -141,6 +142,7 @@ class Volume(BaseVolume):
         self._tri = None
         self._alg_objects = []
         self._priority = 0
+        self._tolerance = tolerance
 
         if not (points is None):
             #expect 2D array with Nx3 points
@@ -209,6 +211,16 @@ class Volume(BaseVolume):
     def generator(self):
         """Generator object associated with volume that supplies atoms."""
         return self._generator
+
+    @property
+    def tolerance(self):
+        """Numerical tolerance for simplex checking with convex hulls. Defaults to 1e-10"""
+        return self._tolerance
+    
+    @tolerance.setter
+    def tolerance(self, val):
+        assert(isinstance(val, float))
+        self._tolerance = val
 
     def add_generator(self, generator, origin=None):
         if not isinstance(generator, BaseGenerator):
@@ -291,7 +303,7 @@ class Volume(BaseVolume):
         if not self.tri is None:
             check = np.logical_and(
                 check,
-                self.tri.find_simplex(testPoints, tol=2.5e-1) >= 0)
+                self.tri.find_simplex(testPoints, tol=self.tolerance) >= 0)
 
         if len(self.alg_objects) > 0:
             for obj in self.alg_objects:
@@ -327,6 +339,10 @@ class Volume(BaseVolume):
         bbox = self.get_bounding_box()
         coords, species = self.generator.supply_atoms(bbox)
         check = self.checkIfInterior(coords)
+
+        print(len(check))
+        print(np.sum(check))
+        print("check autoreload")
 
         self._atoms = coords[check, :]
         self._species = species[check]
