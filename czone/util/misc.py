@@ -2,7 +2,7 @@ from typing import List, Union
 
 import numpy as np
 from numpy.typing import ArrayLike
-
+from pymatgen.core import Element
 
 def round_away(x: float) -> float:
     """Round to float integer away from zero--opposite of np.fix.
@@ -28,6 +28,9 @@ def get_N_splits(n: int, m: int, l: int, seed: int = None) -> List[int]:
     Returns:
         List[int]: sorted list of random indices
     """
+    if n == 0:
+        return []
+        
     if (l - 2 * m < (n - 1) * m):
         raise ValueError("m is too large for number of splits requested and l")
     rng = np.random.default_rng(seed=seed)

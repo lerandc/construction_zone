@@ -46,7 +46,7 @@ class BaseStrain(ABC):
         if self.mode == "crystal":
             self._bases = np.copy(obj.voxel.sbases)
 
-        if self.origin == "generator":
+        if self.origin_type == "generator":
             self.origin = np.copy(obj.origin)
 
     @property
@@ -58,6 +58,14 @@ class BaseStrain(ABC):
     def origin(self, val):
         assert (val.shape == (3,)), "Origin must have shape (3,)"
         self._origin = np.array(val)
+
+    @property
+    def origin_type(self):
+        return self._origin_type
+
+    @origin_type.setter
+    def origin_type(self, val):
+        self._origin_type = val
 
     @property
     def mode(self):
@@ -101,8 +109,10 @@ class HStrain(BaseStrain):
 
         if origin != "generator":
             self.origin = origin
+            self.origin_type = "global"
         else:
-            super.__init__()
+            super().__init__()
+            self.origin_type = "generator"
 
         self._bases = None
 
@@ -143,7 +153,7 @@ class HStrain(BaseStrain):
 
         if self.mode == "crystal":
             # project onto crystal coordinates, strain, project back into real space
-            sp = sp @ np.linalg.inv(self.bases) @ self.matrix @ self.bases
+            sp = sp @ np.linalg.inv(self.bases).T @ self.matrix @ self.bases.T
         else:
             # strain
             sp = sp @ self.matrix
@@ -182,7 +192,7 @@ class IStrain(BaseStrain):
         if origin != "generator":
             self.origin = origin
         else:
-            super.__init__()
+            super().__init__()
 
         self._bases = None
         self.fun_kwargs = kwargs

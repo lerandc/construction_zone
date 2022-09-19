@@ -9,6 +9,7 @@ from pymatgen.symmetry.groups import SpaceGroup, sg_symbol_from_int_number
 
 from ..transform import BaseTransform
 from ..transform.strain import BaseStrain
+from ..transform.post import BasePostTransform
 from ..volume.voxel import Voxel
 from .amorphous_algorithms import *
 
@@ -58,7 +59,6 @@ class BaseGenerator(ABC):
 
         return new_generator
 
-
 class Generator(BaseGenerator):
     """Generator object for crystal systems.
 
@@ -92,6 +92,7 @@ class Generator(BaseGenerator):
         self._voxel = None
         self._orientation = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         self._strain_field = None
+        self._post_transform = None
 
         if not structure is None:
             self.structure = structure
@@ -181,6 +182,17 @@ class Generator(BaseGenerator):
             field, BaseStrain)), "Strain field must be of BaseStrain class"
         self._strain_field = field
 
+    @property
+    def post_transform(self):
+        """Strain field applied to atoms post-generation."""
+        return self._post_transform
+
+    @post_transform.setter
+    def post_transform(self, transform: BasePostTransform):
+        assert (isinstance(
+            transform, BasePostTransform)), "Strain field must be of BaseStrain class"
+        self._post_transform = transform
+
     """ 
     Methods
     """
@@ -213,6 +225,10 @@ class Generator(BaseGenerator):
 
         out_coords = coords[:, :-1] + self.voxel.origin
         species = coords[:, -1]
+
+        if self.post_transform is not None:
+            # apply post transformation
+            out_coords, species = self.post_transform.apply_function(out_coords, species)
 
         if self.strain_field is None:
             return out_coords, species
@@ -334,6 +350,7 @@ class AmorphousGenerator(BaseGenerator):
         self._species = None
         self._density = None
         self._min_dist = None
+        self._old_result = None
 
         if not (origin is None):
             self.origin = origin
@@ -397,7 +414,6 @@ class AmorphousGenerator(BaseGenerator):
     """
 
     def supply_atoms(self, bbox):
-
         if self.use_old_result and self._old_result is not None:
             return self.old_result
         else:
@@ -405,3 +421,20 @@ class AmorphousGenerator(BaseGenerator):
                 np.max(bbox, axis=0) - np.min(bbox, axis=0), self.min_dist)
             self._old_result = (coords, np.ones(coords.shape[0]) * self.species)
             return self.old_result
+
+
+class NullGenerator(BaseGenerator):
+    """Generator object for empty space.
+
+    Generator objects are additive components in Construction Zone. When designing
+    nanostructures, Generators contain information about the arrangement of atoms
+    in space and can supply atoms at least where they should exist. 
+
+    The NulLGenerator object handles empty space.
+    """
+
+    def __init__(self):
+        pass
+
+    def supply_atoms(self, bbox):
+        return np.empty((0,3)), np.empty((0,))

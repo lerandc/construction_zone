@@ -62,7 +62,7 @@ def get_voxels(min_dist, dims):
 def gen_p_substrate(dims: List[float],
                     min_dist: float = 1.4,
                     density=.1103075,
-                    print_progress=True):
+                    print_progress=False):
     """Generate a uniformly random distributed collection of atoms with PBC.
 
     Given the size of a rectangular prism, a minimum bond distance, and a target

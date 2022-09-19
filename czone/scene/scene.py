@@ -5,6 +5,8 @@ from ase import Atoms
 from ase.io import write as ase_write
 from ase.symbols import Symbols
 
+from czone.molecule.molecule import BaseMolecule
+
 from ..volume import BaseVolume, makeRectPrism
 
 
@@ -63,7 +65,7 @@ class Scene():
             ob (BaseVolume): object to add to scene.
         """
         #for now, only volumes are objects
-        if isinstance(ob, BaseVolume):
+        if isinstance(ob, BaseVolume) or isinstance(ob, BaseMolecule):
             if self._objects is None:
                 self._objects = [ob]
             else:
@@ -72,7 +74,11 @@ class Scene():
     @property
     def _checks(self):
         """List of logical arrays indicating inclusion of atoms in scene from each object."""
-        return self._checks
+        return self.__checks
+
+    @_checks.setter
+    def _checks(self, val):
+        self.__checks = val
 
     @property
     def all_atoms(self):
