@@ -8,6 +8,8 @@ Construction Zone
    czone.volume
    czone.scene
    czone.transform
+   czone.molecule
+   czone.surface
    czone.prefab
    czone.util
    czone.viz

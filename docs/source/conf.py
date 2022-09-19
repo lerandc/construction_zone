@@ -20,7 +20,7 @@ sys.path.insert(0,"../../")
 # -- Project information -----------------------------------------------------
 
 project = 'Construction Zone'
-copyright = '2021, Luis Rangel DaCosta'
+copyright = '2022, Luis Rangel DaCosta'
 author = 'Luis Rangel DaCosta'
 
 # The full version, including alpha/beta/rc tags
