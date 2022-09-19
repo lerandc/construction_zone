@@ -1,3 +1,14 @@
+
+import numpy as np
+from functools import reduce
+
+from .alpha_shape import alpha_shape_alg_3D, alpha_shape_alg_3D_with_sampling
+from ..molecule import BaseMolecule
+from ..volume import BaseVolume
+from ..transform import rot_v, rot_vtv, Rotation, Translation
+from pymatgen import Element
+from scipy.sparse import csr_matrix
+
 """
 Loose sketch of algorithm:
 1) Find all atoms on surface with alpha shape
@@ -12,16 +23,6 @@ Loose sketch of algorithm:
 7) Check for collisions/make sure none of the molecule is in the surface
 8) Accept adsorbate
 """
-
-import numpy as np
-from functools import reduce
-
-from .alpha_shape import alpha_shape_alg_3D, alpha_shape_alg_3D_with_sampling
-from ..molecule import BaseMolecule
-from ..volume import BaseVolume
-from ..transform import rot_v, rot_vtv, Rotation, Translation
-from pymatgen import Element
-from scipy.sparse import csr_matrix
 
 def sparse_matrix_from_tri(simplices):
     """Convert array of triangulation simplices into sparse matrix (graph).
@@ -49,7 +50,7 @@ def sparse_matrix_from_tri(simplices):
     return csr_matrix(mat)
 
 def find_approximate_normal(points, decay=0.99, tol=1e-5, margin=0, seed=23, max_steps=1000, **kwargs):
-    """Use modifeid perception algorithm to find approximate surface normal to set of points.
+    """Use modified perception algorithm to find approximate surface normal to set of points.
     
     Assumes points come from local section of alpha-shape, i.e, they are bounded
     by a convex surface and thus all lie within a common half-space.
