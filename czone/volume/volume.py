@@ -340,10 +340,6 @@ class Volume(BaseVolume):
         coords, species = self.generator.supply_atoms(bbox)
         check = self.checkIfInterior(coords)
 
-        print(len(check))
-        print(np.sum(check))
-        print("check autoreload")
-
         self._atoms = coords[check, :]
         self._species = species[check]
 

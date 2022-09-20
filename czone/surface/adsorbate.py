@@ -20,7 +20,7 @@ from .alpha_shape import alpha_shape_alg_3D, alpha_shape_alg_3D_with_sampling
 from ..molecule import BaseMolecule
 from ..volume import BaseVolume
 from ..transform import rot_v, rot_vtv, Rotation, Translation
-from pymatgen import Element
+from pymatgen.core import Element
 from scipy.sparse import csr_matrix
 
 def sparse_matrix_from_tri(simplices):

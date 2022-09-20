@@ -10,7 +10,7 @@ setup(
     python_requires='>=3.7',
     packages=find_packages(),
     install_requires=[
-        'pymatgen >= 2020.4.29',
+        'pymatgen >= 2022.x.x',
         'numpy >= 1.16.2',
         'scipy >= 1.3.0',
         'ase >= 3.21.0',
