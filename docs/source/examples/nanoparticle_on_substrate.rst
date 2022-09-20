@@ -11,10 +11,10 @@ First, let's import the classes we'll need.
 
     import czone as cz
     import numpy as np
-    from cz.volume import MultiVolume, Volume, Sphere, Plane, snap_plane_near_point, makeRectPrism
-    from cz.generator import Generator, AmorphousGenerator
-    from cz.transform import Rotation, Reflection, Translation, rot_vtv
-    from cz.scene import Scene
+    from czone.volume import MultiVolume, Volume, Sphere, Plane, snap_plane_near_point, makeRectPrism
+    from czone.generator import Generator, AmorphousGenerator
+    from czone.transform import Rotation, Reflection, Translation, rot_vtv
+    from czone.scene import Scene
 
 Let's start with making the substrate. We first will create an AmorphousGenerator object,
 which by default generates blocks of amorphous carbon which are periodic in x and y.
@@ -163,7 +163,7 @@ one without the substrate, and one with the substrate.
 
 .. code-block::
 
-    from cz.prefab import fccMixedTwinSF
+    from czone.prefab import fccMixedTwinSF
 
     sphere = Sphere(center=np.array([0,0,0]), radius=radius)
     vol = Volume(alg_objects=[small_sphere])

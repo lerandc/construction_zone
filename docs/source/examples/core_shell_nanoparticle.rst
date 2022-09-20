@@ -12,10 +12,10 @@ First, let's import the routines we need.
     import numpy as np
     import czone as cz
     from pymatgen.core import Structure
-    from cz.volume import Volume, MultiVolume, Plane, snap_plane_near_point
-    from cz.generator import Generator, AmorphousGenerator
-    from cz.transform import Rotation, Reflection, Translation, rot_vtv
-    from cz.scene import Scene
+    from czone.volume import Volume, MultiVolume, Plane, snap_plane_near_point
+    from czone.generator import Generator, AmorphousGenerator
+    from czone.transform import Rotation, Reflection, Translation, rot_vtv
+    from czone.scene import Scene
 
 We downloaded `cif` files from the `Materials Project <https://materialsproject.org/>`_ database 
 for the unit cell data for the two grain types. Here, we load the the files into 
