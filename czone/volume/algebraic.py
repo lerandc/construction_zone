@@ -1,3 +1,4 @@
+import copy
 from abc import ABC, abstractmethod
 from typing import Generator, List, Tuple
 
@@ -24,7 +25,7 @@ class BaseAlgebraic(ABC):
     
     """
 
-    def __init__(self, tol: float = 1e-5):
+    def __init__(self, tol: float = 1e-10):
         self.tol = tol
 
     @abstractmethod
@@ -54,6 +55,20 @@ class BaseAlgebraic(ABC):
         assert (float(val) > 0.0)
         self._tol = float(val)
 
+    def from_alg_object(self, **kwargs):
+        """Constructor for new algebraic objects based on existing Algebraic object.
+        
+        Args:
+            **kwargs: "transformation"=List[BaseTransformation] to apply a 
+                        series of transformations to the copied generator.
+        """
+        new_alg_object = copy.deepcopy(self)
+
+        if "transformation" in kwargs.keys():
+            for t in kwargs["transformation"]:
+                new_alg_object = t.applyTransformation_alg(new_alg_object)
+
+        return new_alg_object
 
 class Sphere(BaseAlgebraic):
     """Algebraic surface for spheres. 
@@ -213,21 +228,22 @@ class Cylinder(BaseAlgebraic):
 
     Attributes:
         axis (np.ndarray): vector parallel to central axis of cylinder.
-        point (np.ndarray): point which lies along central axis of cylinder.
+        point (np.ndarray): point which lies at the center of the cylinder
         radius (float): radius of cylinder.
+        length (float): length of cylinder
         tol (float): Tolerance value for interiority check. Default is 1e-5.
     """
-
-    #TODO: Write transformations for handling cylinder parameters.
 
     def __init__(self,
                  axis: np.ndarray = [0, 0, 1],
                  point: np.ndarray = [0, 0, 0],
                  radius: float = 1.0,
+                 length: float = 1.0,
                  tol: float = 1e-5):
         self.axis = axis
         self.point = point
         self.radius = radius
+        self.length = length
         super().__init__(tol=tol)
 
     def params(self):
@@ -269,11 +285,56 @@ class Cylinder(BaseAlgebraic):
         except TypeError:
             raise TypeError("Supplied value must be castable to float")
 
+    @property
+    def length(self):
+        """Length of cylinder."""
+        return self._length
+
+    @length.setter
+    def length(self, val):
+        try:
+            val = float(val)
+            self._length = val
+        except TypeError:
+            raise TypeError("Supplied value must be castable to float")
+
     def checkIfInterior(self, testPoints):
-        dists = np.linalg.norm(np.cross(testPoints - self.point,
+        rad_dists = np.linalg.norm(np.cross(testPoints - self.point,
                                         self.axis[None, :]),
                                axis=1)
-        return dists < self.radius + self.tol
+
+        rad_check = rad_dists < self.radius + self.tol
+
+        length_dists = np.abs(np.dot(testPoints-self.point, self.axis))
+        length_check = length_dists < self.length/2.0 + self.tol
+        return np.logical_and(rad_check,length_check)
+
+    def get_bounding_box(self):
+        # make a square inscribing cylidner at center disk
+        # any rotation is valid
+
+        vz = (self.length/2)*np.copy(self.axis.T)[:,None]
+    
+        vs_0 = np.array([[1,1,1]]).T # any vector works; fix to make generation stable
+        vs_0 = vs_0/np.linalg.norm(vs_0)
+        vs_0 = vs_0 - vs_0.T @ vz * vz
+        vs_0 = vs_0/np.linalg.norm(vs_0)
+
+        vs_1 = np.cross(vs_0, vz, axis=0)
+        vs_1 = vs_1/np.linalg.norm(vs_1)
+        vs_0 = np.squeeze(vs_0)
+        vs_1 = np.squeeze(vs_1)
+
+        # factors of two cancel
+        square = self.point + (self.radius)*np.array([vs_0+vs_1,
+                                        vs_0-vs_1,
+                                        -vs_0+vs_1,
+                                        -vs_0-vs_1,
+                                            ])
+
+        # extend to rectangular prism
+        return np.vstack([square+vz.T, square-vz.T])
+
 
 
 #####################################
@@ -326,7 +387,6 @@ def get_bounding_box(planes: List[Plane]):
         return hs.intersections - shift
     else:
         return res.status
-
 
 def snap_plane_near_point(point: np.ndarray,
                           generator: Generator,

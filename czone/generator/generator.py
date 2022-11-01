@@ -202,7 +202,6 @@ class Generator(BaseGenerator):
         min_extent, max_extent = self.voxel.get_extents(bbox)
         fcoords = np.copy(
             self.coords)  #grab fractional in case bases are rotated
-
         # get matrix representing unit cells as grid
         l = [
             range(min_extent[0], max_extent[0] + 1),

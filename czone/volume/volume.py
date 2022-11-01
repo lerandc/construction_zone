@@ -9,7 +9,7 @@ from scipy.spatial import ConvexHull, Delaunay
 
 from ..generator import AmorphousGenerator, BaseGenerator
 from ..transform import BaseTransform
-from .algebraic import BaseAlgebraic, Plane, Sphere
+from .algebraic import BaseAlgebraic, Plane, Sphere, Cylinder
 from .algebraic import get_bounding_box as get_bounding_box_planes
 
 ############################
@@ -322,18 +322,27 @@ class Volume(BaseVolume):
         else:
             # As heuristic, look for any sphere first
             # Then, gather planes and check if valid intersection exists
+            # Then, look for spheres
+            # To improve, check all objects and select smalllest bounding box
             spheres = [
                 obj for obj in self.alg_objects if isinstance(obj, Sphere)
             ]
             if len(spheres) > 0:
-                d = 2 * spheres[0].radius
+                s_idx = sorted(range(len(spheres)), key=lambda i: spheres[i].radius)[0]
+                d = 2 * spheres[s_idx].radius
                 bbox = makeRectPrism(d, d, d)
-                shift = spheres[0].center - (d / 2) * np.ones(3)
+                shift = spheres[s_idx].center - (d / 2) * np.ones(3)
                 return bbox + shift
 
             planes = [obj for obj in self.alg_objects if isinstance(obj, Plane)]
             if len(planes) > 3:
                 return get_bounding_box_planes(planes)
+
+            cylinders = [obj for obj in self.alg_objects if isinstance(obj, Cylinder)]
+            if len(cylinders) > 0:
+                bbox = cylinders[0].get_bounding_box()
+                return bbox
+
 
     def populate_atoms(self):
         bbox = self.get_bounding_box()

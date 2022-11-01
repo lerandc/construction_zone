@@ -546,6 +546,8 @@ def s2s_alignment(M_plane: Plane, T_plane: Plane, M_point: np.ndarray,
     R = rot_vtv(M_plane.normal, -1.0 * T_plane.normal)
 
     R_t = Rotation(matrix=R, origin=M_plane.point)
+
+    #TODO: why aren't these being used?
     M_plane_r = R_t.applyTransformation_alg(M_plane)
     M_point_r = R_t.applyTransformation(M_point)
 
