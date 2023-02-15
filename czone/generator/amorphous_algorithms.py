@@ -215,7 +215,7 @@ def gen_p_substrate_batched(dims: List[float],
             max_compare = np.max([max_compare, len(parts)])
             compare_parts.append(coords[parts,:])
 
-        all_compare_parts = np.ones((len(block),max_compare,3))*-1000
+        all_compare_parts = np.ones((len(block),max_compare,3))*-1000 # what is this doing?
         for i, parts in enumerate(compare_parts):
             all_compare_parts[i,:parts.shape[0],:] = parts
 

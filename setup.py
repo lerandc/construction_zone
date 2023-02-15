@@ -10,9 +10,9 @@ setup(
     python_requires='>=3.7',
     packages=find_packages(),
     install_requires=[
-        'pymatgen >= 2022.x.x',
-        'numpy >= 1.16.2',
-        'scipy >= 1.3.0',
+        'pymatgen == 2022.0.17',
+        'numpy >= 1.16.2, <1.22.0',
+        'scipy >= 1.3.0, <1.8',
         'ase >= 3.21.0',
         'wulffpack >= 1.1.0']
 )

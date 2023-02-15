@@ -352,6 +352,7 @@ class Volume(BaseVolume):
         self._atoms = coords[check, :]
         self._species = species[check]
 
+    #TODO: let user raise warnings if te object is the same
     def from_volume(self, **kwargs):
         """Constructor for new Volumes based on existing Volume object.
 
