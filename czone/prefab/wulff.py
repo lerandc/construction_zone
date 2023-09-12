@@ -58,7 +58,7 @@ class WulffBase(ABC):
                ), "Supplied generator must be crystalline Generator class"
         self._generator = val
         p_struct = val.structure.get_primitive_structure()
-        self._p_atoms = Atoms(positions=p_struct.cart_coords)
+        self._p_atoms = Atoms(positions=p_struct.cart_coords, cell=p_struct.lattice.matrix)
 
     @property
     def p_atoms(self):
@@ -153,10 +153,17 @@ class WulffSingle(WulffBase):
     ###### Methods #####
     ####################
 
-    def get_construction(self):
+    def get_construction(self, return_facet_areas=False):
         wulff = SingleCrystal(self.surface_energies, self.p_atoms, self.natoms)
         planes = self.planes_from_wulff(wulff)
-        return Volume(alg_objects=planes, generator=self.generator)
+        if return_facet_areas:
+            return Volume(alg_objects=planes, generator=self.generator), wulff.facet_fractions
+        else:
+            return Volume(alg_objects=planes, generator=self.generator)
+
+    def get_areas(self):
+        wulff = SingleCrystal(self.surface_energies, self.p_atoms, self.natoms)
+        return wulff.facet_fractions
 
     def winterbottom(self, interface: Tuple[int], interface_energy: float):
         """Construct Winterbottom construction for single crystals.

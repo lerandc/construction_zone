@@ -151,7 +151,7 @@ def get_voxel_grid(dim: Tuple[int],
     # used masked arrays to get compact lists of neighboring voxels
     mask = np.isnan(neighbors)
     neighbors_ma = np.ma.masked_array(neighbors, mask=mask).astype(int)
-    neighbor_lists = [np.ma.compressed(x) for x in neighbors_ma]
+    neighbor_lists = [set(list(np.ma.compressed(x))) for x in neighbors_ma]
 
     return neighbor_lists
 
