@@ -28,18 +28,13 @@ class BaseMolecule(ABC):
     """
 
     @abstractmethod
-    def __init__(self, species=None, positions=None, **kwargs) -> None:
+    def __init__(self, species, positions, **kwargs) -> None:
         self._atoms = None
         self._species = None
         self.priority = 0
         self.reset_orientation()
         self._print_warnings = True
-
-        # both species and positions must be provided
-        set_check0 = (species is not None) or (positions is not None)
-        set_check1 = (species is not None) and (positions is not None)
-        if set_check0 and set_check1:
-            self.set_atoms(species, positions)
+        self.set_atoms(species, positions)
 
         if "orientation" in kwargs.keys():
             self.orientation = kwargs["orientation"]
@@ -69,14 +64,15 @@ class BaseMolecule(ABC):
         positions = np.array(positions)
         positions = np.reshape(positions, (-1, 3))
 
-        assert(positions.shape[0] == species.shape[0])
+        if positions.shape[0] != species.shape[0]:
+            raise ValueError(f"Number of positions ({positions.shape[0]}) provided does not match number of species ({species.shape[0]}) provided")
 
         self._species = species
         self._atoms = positions
 
     def update_positions(self, positions):
         positions = np.array(positions)
-        positions = np.reshape(positions, self.positions.shape).astype(int)
+        positions = np.reshape(positions, self.atoms.shape)
         self._atoms = positions
 
     def update_species(self, species):
@@ -156,6 +152,7 @@ class BaseMolecule(ABC):
         if transform_origin:
             if self._origin_tracking:
                 if self.print_warnings:
+                    # TODO: convert to warning
                     print("Requested to transform molecule, but currently origin is set to track an atom. \n \
                         Origin will not be transformed.")
                     print("Molecule is currently tracking origin against atom %i." % self._origin_idx)
