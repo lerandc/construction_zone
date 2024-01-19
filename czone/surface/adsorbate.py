@@ -49,7 +49,7 @@ def sparse_matrix_from_tri(simplices):
     return csr_matrix(mat)
 
 def find_approximate_normal(points, decay=0.99, tol=1e-5, margin=0, seed=23, max_steps=1000, **kwargs):
-    """Use modifeid perception algorithm to find approximate surface normal to set of points.
+    """Use modified perception algorithm to find approximate surface normal to set of points.
     
     Assumes points come from local section of alpha-shape, i.e, they are bounded
     by a convex surface and thus all lie within a common half-space.
