@@ -144,6 +144,7 @@ class WulffSingle(WulffBase):
         self.generator = generator
         self.natoms = natoms
         self.surface_energies = surface_energies
+        self._wulff = None
 
     ####################
     #### Properties ####
@@ -153,17 +154,22 @@ class WulffSingle(WulffBase):
     ###### Methods #####
     ####################
 
+
+    @property
+    def wulff(self):
+        if self._wulff is None:
+            self._wulff = SingleCrystal(self.surface_energies, self.p_atoms, self.natoms)
+        return self._wulff
+
     def get_construction(self, return_facet_areas=False):
-        wulff = SingleCrystal(self.surface_energies, self.p_atoms, self.natoms)
-        planes = self.planes_from_wulff(wulff)
+        planes = self.planes_from_wulff(self.wulff)
         if return_facet_areas:
-            return Volume(alg_objects=planes, generator=self.generator), wulff.facet_fractions
+            return Volume(alg_objects=planes, generator=self.generator), self.wulff.facet_fractions
         else:
             return Volume(alg_objects=planes, generator=self.generator)
 
     def get_areas(self):
-        wulff = SingleCrystal(self.surface_energies, self.p_atoms, self.natoms)
-        return wulff.facet_fractions
+        return self._wulff.facet_fractions
 
     def winterbottom(self, interface: Tuple[int], interface_energy: float):
         """Construct Winterbottom construction for single crystals.
