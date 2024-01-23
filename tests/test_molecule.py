@@ -90,8 +90,6 @@ class Test_Molecule(unittest.TestCase):
             self.assertTrue(np.allclose(mol.species, ref_species))
             self.assertTrue(np.allclose(mol.atoms, ref_pos))
 
-
-
         species = rng.integers(1,119,(N,1))
         positions = rng.normal(size=(N,3))
         mol = Molecule(species, positions)
@@ -154,3 +152,41 @@ class Test_Molecule(unittest.TestCase):
 
         bad_eigenvals = np.eye(3)*2
         self.assertRaises(ValueError, f_molecule, bad_eigenvals)
+
+    def test_origin(self):
+        N = 1024
+        for _ in range(self.N_trials):
+            species = rng.integers(1,119,(N,1))
+            positions = rng.normal(size=(N,3))
+            
+            # Default origin at grid origin
+            mol_0 = Molecule(species, positions)
+            self.assertTrue(np.allclose(mol_0.origin, np.zeros((3,1))))
+
+            # Check consistency between origin index and manual specification
+            origin = rng.choice(1024, 1)[0]
+            mol_1 = Molecule(species, positions, origin=origin)
+            mol_2 = Molecule(species, positions, origin=positions[origin,:])
+            self.assertTrue(np.allclose(mol_1.origin, mol_2.origin))
+
+            # Check tracking of origin
+            new_positions = np.copy(positions)
+            new_positions[origin,:] = 0.0
+            mol_1.update_positions(new_positions)
+            self.assertTrue(np.allclose(mol_1.origin, np.zeros((3,1))))
+
+        f_molecule = lambda x: Molecule(species, positions, origin=x)
+        self.assertRaises(IndexError, f_molecule, 1025)
+        self.assertRaises(IndexError, f_molecule, -1025)
+
+    def test_priority(self):
+        mol = Molecule(np.array([1]), np.zeros((3,1)))
+        for _ in range(self.N_trials):
+            new_priority = rng.integers(-1000,1000)
+            mol.priority = new_priority
+            self.assertEqual(mol.priority, new_priority)
+        
+        def f_set_priority(val):
+            mol.priority = val
+
+        self.assertRaises(TypeError, f_set_priority, 1.0)

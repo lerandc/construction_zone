@@ -97,16 +97,12 @@ class BaseMolecule(ABC):
             indices: iterable(int), set of indices to remove 
             new_origin_idx: int, original index number of atom to set as new origin
         """
-        # check to see if origin index in removal indices
-        # if so, set new origin index to 0
-        # if not, update origin index appropriately
-        # create copies of species and atoms arrays and remove and validate sizes
         if new_origin_idx is not None:
             if not np.issubdtype(type(new_origin_idx), np.integer): # TEST
                 raise TypeError("new_origin_idx must be an int")
             
             if new_origin_idx < 0 or new_origin_idx > self.atoms.shape[0]:
-                raise IndexError(f"Supplied new_origin_idx {new_origin_idx} is out of bounds for {self.atoms.shape[0]} atom molecule")            
+                raise IndexError(f"Supplied new_origin_idx {new_origin_idx} is out of bounds for {self.atoms.shape[0]} atom molecule")
             
         if new_origin_idx in indices:
             raise IndexError(f"Supplied new_origin_idx {new_origin_idx} in set of indices of atoms to be removed.") # TESST
@@ -124,7 +120,7 @@ class BaseMolecule(ABC):
 
     @property
     def origin(self):
-        if self._origin_tracking: #TEST
+        if self._origin_tracking:
             return self.atoms[self._origin_idx,:]
         else:
             return self._origin
@@ -141,24 +137,27 @@ class BaseMolecule(ABC):
 
     @property
     def _origin_idx(self) -> int:
-        return self.__origin_idx # TEST
+        return self.__origin_idx
 
     @_origin_idx.setter
     def _origin_idx(self, val: int):
-        assert(isinstance(val, int)) # TEST
-        assert(val < self.atoms.shape[0])
-
-        self.__origin_idx = val
+        if np.issubdtype(type(val), np.integer):
+            if np.abs(val) < self.atoms.shape[0]:
+                self.__origin_idx = val
+            else:
+                raise IndexError(f"Supplied origin index is {val} is out of bounds for {self.atoms.shape[0]} atom molecule")
+        else:
+            raise TypeError(f"Supplied drigin index is a {type(val)} and must be an integer")
 
     @property
     def priority(self):
         """Relative generation precedence of molecule."""
-        return self._priority # TEST
+        return self._priority
 
     @priority.setter
     def priority(self, priority):
-        if not isinstance(priority, int): # TEST
-            raise TypeError("Priority needs to be integer valued")
+        if not np.issubdtype(type(priority), np.integer): # TEST
+            raise TypeError("Priority must be an integer.")
 
         self._priority = priority
 
