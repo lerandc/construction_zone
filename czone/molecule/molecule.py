@@ -45,7 +45,7 @@ class BaseMolecule(ABC):
             self.set_origin(point=origin)
 
         if "orientation" in kwargs.keys():
-            self.orientation = kwargs["orientation"] # TEST
+            self.orientation = kwargs["orientation"]
 
     @property
     def print_warnings(self):
@@ -210,13 +210,14 @@ class BaseMolecule(ABC):
     def orientation(self, mat):
         # check for valid rotation matrix
         # rotation matrix transforms zone axes to global coordinate system
-        assert (mat.shape == (3,
-                              3)), "Input matrix must be square 3x3 numpy array"
-        assert (np.abs(np.linalg.det(mat) - 1.0) < 1e-6
-               ), "Input matrix not a valid rotation matrix. Fails determinant."
-        assert (
-            np.sum(np.abs(mat @ mat.T - np.eye(3))) < 1e-6
-        ), "Input matrix not a valid rotation matrix. Fails orthogonality."
+        if mat.shape != (3,3):
+            raise ValueError(f"Input matrix has shape {mat.shape}  but must have shape {(3,3)}.")
+            
+        if np.sum(np.abs(mat @ mat.T - np.eye(3))) > 1e-6:
+            raise ValueError(f"Input (rotation) matrix must be orthogonal.") # TODO: provide info on non-orthogonal vectors
+        
+        if np.abs(np.linalg.det(mat) - 1.0) > 1e-6:
+            raise ValueError("Input (rotation) matrix must have determinant of 1.")
 
         self._orientation = mat
 

@@ -133,4 +133,24 @@ class Test_Molecule(unittest.TestCase):
             self.assertTrue(np.allclose(mol.atoms, pmg_mol.cart_coords))
 
         self.assertRaises(TypeError, Molecule.from_pmg_molecule, mol.ase_atoms)
-        
+
+    def test_orientation(self):
+        N = 4
+        for _ in range(self.N_trials):
+            species = rng.integers(1,119,(N,1))
+            positions = rng.normal(size=(N,3))
+
+            scaled_orientation = rng.normal(0,1,(3,3,))
+            orientation, _ = np.linalg.qr(scaled_orientation)
+
+            mol = Molecule(species, positions, orientation=orientation)
+
+        f_molecule = lambda x: Molecule(species, positions, orientation=x)
+        self.assertRaises(ValueError, f_molecule, np.eye(4))
+
+        bad_ortho = np.eye(3)
+        bad_ortho[0,1] += 1
+        self.assertRaises(ValueError, f_molecule, bad_ortho)
+
+        bad_eigenvals = np.eye(3)*2
+        self.assertRaises(ValueError, f_molecule, bad_eigenvals)
