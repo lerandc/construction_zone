@@ -122,12 +122,25 @@ class Test_Molecule(unittest.TestCase):
         species = rng.integers(1,119,(N,1))
         positions = rng.normal(size=(N,3))
         mol = Molecule(species, positions)
+
+        # Test for bad removal indices
         bad_ind = [0, 1, 2, 3, 1025]
         self.assertRaises(IndexError, mol.remove_atoms, bad_ind)
 
         bad_ind = [0, 1, 2, 3, -1025]
         self.assertRaises(IndexError, mol.remove_atoms, bad_ind)
 
+        # Test for bad choices of new origins
+        bad_ind = [0,1,2,3]
+        self.assertRaises(TypeError, mol.remove_atoms, *(bad_ind, 5.2))
+        self.assertRaises(IndexError, mol.remove_atoms, *(bad_ind, 1025))
+        self.assertRaises(IndexError, mol.remove_atoms, *(bad_ind, -1025))
+        self.assertRaises(IndexError, mol.remove_atoms, *(bad_ind, 2))
+
+        # Test for origin tracking removal
+        bad_ind = [0,1,2,3]
+        mol.set_origin(idx=2)
+        self.assertRaises(NotImplementedError, mol.remove_atoms, bad_ind)
 
     def test_orientation(self):
         N = 4
@@ -215,3 +228,18 @@ class Test_Molecule(unittest.TestCase):
         mol.set_origin(idx=4)
         mol.print_warnings = True
         self.assertWarns(UserWarning, mol.transform, T)
+
+        # Since the warnings are only used here, test to make sure warning setting catches errors
+        def set_warnings(val):
+            mol.print_warnings = val
+        
+        self.assertRaises(TypeError, set_warnings, 1.2)
+
+    def test_check_interior(self):
+        N = 10
+        species = rng.integers(1,119,(N,1))
+        positions = rng.normal(size=(N,3))            
+        mol = Molecule(species, positions)
+
+        test_pos = rng.normal(size=(N,3))
+        self.assertWarns(UserWarning, mol.checkIfInterior, test_pos)

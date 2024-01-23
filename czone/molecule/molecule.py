@@ -40,7 +40,7 @@ class BaseMolecule(ABC):
 
         if origin is None:
             self.set_origin(point=np.array([0.0,0.0,0.0]))
-        elif np.issubdtype(type(origin), np.integer): # TEST thru if logic
+        elif np.issubdtype(type(origin), np.integer):
             self.set_origin(idx=origin)
         else:
             self.set_origin(point=origin)
@@ -50,12 +50,12 @@ class BaseMolecule(ABC):
 
     @property
     def print_warnings(self):
-        return self._print_warnings # TEST
+        return self._print_warnings 
 
     @print_warnings.setter
     def print_warnings(self, val):
         if not isinstance(val, bool):
-            raise TypeError # TEST
+            raise TypeError
         
         self._print_warnings = val
 
@@ -99,17 +99,18 @@ class BaseMolecule(ABC):
             new_origin_idx: int, original index number of atom to set as new origin
         """
         if new_origin_idx is not None:
-            if not np.issubdtype(type(new_origin_idx), np.integer): # TEST
+            if not np.issubdtype(type(new_origin_idx), np.integer):
                 raise TypeError("new_origin_idx must be an int")
             
-            if new_origin_idx < 0 or new_origin_idx > self.atoms.shape[0]:
+            if np.abs(new_origin_idx) >= self.atoms.shape[0]:
                 raise IndexError(f"Supplied new_origin_idx {new_origin_idx} is out of bounds for {self.atoms.shape[0]} atom molecule")
             
         if new_origin_idx in indices:
-            raise IndexError(f"Supplied new_origin_idx {new_origin_idx} in set of indices of atoms to be removed.") # TESST
+            raise IndexError(f"Supplied new_origin_idx {new_origin_idx} in set of indices of atoms to be removed.")
         
         if self._origin_tracking and self._origin_idx in indices:
-            self._origin_idx = new_origin_idx # TEST
+            raise NotImplementedError # TODO: Implement origin resetting behavior and warn user if origin is reset to a new index
+            # self._origin_idx = new_origin_idx # TEST
 
         self._species = np.delete(self.species, indices, axis=0)
         self._atoms = np.delete(self.atoms, indices, axis=0)
@@ -162,7 +163,7 @@ class BaseMolecule(ABC):
 
         self._priority = priority
 
-    def transform(self, transformation: BaseTransform, transform_origin=True): # TEST
+    def transform(self, transformation: BaseTransform, transform_origin=True):
         """Transform molecule with given transformation.
 
         Args:
@@ -195,13 +196,13 @@ class BaseMolecule(ABC):
             self._origin_tracking = False
             self._origin = point
 
-        elif idx is not None: # TEST
+        elif idx is not None: 
             self._origin_tracking = True
             self._origin_idx = idx
 
     @property
     def orientation(self):
-        return self._orientation # TEST
+        return self._orientation
 
     @orientation.setter
     def orientation(self, mat):
@@ -231,6 +232,7 @@ class BaseMolecule(ABC):
         ## TODO
         # have a minimum bond distance
         # perhaps set heuristically to maximum atomic radius for any of the constiuent atoms?
+        warnings.warn("WARNING: Default behavior for interiority check for molecules not yet implemented. No atoms will be removed from Volume or Scene due to collisions with a higher priority Molecule.")
         return np.zeros(testPoints.shape[0], dtype=bool)
 
     @classmethod
