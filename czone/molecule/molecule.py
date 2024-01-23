@@ -4,6 +4,7 @@ import numpy as np
 from ase import Atoms
 from pymatgen.core.structure import IMolecule
 from ..transform import BaseTransform
+import warnings
 
 import copy
 
@@ -175,10 +176,7 @@ class BaseMolecule(ABC):
         if transform_origin:
             if self._origin_tracking:
                 if self.print_warnings:
-                    # TODO: convert to warning
-                    print("Requested to transform molecule, but currently origin is set to track an atom. \n \
-                        Origin will not be transformed.")
-                    print("Molecule is currently tracking origin against atom %i." % self._origin_idx)
+                    warnings.warn(f"Requested to transform molecule, but currently origin is set to track an atom. \n Origin will not be transformed. Molecule is currently tracking origin against atom {self._origin_idx}")
                 return
             self.set_origin(point=transformation.applyTransformation(self.origin))
         

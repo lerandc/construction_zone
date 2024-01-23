@@ -2,6 +2,7 @@ import unittest
 import numpy as np
 from pymatgen.core.structure import Molecule as pmg_molecule
 from czone.molecule import Molecule
+from czone.transform import MatrixTransform
 
 seed = 8907190823
 rng = np.random.default_rng(seed=seed)
@@ -43,6 +44,34 @@ class Test_Molecule(unittest.TestCase):
         species = rng.integers(1,119,(N,1))
         positions = rng.normal(size=(N,4))
         self.assertRaises(ValueError, init_f, species, positions)
+
+    def test_copy_constructors(self):
+        N = 512
+        for _ in range(self.N_trials//8):
+            species = rng.integers(1,119,(N,1))
+            positions = rng.normal(size=(N,3))
+            mol = Molecule(species, positions)
+            new_mol = Molecule.from_molecule(mol)
+            self.assertTrue(np.allclose(mol.species, new_mol.species))
+            self.assertTrue(np.allclose(mol.atoms, new_mol.atoms))
+
+            ase_mol = mol.ase_atoms
+            self.assertTrue(np.allclose(mol.species, ase_mol.get_atomic_numbers()))
+            self.assertTrue(np.allclose(mol.atoms, ase_mol.get_positions()))
+
+            ase_mol = Molecule.from_ase_atoms(ase_mol)
+            self.assertTrue(np.allclose(mol.species, ase_mol.species))
+            self.assertTrue(np.allclose(mol.atoms, ase_mol.atoms))
+
+            pmg_mol = pmg_molecule(species, positions)
+            test_mol = Molecule.from_pmg_molecule(pmg_mol)
+
+            ref_species = np.array([s.number for s in pmg_mol.species])
+            self.assertTrue(np.allclose(test_mol.species, ref_species))
+            self.assertTrue(np.allclose(test_mol.atoms, pmg_mol.cart_coords))
+
+        self.assertRaises(TypeError, Molecule.from_ase_atoms, pmg_molecule(species, positions))
+        self.assertRaises(TypeError, Molecule.from_pmg_molecule, mol.ase_atoms)
 
     def test_updates(self):
         N = 1024
@@ -99,38 +128,6 @@ class Test_Molecule(unittest.TestCase):
         bad_ind = [0, 1, 2, 3, -1025]
         self.assertRaises(IndexError, mol.remove_atoms, bad_ind)
 
-    def test_ase_atoms(self):
-        N = 1024
-        for _ in range(self.N_trials):
-            species = rng.integers(1,119,(N,1))
-            positions = rng.normal(size=(N,3))
-            mol = Molecule(species, positions)
-
-            ase_mol = mol.ase_atoms
-            self.assertTrue(np.allclose(mol.species, ase_mol.get_atomic_numbers()))
-            self.assertTrue(np.allclose(mol.atoms, ase_mol.get_positions()))
-
-            new_mol = Molecule.from_ase_atoms(ase_mol)
-
-            self.assertTrue(np.allclose(mol.species, new_mol.species))
-            self.assertTrue(np.allclose(mol.atoms, new_mol.atoms))
-
-        self.assertRaises(TypeError, Molecule.from_ase_atoms, pmg_molecule(species, positions))
-
-    def test_pmg_atoms(self):
-        N = 1024
-        for _ in range(self.N_trials // 8):
-            species = rng.integers(1,119,(N,1))
-            positions = rng.normal(size=(N,3))
-
-            pmg_mol = pmg_molecule(species, positions)
-            mol = Molecule.from_pmg_molecule(pmg_mol)
-
-            ref_species = np.array([s.number for s in pmg_mol.species])
-            self.assertTrue(np.allclose(mol.species, ref_species))
-            self.assertTrue(np.allclose(mol.atoms, pmg_mol.cart_coords))
-
-        self.assertRaises(TypeError, Molecule.from_pmg_molecule, mol.ase_atoms)
 
     def test_orientation(self):
         N = 4
@@ -195,3 +192,26 @@ class Test_Molecule(unittest.TestCase):
             mol.priority = val
 
         self.assertRaises(TypeError, f_set_priority, 1.0)
+
+    def test_transform(self):
+        N = 1024
+        for _ in range(self.N_trials):
+            mat = rng.normal(size=(3,3))
+            T = MatrixTransform(mat)
+
+            species = rng.integers(1,119,(N,1))
+            positions = rng.normal(size=(N,3))            
+            mol = Molecule(species, positions)
+ 
+            test_mol = Molecule.from_molecule(mol, transformation=[T])
+            test_mol.set_origin(idx=4)
+            mol.set_origin(positions[4,:])
+            mol.transform(T)
+
+            self.assertTrue(np.allclose(mol.atoms, (mat @ positions.T).T))
+            self.assertTrue(np.allclose(mol.atoms, test_mol.atoms))
+            self.assertTrue(np.allclose(mol.origin, test_mol.origin))
+
+        mol.set_origin(idx=4)
+        mol.print_warnings = True
+        self.assertWarns(UserWarning, mol.transform, T)
