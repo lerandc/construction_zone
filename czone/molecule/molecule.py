@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 from ase import Atoms
+from pymatgen.core.structure import IMolecule
 from ..transform import BaseTransform
 
 import copy
@@ -38,7 +39,7 @@ class BaseMolecule(ABC):
 
         if origin is None:
             self.set_origin(point=np.array([0.0,0.0,0.0]))
-        elif np.issubdtype(type(origin), np.integer):
+        elif np.issubdtype(type(origin), np.integer): # TEST thru if logic
             self.set_origin(idx=origin)
         else:
             self.set_origin(point=origin)
@@ -101,17 +102,17 @@ class BaseMolecule(ABC):
         # if not, update origin index appropriately
         # create copies of species and atoms arrays and remove and validate sizes
         if new_origin_idx is not None:
-            if not np.issubdtype(type(new_origin_idx), np.integer):
+            if not np.issubdtype(type(new_origin_idx), np.integer): # TEST
                 raise TypeError("new_origin_idx must be an int")
             
             if new_origin_idx < 0 or new_origin_idx > self.atoms.shape[0]:
                 raise IndexError(f"Supplied new_origin_idx {new_origin_idx} is out of bounds for {self.atoms.shape[0]} atom molecule")            
             
         if new_origin_idx in indices:
-            raise IndexError(f"Supplied new_origin_idx {new_origin_idx} in set of indices of atoms to be removed.")
+            raise IndexError(f"Supplied new_origin_idx {new_origin_idx} in set of indices of atoms to be removed.") # TESST
         
         if self._origin_tracking and self._origin_idx in indices:
-            self._origin_idx = new_origin_idx
+            self._origin_idx = new_origin_idx # TEST
 
         self._species = np.delete(self.species, indices, axis=0)
         self._atoms = np.delete(self.atoms, indices, axis=0)
@@ -123,7 +124,7 @@ class BaseMolecule(ABC):
 
     @property
     def origin(self):
-        if self._origin_tracking:
+        if self._origin_tracking: #TEST
             return self.atoms[self._origin_idx,:]
         else:
             return self._origin
@@ -140,11 +141,11 @@ class BaseMolecule(ABC):
 
     @property
     def _origin_idx(self) -> int:
-        return self.__origin_idx
+        return self.__origin_idx # TEST
 
     @_origin_idx.setter
     def _origin_idx(self, val: int):
-        assert(isinstance(val, int))
+        assert(isinstance(val, int)) # TEST
         assert(val < self.atoms.shape[0])
 
         self.__origin_idx = val
@@ -152,16 +153,16 @@ class BaseMolecule(ABC):
     @property
     def priority(self):
         """Relative generation precedence of molecule."""
-        return self._priority
+        return self._priority # TEST
 
     @priority.setter
     def priority(self, priority):
-        if not isinstance(priority, int):
+        if not isinstance(priority, int): # TEST
             raise TypeError("Priority needs to be integer valued")
 
         self._priority = priority
 
-    def transform(self, transformation: BaseTransform, transform_origin=True):
+    def transform(self, transformation: BaseTransform, transform_origin=True): # TEST
         """Transform molecule with given transformation.
 
         Args:
@@ -197,13 +198,13 @@ class BaseMolecule(ABC):
             self._origin_tracking = False
             self._origin = point
 
-        elif idx is not None:
+        elif idx is not None: # TEST
             self._origin_tracking = True
             self._origin_idx = idx
 
     @property
     def orientation(self):
-        return self._orientation
+        return self._orientation # TEST
 
     @orientation.setter
     def orientation(self, mat):
@@ -236,13 +237,18 @@ class BaseMolecule(ABC):
 
     @classmethod
     def from_ase_atoms(cls, atoms):
-        ## TODO
-        return
+        if isinstance(atoms, Atoms):
+            return cls(atoms.get_atomic_numbers(), atoms.get_positions())
+        else:
+            raise TypeError(f"Supplied atoms are {type(atoms)} and should be an ASE Atoms object")
 
     @classmethod
     def from_pmg_molecule(cls, atoms):
-        ## TODO
-        return
+        if isinstance(atoms, IMolecule):
+            species = [s.number for s in atoms.species]
+            return cls(species, atoms.cart_coords)
+        else:
+            raise TypeError(f"Supplied atoms are {type(atoms)} and should be a Pymatgen IMolecule or Molecule object")
 
     def from_molecule(self, **kwargs):
         """Constructor for new Molecules from existing Molecule object

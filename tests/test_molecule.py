@@ -1,5 +1,6 @@
 import unittest
 import numpy as np
+from pymatgen.core.structure import Molecule as pmg_molecule
 from czone.molecule import Molecule
 
 seed = 8907190823
@@ -110,3 +111,21 @@ class Test_Molecule(unittest.TestCase):
             ase_mol = mol.ase_atoms
             self.assertTrue(np.allclose(mol.species, ase_mol.get_atomic_numbers()))
             self.assertTrue(np.allclose(mol.atoms, ase_mol.get_positions()))
+
+            new_mol = Molecule.from_ase_atoms(ase_mol)
+
+            self.assertTrue(np.allclose(mol.species, new_mol.species))
+            self.assertTrue(np.allclose(mol.atoms, new_mol.atoms))
+
+    def test_pmg_atoms(self):
+        N = 1024
+        for _ in range(self.N_trials // 8):
+            species = rng.integers(1,119,(N,1))
+            positions = rng.normal(size=(N,3))
+
+            pmg_mol = pmg_molecule(species, positions)
+            mol = Molecule.from_pmg_molecule(pmg_mol)
+
+            ref_species = np.array([s.number for s in pmg_mol.species])
+            self.assertTrue(np.allclose(mol.species, ref_species))
+            self.assertTrue(np.allclose(mol.atoms, pmg_mol.cart_coords))
