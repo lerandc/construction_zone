@@ -156,7 +156,7 @@ class BaseMolecule(ABC):
 
     @priority.setter
     def priority(self, priority):
-        if not np.issubdtype(type(priority), np.integer): # TEST
+        if not np.issubdtype(type(priority), np.integer):
             raise TypeError("Priority must be an integer.")
 
         self._priority = priority
@@ -212,11 +212,11 @@ class BaseMolecule(ABC):
         if mat.shape != (3,3):
             raise ValueError(f"Input matrix has shape {mat.shape}  but must have shape {(3,3)}.")
             
-        if np.sum(np.abs(mat @ mat.T - np.eye(3))) > 1e-6:
-            raise ValueError(f"Input (rotation) matrix must be orthogonal.") # TODO: provide info on non-orthogonal vectors
-        
         if np.abs(np.linalg.det(mat) - 1.0) > 1e-6:
             raise ValueError("Input (rotation) matrix must have determinant of 1.")
+        
+        if np.sum(np.abs(mat @ mat.T - np.eye(3))) > 1e-6:
+            raise ValueError(f"Input (rotation) matrix must be orthogonal.") # TODO: provide info on non-orthogonal vectors
 
         self._orientation = mat
 

@@ -142,16 +142,18 @@ class Test_Molecule(unittest.TestCase):
             orientation, _ = np.linalg.qr(scaled_orientation)
 
             mol = Molecule(species, positions, orientation=orientation)
+            self.assertTrue(np.allclose(mol.orientation, orientation))
 
         f_molecule = lambda x: Molecule(species, positions, orientation=x)
         self.assertRaises(ValueError, f_molecule, np.eye(4))
 
-        bad_ortho = np.eye(3)
-        bad_ortho[0,1] += 1
-        self.assertRaises(ValueError, f_molecule, bad_ortho)
-
         bad_eigenvals = np.eye(3)*2
         self.assertRaises(ValueError, f_molecule, bad_eigenvals)
+
+        s = np.cbrt(1/2.0)
+        bad_ortho = np.array([[s, s, 0], [0, s, s], [s, 0, s]])
+        self.assertRaises(ValueError, f_molecule, bad_ortho)
+
 
     def test_origin(self):
         N = 1024
@@ -178,6 +180,9 @@ class Test_Molecule(unittest.TestCase):
         f_molecule = lambda x: Molecule(species, positions, origin=x)
         self.assertRaises(IndexError, f_molecule, 1025)
         self.assertRaises(IndexError, f_molecule, -1025)
+
+        f_set_origin = lambda x: mol_0.set_origin(idx=x)
+        self.assertRaises(TypeError, f_set_origin, 73.103)
 
     def test_priority(self):
         mol = Molecule(np.array([1]), np.zeros((3,1)))
