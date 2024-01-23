@@ -99,3 +99,14 @@ class Test_Molecule(unittest.TestCase):
 
         bad_ind = [0, 1, 2, 3, -1025]
         self.assertRaises(IndexError, mol.remove_atoms, bad_ind)
+
+    def test_ase_atoms(self):
+        N = 1024
+        for _ in range(self.N_trials):
+            species = rng.integers(1,119,(N,1))
+            positions = rng.normal(size=(N,3))
+            mol = Molecule(species, positions)
+
+            ase_mol = mol.ase_atoms
+            self.assertTrue(np.allclose(mol.species, ase_mol.get_atomic_numbers()))
+            self.assertTrue(np.allclose(mol.atoms, ase_mol.get_positions()))
