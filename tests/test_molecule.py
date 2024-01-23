@@ -117,6 +117,8 @@ class Test_Molecule(unittest.TestCase):
             self.assertTrue(np.allclose(mol.species, new_mol.species))
             self.assertTrue(np.allclose(mol.atoms, new_mol.atoms))
 
+        self.assertRaises(TypeError, Molecule.from_ase_atoms, pmg_molecule(species, positions))
+
     def test_pmg_atoms(self):
         N = 1024
         for _ in range(self.N_trials // 8):
@@ -129,3 +131,6 @@ class Test_Molecule(unittest.TestCase):
             ref_species = np.array([s.number for s in pmg_mol.species])
             self.assertTrue(np.allclose(mol.species, ref_species))
             self.assertTrue(np.allclose(mol.atoms, pmg_mol.cart_coords))
+
+        self.assertRaises(TypeError, Molecule.from_pmg_molecule, mol.ase_atoms)
+        
