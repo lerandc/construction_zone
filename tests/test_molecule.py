@@ -70,3 +70,32 @@ class Test_Molecule(unittest.TestCase):
 
         bad_positions = rng.normal(size=(N-1,3))
         self.assertRaises(ValueError, f_update_positions, bad_positions)
+
+
+    def test_removes(self):
+        N = 1024
+        for _ in range(self.N_trials):
+            species = rng.integers(1,119,(N,1))
+            positions = rng.normal(size=(N,3))
+            mol = Molecule(species, positions)
+
+            rem_ind = rng.choice(np.arange(N), 128, replace=False)
+            mol.remove_atoms(rem_ind)
+
+            keep_ind = set(np.arange(N)).difference(rem_ind)
+            ref_species = np.asarray([species[i,0] for i in keep_ind])
+            ref_pos = np.vstack([positions[i, :] for i in keep_ind])
+
+            self.assertTrue(np.allclose(mol.species, ref_species))
+            self.assertTrue(np.allclose(mol.atoms, ref_pos))
+
+
+
+        species = rng.integers(1,119,(N,1))
+        positions = rng.normal(size=(N,3))
+        mol = Molecule(species, positions)
+        bad_ind = [0, 1, 2, 3, 1025]
+        self.assertRaises(IndexError, mol.remove_atoms, bad_ind)
+
+        bad_ind = [0, 1, 2, 3, -1025]
+        self.assertRaises(IndexError, mol.remove_atoms, bad_ind)

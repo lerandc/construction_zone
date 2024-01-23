@@ -28,23 +28,33 @@ class BaseMolecule(ABC):
     """
 
     @abstractmethod
-    def __init__(self, species, positions, **kwargs) -> None:
+    def __init__(self, species, positions, origin=None, **kwargs) -> None:
         self._atoms = None
         self._species = None
         self.priority = 0
         self.reset_orientation()
-        self._print_warnings = True
+        self.print_warnings = True
         self.set_atoms(species, positions)
 
+        if origin is None:
+            self.set_origin(point=np.array([0.0,0.0,0.0]))
+        elif np.issubdtype(type(origin), np.integer):
+            self.set_origin(idx=origin)
+        else:
+            self.set_origin(point=origin)
+
         if "orientation" in kwargs.keys():
-            self.orientation = kwargs["orientation"]
+            self.orientation = kwargs["orientation"] # TEST
 
     @property
     def print_warnings(self):
-        return self._print_warnings
+        return self._print_warnings # TEST
 
     @print_warnings.setter
     def print_warnings(self, val):
+        if not isinstance(val, bool):
+            raise TypeError # TEST
+        
         self._print_warnings = val
 
     @property
@@ -81,17 +91,30 @@ class BaseMolecule(ABC):
         self._species = species
 
     def remove_atoms(self, indices, new_origin_idx=None):
+        """
+        Args:
+            indices: iterable(int), set of indices to remove 
+            new_origin_idx: int, original index number of atom to set as new origin
+        """
         # check to see if origin index in removal indices
         # if so, set new origin index to 0
         # if not, update origin index appropriately
         # create copies of species and atoms arrays and remove and validate sizes
-
+        if new_origin_idx is not None:
+            if not np.issubdtype(type(new_origin_idx), np.integer):
+                raise TypeError("new_origin_idx must be an int")
+            
+            if new_origin_idx < 0 or new_origin_idx > self.atoms.shape[0]:
+                raise IndexError(f"Supplied new_origin_idx {new_origin_idx} is out of bounds for {self.atoms.shape[0]} atom molecule")            
+            
+        if new_origin_idx in indices:
+            raise IndexError(f"Supplied new_origin_idx {new_origin_idx} in set of indices of atoms to be removed.")
+        
         if self._origin_tracking and self._origin_idx in indices:
-            self._origin_idx = 0 if new_origin_idx is None else new_origin_idx
+            self._origin_idx = new_origin_idx
 
         self._species = np.delete(self.species, indices, axis=0)
         self._atoms = np.delete(self.atoms, indices, axis=0)
-        return
 
     @property
     def ase_atoms(self):
@@ -167,6 +190,7 @@ class BaseMolecule(ABC):
             point (np.ndarray): 
             idx (int):
         """
+        # TODO: switch to match statement in 3.10
         if point is not None:
             point = np.array(point).ravel()
             assert(point.shape == (3,))
