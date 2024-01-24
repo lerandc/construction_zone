@@ -101,7 +101,7 @@ class Sphere(BaseAlgebraic):
                       axis=1) < (self.radius + self.tol)**2.0
 
     @property
-    def params(self):
+    def params(self): 
         """Return radius, center of Sphere."""
         return self.radius, self.center
 
@@ -125,8 +125,8 @@ class Sphere(BaseAlgebraic):
     @center.setter
     def center(self, center: np.ndarray):
         center = np.array(center)  #cast to np array if not already
-        assert (center.size == 3), "Center must be a point in 3D space"
-        assert (center.shape[0] == 3), "Center must be a point in 3D space"
+        if center.size != 3 or center.shape[0] != 3:
+            raise ValueError("Center must be an array with 3 elements")
         self._center = center
 
 
