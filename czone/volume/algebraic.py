@@ -82,17 +82,12 @@ class Sphere(BaseAlgebraic):
     """
 
     def __init__(self,
-                 radius: float = None,
-                 center: np.ndarray = None,
+                 radius: float,
+                 center: np.ndarray,
                  tol=1e-5):
-        self._radius = None
-        self._center = np.array([0, 0, 0])
-
-        if not (radius is None):
-            self.radius = radius
-
-        if not (center is None):
-            self.center = center
+                 
+        self.radius = radius
+        self.center = center
 
         super().__init__(tol=tol)
 
@@ -133,27 +128,22 @@ class Sphere(BaseAlgebraic):
 class Plane(BaseAlgebraic):
     """Algebraic surface for planes in R3.
 
-    Interior points lie opposite in direction of plane normal.
+    Interior points lie opposite in direction of plane normal,
+    e.g., the point (0, 0, -1) is interior to Plane((0,0,1), (0,0,0))
 
     Attributes:
-        point (np.ndarray): point lying on plane.
         normal (np.ndarray): normal vector describing orientation of plane.
+        point (np.ndarray): point lying on plane.
         tol (float): Tolerance value for interiority check. Default is 1e-5.
     
     """
 
     def __init__(self,
-                 normal: np.ndarray = None,
-                 point: np.ndarray = None,
+                 normal: np.ndarray,
+                 point: np.ndarray,
                  tol: float = 1e-5):
-        self._normal = None
-        self._point = None
-
-        if not (normal is None):
-            self.normal = normal
-
-        if not (point is None):
-            self.point = point
+        self.normal = normal
+        self.point = point
 
         super().__init__(tol=tol)
 
@@ -182,19 +172,32 @@ class Plane(BaseAlgebraic):
     def normal(self, normal: np.ndarray):
         normal = np.array(normal)  #cast to np array if not already
         assert (normal.size == 3), "normal must be a vector in 3D space"
-        # normal = np.reshape(normal, (3,1)) #make a consistent shape
+        normal = np.reshape(normal, (3,)) #make a consistent shape
         if (np.linalg.norm(normal) > np.finfo(float).eps):
             self._normal = normal / np.linalg.norm(normal)
         else:
-            raise ValueError("Normal vector must have some length")
+            raise ValueError(f"Input normal vector length {np.linalg.norm(normal)} is below machine precision.")
 
     def checkIfInterior(self, testPoints: np.ndarray):
-        return np.sum((testPoints * self.normal), axis=1) - np.squeeze(
-            np.dot(self.normal, self.point + self.normal * self.tol)) < 0
+        return self.sdist_from_plane(testPoints) < self.tol
 
     def flip_orientation(self):
         """Flip the orientation of the plane."""
-        self.normal = -1 * self.normal
+        self.normal = - self.normal
+        return self
+    
+    def sdist_from_plane(self, point: np.ndarray):
+        """Calculate the signed distance from a point or series of points to the Plane.
+        
+        Arg:
+            point (np.ndarray): Point in space to calculate distance.
+
+        Returns:
+            Array of distances to plane.
+
+        """
+        # separate into two dot products to avoid an an array subtraction against testPoints
+        return np.dot(point, self.normal) - np.dot(self.point, self.normal)
 
     def dist_from_plane(self, point: np.ndarray):
         """Calculate the distance from a point or series of points to the Plane.
@@ -206,7 +209,7 @@ class Plane(BaseAlgebraic):
             Array of distances to plane.
 
         """
-        return np.abs(np.dot(point - self.point, self.normal))
+        return np.abs(self.sdist_from_plane(point))
 
     def project_point(self, point: np.ndarray):
         """Project a point in space onto Plane.
@@ -217,7 +220,7 @@ class Plane(BaseAlgebraic):
         Returns:
             Projected point lying on surface of Plane.
         """
-        return point - self.dist_from_plane(point) * self.normal.T
+        return point - self.sdist_from_plane(point)[:,None] * self.normal[None,:]
 
 
 class Cylinder(BaseAlgebraic):
