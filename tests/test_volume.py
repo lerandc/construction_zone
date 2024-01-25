@@ -111,7 +111,7 @@ class Test_Plane(unittest.TestCase):
             Rs = rng.normal(size=(3,3))
             R = Rotation(np.linalg.qr(Rs)[0], origin=point)
 
-            r_plane = R.applyTransformation_alg(plane)
+            r_plane = Plane.from_alg_object(plane, transformation=[R])
             r_points = R.applyTransformation(test_points)
             self.assertTrue(np.allclose(r_plane.dist_from_plane(r_points), ref_arr))
 
