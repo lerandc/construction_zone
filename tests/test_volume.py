@@ -1,7 +1,10 @@
 import unittest
 import numpy as np
-from czone.volume.algebraic import Sphere, Plane
+from czone.volume.volume import makeRectPrism
+from czone.volume.algebraic import Sphere, Plane, get_bounding_box, convex_hull_to_planes
 from czone.transform import Rotation
+from scipy.spatial import ConvexHull, Delaunay
+from functools import reduce
 
 seed = 32135213035
 rng = np.random.default_rng(seed=seed)
@@ -129,7 +132,52 @@ class Test_Plane(unittest.TestCase):
 
             proj_points = plane.project_point(test_points)
             proj_dist = plane.dist_from_plane(proj_points)
-            print(proj_dist[:10])
-            print(test_points[3, :])
-            print(plane.dist_from_plane(test_points[3,:]))
             self.assertTrue(np.allclose(proj_dist, np.zeros_like(proj_dist)))
+
+    def test_convex_hull_to_planes(self):
+        for _ in range(self.N_trials):
+            hull_points = rng.uniform(-5, 5, size=(32, 3))
+            test_points = rng.uniform(-10, 10, size=(self.N_test_points, 3))
+
+            tri = Delaunay(hull_points)
+
+            planes = convex_hull_to_planes(hull_points)
+
+            ref_check = tri.find_simplex(test_points) > -1
+            test_check = reduce(lambda x, y: np.logical_and(x,y), [p.checkIfInterior(test_points) for p in planes])
+
+            self.assertTrue(np.array_equal(test_check, ref_check))
+
+            
+
+    def test_bounding_box(self):
+
+        for _ in range(self.N_trials):
+            hull_points = rng.uniform(-5, 5, size=(32, 3))
+            test_points = rng.uniform(-10, 10, size=(self.N_test_points, 3))
+
+            tri = Delaunay(hull_points)
+            planes = convex_hull_to_planes(hull_points)
+
+            test_points, status = get_bounding_box(planes)
+            ref_points = tri.points[np.unique(tri.convex_hull),:]
+            self.assertTrue(np.allclose(np.sort(test_points, axis=0), np.sort(ref_points, axis=0)))
+            
+        
+        # If < 4 planes, should return unbounded
+        _, status = get_bounding_box(planes[:4])
+        self.assertEqual(status, 3)
+
+
+        # If two planes mutually exclude eachother, feasible region should be null
+        new_plane = Plane.from_alg_object(planes[0])
+        new_plane.flip_orientation()
+        new_plane.point = new_plane.point - new_plane.normal
+        hs, status = get_bounding_box(planes + [new_plane])
+        self.assertEqual(status, 2)
+
+        # This raises a QHullerror, since the planes are on top of each other.
+        new_plane = Plane.from_alg_object(planes[0])
+        new_plane.flip_orientation()
+        _, status = get_bounding_box(planes + [new_plane])
+        self.assertEqual(status, 2)

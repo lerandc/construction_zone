@@ -4,7 +4,7 @@ from typing import Generator, List, Tuple
 
 import numpy as np
 from scipy.optimize import linprog
-from scipy.spatial import HalfspaceIntersection
+from scipy.spatial import HalfspaceIntersection, ConvexHull, Delaunay, QhullError
 
 from ..util.misc import round_away
 from ..transform.strain import HStrain
@@ -345,6 +345,30 @@ class Cylinder(BaseAlgebraic):
 #####################################
 
 
+def convex_hull_to_planes(points, **kwargs):
+    """Convert the convex hull of a set of points into a set of Planes."""
+
+    tri = Delaunay(points)
+    facets = tri.convex_hull
+
+    def facet_to_plane(facet):
+        v0 = points[facet[1],:] - points[facet[0],:]
+        v1 = points[facet[2],:] - points[facet[0],:]
+        n = np.cross(v0,v1)
+        return Plane(n, points[facet[0]])
+
+    planes = [facet_to_plane(f) for f in facets]
+
+    ipoint = np.mean(points, axis=0)
+    if tri.find_simplex(ipoint) < 0:
+        raise AssertionError
+
+    for i, plane in enumerate(planes):
+        if not plane.checkIfInterior(ipoint):
+            plane = plane.flip_orientation()
+
+    return planes
+
 def get_bounding_box(planes: List[Plane]):
     """Get convex region interior to set of Planes, if one exists.
 
@@ -358,8 +382,7 @@ def get_bounding_box(planes: List[Plane]):
 
     Returns:
         np.ndarray: Nx3 array of vertices of convex region.
-        2: no valid intersection.
-        3: if intersection is unbounded.
+        status: 0 if successful, 2 if no valid intersection, 3 if intersection is unbounded.
     """
 
     # some issues arose when all planes were in negative coordinate space
@@ -383,13 +406,17 @@ def get_bounding_box(planes: List[Plane]):
     #check feasiblity of region and get interior point
     c = np.zeros(4)
     c[-1] = -1
-    res = linprog(c, A_ub=np.hstack([A, norms]), b_ub=-1.0 * d)
 
+    res = linprog(c, A_ub=np.hstack([A, norms]), b_ub=-1.0 * d)
     if (res.status == 0):
-        hs = HalfspaceIntersection(np.hstack([A, d]), res.x[:-1])
-        return hs.intersections - shift
+        try:
+            hs = HalfspaceIntersection(np.hstack([A, d]), res.x[:-1])
+        except QhullError:
+            return np.empty((0,3)), 2
+            
+        return hs.intersections - shift, res.status
     else:
-        return res.status
+        return np.empty((0,3)), res.status
 
 def snap_plane_near_point(point: np.ndarray,
                           generator: Generator,
