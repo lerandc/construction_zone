@@ -63,14 +63,14 @@ class Test_Molecule(unittest.TestCase):
             self.assertTrue(np.allclose(mol.species, ase_mol.species))
             self.assertTrue(np.allclose(mol.atoms, ase_mol.atoms))
 
-            pmg_mol = pmg_molecule(species, positions)
+            pmg_mol = pmg_molecule(list(species[:,0]), positions)
             test_mol = Molecule.from_pmg_molecule(pmg_mol)
 
             ref_species = np.array([s.number for s in pmg_mol.species])
             self.assertTrue(np.allclose(test_mol.species, ref_species))
             self.assertTrue(np.allclose(test_mol.atoms, pmg_mol.cart_coords))
 
-        self.assertRaises(TypeError, Molecule.from_ase_atoms, pmg_molecule(species, positions))
+        self.assertRaises(TypeError, Molecule.from_ase_atoms, pmg_molecule(list(species[:,0]), positions))
         self.assertRaises(TypeError, Molecule.from_pmg_molecule, mol.ase_atoms)
 
     def test_updates(self):
