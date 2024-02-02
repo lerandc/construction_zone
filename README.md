@@ -50,6 +50,48 @@ every time. You could freely edit the source code yourself, or just use the
 installation to pull fresh code from the development branch by running `git pull`
 in the repository directory.
 
+### Manual Coverage Summaray (LRD, 2 Feb. 2024):
+We have begun writing unit tests for Construction Zone. A partial coverage summary can be found below.
+For more a more detailed coverage summary, and information about testing priorities and a testing road map,
+please look towards the `tests' folder. Once unit tests for the core modules have been completed, CZ will
+be updated on relevant installatio channels. Minor to major refactoring can be expected in certain areas, 
+but we will aim to have miminal breaking API changes, where possible.
+
+(x = total, + = partial (direct),  - = partial (indirect), blank = none)
+
+[ ] Generator \
+ | [ ] Amorphous Algorithms \
+ | [ ] Generator Core
+ 
+ [x] Molecule
+
+ [ ] Prefab \
+ | [ ] Prefab Core \
+ | [ ] Wulff
+
+ [ ] Scene
+
+ [ ] Surface \
+ | [ ] Adsorbate \
+ | [ ] Alpha shapes
+
+ [-] Transform \
+ | [ ] Post \
+ | [ ] Strain \
+ | [-] Transform Core
+
+ [ ] Util \
+ | [ ] Measure \
+ | [ ] Misc.
+
+ [ ] Viz 
+
+ [+] Volume \
+ | [+] Algebraic \
+ | [ ] Volume Core \
+ | [ ] Voxel 
+
+
 ## Acknowledgment
 
 We acknowledge support for the development of Construction Zone from the Toyota Research Institute.
