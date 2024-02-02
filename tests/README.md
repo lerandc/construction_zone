@@ -25,6 +25,8 @@ Low priority:
 - Unit tests and/or deprecation of Viz utilities
 
 Other goals (to be included as part of a feature roadmap):
+- Create Github actions/runners and/or environment testing scripts to rapidly check dependency compatibility
+- Explore Docker/Shifter/Podman containerization and evaluate utility, ease of generation
 - Expose and unify handling of RNGs 
 - Write doc strings where possible
 - Implement __repr__ methods where missing
