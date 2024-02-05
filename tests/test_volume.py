@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from czone.volume.volume import makeRectPrism
-from czone.volume.algebraic import Sphere, Plane, get_bounding_box, convex_hull_to_planes
+from czone.volume.algebraic import Sphere, Plane, get_bounding_box, convex_hull_to_planes, Cylinder
 from czone.transform import Rotation
 from scipy.spatial import ConvexHull, Delaunay
 from functools import reduce
@@ -181,3 +181,68 @@ class Test_Plane(unittest.TestCase):
         new_plane.flip_orientation()
         _, status = get_bounding_box(planes + [new_plane])
         self.assertEqual(status, 2)
+
+
+class Test_Cylinder(unittest.TestCase):
+
+    def setUp(self):
+        self.N_trials = 100
+        self.N_test_points = 1024
+
+    def test_init(self):
+        def is_collinear(a,b):
+            cos_theta = np.dot(a,b)/(np.linalg.norm(a)*np.linalg.norm(b))
+            return np.isclose(cos_theta, 1.0)
+
+        for _ in range(self.N_trials):
+            axis = rng.normal(size=(3,1))
+
+            point = rng.normal(size=(3,1))
+            
+            radius = rng.uniform(1e-1, 1e2)
+            length = rng.uniform(1e-1, 1e2)
+
+            cyl = Cylinder(axis, point, radius, length)
+
+            ta, tp, tr, tl = cyl.params()
+            
+            self.assertEqual(radius, tr)
+            self.assertEqual(length, tl)
+            self.assertTrue(np.array_equal(point.reshape((3,)), tp))
+            self.assertTrue(is_collinear(axis[:,0], ta))
+            self.assertTrue(np.isclose(np.linalg.norm(ta), 1.0))
+
+        # good values    
+        ga = np.array([0,0,1])
+        gp = np.array([0,0,0])
+        gr = 1.0
+        gl = 1.0
+
+        ## errors on radius
+        # type
+        self.assertRaises(ValueError, lambda : Cylinder(ga, gp, 'a', gl))
+
+        # value
+        self.assertRaises(ValueError, lambda : Cylinder(ga, gp, -1.0, gl))
+        self.assertRaises(ValueError, lambda : Cylinder(ga, gp, 0.5*np.finfo(float).eps, gl))
+            
+        ## errors on length
+        # type
+        self.assertRaises(ValueError, lambda : Cylinder(ga, gp, gr,'a'))
+
+        # value
+        self.assertRaises(ValueError, lambda : Cylinder(ga, gp, gr, -1.0))
+        self.assertRaises(ValueError, lambda : Cylinder(ga, gp, gr, 0.5*np.finfo(float).eps))
+            
+        ## errors on axis
+        # shape
+        self.assertRaises(ValueError, lambda: Cylinder([0,0,0,1], gp, gr, gl))
+
+        # value
+        self.assertRaises(ValueError, lambda: Cylinder([0,0,0], gp, gr, gl))
+            
+        ## errors on point
+        # shape
+        self.assertRaises(ValueError, lambda: Cylinder(ga, [0,0,0,1], gr, gl))
+
+

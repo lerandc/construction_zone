@@ -238,10 +238,10 @@ class Cylinder(BaseAlgebraic):
     """
 
     def __init__(self,
-                 axis: np.ndarray = [0, 0, 1],
-                 point: np.ndarray = [0, 0, 0],
-                 radius: float = 1.0,
-                 length: float = 1.0,
+                 axis: np.ndarray,
+                 point: np.ndarray,
+                 radius: float,
+                 length: float,
                  tol: float = 1e-5):
         self.axis = axis
         self.point = point
@@ -250,19 +250,21 @@ class Cylinder(BaseAlgebraic):
         super().__init__(tol=tol)
 
     def params(self):
-        """Return axis, point, and radius of cylinder."""
-        return self.axis, self.point, self.radius
+        """Return axis, point, radius, and length of cylinder."""
+        return self.axis, self.point, self.radius, self.length
 
     @property
-    def axis(self):
+    def axis(self): 
         """Vector lying parallel to central axis."""
         return self._axis
 
     @axis.setter
     def axis(self, arr):
-        arr = np.squeeze(np.array(arr))
-        assert (arr.shape == (3,))
-        self._axis = arr / np.linalg.norm(arr)
+        arr = np.array(arr).reshape((3,))
+        norm = np.linalg.norm(arr)
+        if norm <= np.finfo(float).eps:
+            raise ValueError(f"Input axis {arr} has norm {norm}, which is below machine precision.")
+        self._axis = arr / norm
 
     @property
     def point(self):
@@ -271,9 +273,7 @@ class Cylinder(BaseAlgebraic):
 
     @point.setter
     def point(self, arr):
-        arr = np.squeeze(np.array(arr))
-        assert (arr.shape == (3,))
-        self._point = arr
+        self._point = np.array(arr).reshape((3,))
 
     @property
     def radius(self):
@@ -284,6 +284,8 @@ class Cylinder(BaseAlgebraic):
     def radius(self, val):
         try:
             val = float(val)
+            if val < np.finfo(float).eps: # negative or subnormal
+                raise ValueError(f"Radius must be positive but is close to zero or negative.")
             self._radius = val
         except TypeError:
             raise TypeError("Supplied value must be castable to float")
@@ -297,6 +299,8 @@ class Cylinder(BaseAlgebraic):
     def length(self, val):
         try:
             val = float(val)
+            if val < np.finfo(float).eps: # negative or subnormal
+                raise ValueError(f"Length must be positive but is close to zero or negative.")
             self._length = val
         except TypeError:
             raise TypeError("Supplied value must be castable to float")
