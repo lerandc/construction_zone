@@ -3,7 +3,7 @@
 Test goals below are listed in relative priority/dependence order, where relevant.
 
 High Priority:
-- Finish unit tests for algebraic volumes, excluding Miller plane utility
+- ~~Finish unit tests for algebraic volumes, excluding Miller plane utility~~
 - Unit tests for Volumes and Multivolumes
 - Unit tests for core Generator objects
 - Write direct unit tests for Transform core
@@ -34,7 +34,7 @@ Other goals (to be included as part of a feature roadmap):
 As tests are completed, we can expect significant refactoring and clarification of API, where possible, as well as implementation of
 better error handling. 
 
-### Manual Coverage Summaray (LRD, 2 Feb. 2024):
+### Manual Coverage Summaray (LRD, 5 Feb. 2024):
 (x = total, + = partial (direct),  - = partial (indirect), blank = none)
 
 [ ] Generator \
@@ -70,7 +70,7 @@ better error handling.
  | [ ] Voxel 
 
 
-### Detailed coverage summary, via Coverage Report + pytest (LRD, 2 Feb. 2024):
+### Detailed coverage summary, via Coverage Report + pytest (LRD, 5 Feb. 2024):
 
 ```
 Name                                                                         Stmts   Miss  Cover   Missing
@@ -116,8 +116,7 @@ czone/util/misc.py                           25     18    28%   16, 31-54, 67
 czone/viz/__init__.py                         1      0   100%
 czone/viz/viz.py                            171    159     7%   5, 14-66, 70-149, 153-232, 236-254, 261-279
 czone/volume/__init__.py                      3      0   100%
-czone/volume/algebraic.py                   226     72    68%   42, 47, 246-250, 254, 259, 263-265, 270, 274-276, 281, 
-                                                                285-289, 294, 298-302, 305-313, 319-339, 364, 441-492
+czone/volume/algebraic.py                   225     30    87%   42, 47, 366, 443-494
 czone/volume/volume.py                      246    175    29%   41, 46, 51, 56, 61, 65-68, 77, 82, 91, 100, 138-165, 174,
                                                                 178-182, 187, 195-198, 203, 208, 213, 218, 222-223, 
                                                                 226-235, 244-247, 255-274, 278-291, 294-312, 320-344, 
@@ -125,8 +124,6 @@ czone/volume/volume.py                      246    175    29%   41, 46, 51, 56, 
                                                                 465-477, 481-502, 517-521, 543-554
 czone/volume/voxel.py                        55     34    38%   26-31, 36, 40-47, 52, 56-73, 78, 82-83, 88, 93, 105, 
                                                                 118-128
-test_molecule.py                                                               176      0   100%
-test_volume.py                                                                 130      0   100%
 ----------------------------------------------------------------------------------------------------------
 TOTAL                                                                         2748   1520    45%
 ```
