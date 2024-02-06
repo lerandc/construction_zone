@@ -282,13 +282,10 @@ class Cylinder(BaseAlgebraic):
 
     @radius.setter
     def radius(self, val):
-        try:
-            val = float(val)
-            if val < np.finfo(float).eps: # negative or subnormal
-                raise ValueError(f"Radius must be positive but is close to zero or negative.")
-            self._radius = val
-        except TypeError:
-            raise TypeError("Supplied value must be castable to float")
+        val = float(val)
+        if val < np.finfo(float).eps: # negative or subnormal
+            raise ValueError(f"Radius must be positive but is close to zero or negative.")
+        self._radius = val
 
     @property
     def length(self):
@@ -297,13 +294,10 @@ class Cylinder(BaseAlgebraic):
 
     @length.setter
     def length(self, val):
-        try:
-            val = float(val)
-            if val < np.finfo(float).eps: # negative or subnormal
-                raise ValueError(f"Length must be positive but is close to zero or negative.")
-            self._length = val
-        except TypeError:
-            raise TypeError("Supplied value must be castable to float")
+        val = float(val)
+        if val < np.finfo(float).eps: # negative or subnormal
+            raise ValueError(f"Length must be positive but is close to zero or negative.")
+        self._length = val
 
     def checkIfInterior(self, testPoints):
         rad_dists = np.linalg.norm(np.cross(testPoints - self.point,
@@ -317,18 +311,21 @@ class Cylinder(BaseAlgebraic):
         return np.logical_and(rad_check,length_check)
 
     def get_bounding_box(self):
-        # make a square inscribing cylidner at center disk
+        # make a square inscribing cylinder at center disk
         # any rotation is valid
 
-        vz = (self.length/2)*np.copy(self.axis.T)[:,None]
-    
+        # need vz to be normalized to project out vs_0
+        vz = np.copy(self.axis.T)[:,None]
+
+        # get vectors perpendicular to axis
         vs_0 = np.array([[1,1,1]]).T # any vector works; fix to make generation stable
         vs_0 = vs_0/np.linalg.norm(vs_0)
-        vs_0 = vs_0 - vs_0.T @ vz * vz
+        vs_0 = vs_0 - (vs_0.T @ vz) * vz
         vs_0 = vs_0/np.linalg.norm(vs_0)
 
         vs_1 = np.cross(vs_0, vz, axis=0)
         vs_1 = vs_1/np.linalg.norm(vs_1)
+
         vs_0 = np.squeeze(vs_0)
         vs_1 = np.squeeze(vs_1)
 
@@ -338,8 +335,9 @@ class Cylinder(BaseAlgebraic):
                                         -vs_0+vs_1,
                                         -vs_0-vs_1,
                                             ])
-
-        # extend to rectangular prism
+    
+        # extend square halfway in both directions into rectangular prism
+        vz = self.length*vz / 2.0
         return np.vstack([square+vz.T, square-vz.T])
 
 

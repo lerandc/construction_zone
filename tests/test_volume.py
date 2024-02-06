@@ -245,4 +245,33 @@ class Test_Cylinder(unittest.TestCase):
         # shape
         self.assertRaises(ValueError, lambda: Cylinder(ga, [0,0,0,1], gr, gl))
 
+    def test_bounding_box(self):
+        def is_collinear(a,b):
+            cos_theta = np.dot(a,b)/(np.linalg.norm(a, axis=1)*np.linalg.norm(b))
+            return np.all(np.logical_or(np.isclose(cos_theta, 1.0), np.isclose(cos_theta, -1.0)))
 
+        for _ in range(self.N_trials):
+            axis = rng.normal(size=(3,1))
+            point = rng.normal(size=(3,1))
+            radius = rng.uniform(1e-1, 1e2)
+            length = rng.uniform(1e-1, 1e2)
+            cyl = Cylinder(axis, point, radius, length)
+        
+            bbox = cyl.get_bounding_box()
+
+            ## Assert shape
+            self.assertEqual(bbox.shape, (8,3))
+
+            ## Box is centered correctly
+            self.assertTrue(np.allclose(np.mean(bbox, axis=0), point.reshape((3,))))
+
+            ## Box has the right length and is oriented correctly
+            dvecs = bbox[:4, :] - bbox[4:, :]
+            d = np.linalg.norm(dvecs, axis=1)
+            print(d, length)
+            self.assertTrue(np.allclose(d, length))
+            self.assertTrue(is_collinear(dvecs, axis))
+
+            ## Box has the right volume
+            vol = ConvexHull(bbox).volume
+            self.assertTrue(np.isclose(vol / (length*(2*radius)**2.0), 1.0))
