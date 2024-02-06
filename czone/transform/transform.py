@@ -5,7 +5,7 @@ import numpy as np
 from scipy.spatial.transform import \
     Rotation as scRotation  # avoid namespace conflicts
 
-from ..volume.algebraic import BaseAlgebraic, Plane, Sphere
+from ..volume.algebraic import BaseAlgebraic, Plane, Sphere, Cylinder
 
 #####################################
 ########### Base Classes ############
@@ -139,10 +139,11 @@ class Translation(BaseTransform):
         return points
 
     def applyTransformation_alg(self, alg_object):
+        # TODO: unify properties
         if isinstance(alg_object, Sphere):
             alg_object.center = alg_object.center + self.shift
 
-        if isinstance(alg_object, Plane):
+        if isinstance(alg_object, Plane) or isinstance(alg_object, Cylinder):
             alg_object.point = alg_object.point + self.shift
 
         return alg_object
@@ -194,7 +195,7 @@ class MatrixTransform(BaseTransform):
 
     @origin.setter
     def origin(self, origin):
-        origin = np.array(origin)
+        origin = np.array(origin).reshape((3,))
         assert (origin.size == 3), "Origin must be a point in 3D space"
         assert (origin.shape[0] == 3), "Origin must be a point in 3D space"
         self._origin = origin
@@ -216,7 +217,7 @@ class MatrixTransform(BaseTransform):
         return np.dot(self.matrix, points)
 
     def applyTransformation_alg(self, alg_object):
-
+        # TODO: swtich to match/case
         if isinstance(alg_object, Sphere):
             if not (self.origin is None):
                 alg_object.center = np.dot(
@@ -234,6 +235,16 @@ class MatrixTransform(BaseTransform):
                 alg_object.point = np.dot(self.matrix, (alg_object.point).T).T
 
             alg_object.normal = np.dot(self.matrix, (alg_object.normal).T).T
+
+        if isinstance(alg_object, Cylinder):
+            if not (self.origin is None):
+                alg_object.point = np.dot(
+                    self.matrix,
+                    (alg_object.point - self.origin).T).T + self.origin
+            else:
+                alg_object.point = np.dot(self.matrix, (alg_object.point).T).T
+
+            alg_object.axis = np.dot(self.matrix, (alg_object.axis).T).T
 
         return alg_object
 

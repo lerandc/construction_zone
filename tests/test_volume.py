@@ -268,10 +268,36 @@ class Test_Cylinder(unittest.TestCase):
             ## Box has the right length and is oriented correctly
             dvecs = bbox[:4, :] - bbox[4:, :]
             d = np.linalg.norm(dvecs, axis=1)
-            print(d, length)
             self.assertTrue(np.allclose(d, length))
             self.assertTrue(is_collinear(dvecs, axis))
 
             ## Box has the right volume
             vol = ConvexHull(bbox).volume
             self.assertTrue(np.isclose(vol / (length*(2*radius)**2.0), 1.0))
+
+    def test_check_interior(self):
+        for _ in range(self.N_trials):
+            test_points = rng.uniform(-1000, 1000, size=(self.N_test_points, 3))
+
+            # Create cylinder oriented in +-Z on XY 
+            axis = np.array([0,0,1])
+            point = rng.normal(size=(1,3))
+            radius = rng.uniform(1e-1, 1e2)
+            length = rng.uniform(1e-1, 1e2)
+            cyl = Cylinder(axis, point, radius, length)
+
+            ref_check_length = np.abs(test_points[:, 2] - point[:, 2]) < length / 2.0 + cyl.tol
+            ref_check_radius = np.linalg.norm(point[:,:2] - test_points[:,:2], axis=1) < radius + cyl.tol
+            ref_check = np.logical_and(ref_check_length, ref_check_radius)
+
+            self.assertTrue(np.array_equal(ref_check, cyl.checkIfInterior(test_points)))
+
+            # Rotate cylinder and points to random axis and assert check is equivalent
+            Rs = rng.normal(size=(3,3))
+            R = Rotation(np.linalg.qr(Rs)[0], origin=point)
+
+            r_cyl = Cylinder.from_alg_object(cyl, transformation=[R])
+            r_points = R.applyTransformation(test_points)
+
+            self.assertTrue(np.array_equal(ref_check, r_cyl.checkIfInterior(r_points)))
+
