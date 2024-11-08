@@ -127,7 +127,6 @@ def gen_p_substrate(
         print("Starting particle loop for %i particles" % num_c)
 
     # add first particle to lists
-
     for i in range(0, num_c):
         if print_progress and (not (i % (num_c // 5))):
             print("On %i of %i" % (i, num_c))
@@ -156,6 +155,64 @@ def gen_p_substrate(
         coords[i, :] = new_coord
 
     return coords
+
+
+def _parse_min_distance_arg(species: List[int], min_dist: dict | np.ndarray) -> np.ndarray:
+    """Parse a set of multielement pairwise minimum distances into a regular format.
+
+    Args:
+        species: Length N list of element Z numbers
+        min_dist: Pairwise minimum distances.
+
+    Returns:
+        np.ndarray: Symmetric NxN array of minimum distances, in Angstroms.
+
+    """
+
+    # TODO: check that only unique pairs are here, utilizing itertools combinations
+    # TODO: check that species has no copies
+    N_species = len(species)
+    order = {Z: i for i, Z in enumerate(species)}
+
+    # initialize result
+    res = np.eye(N_species)
+    match min_dist:
+        case dict():
+            # Expects either dict of dicts, where min_dist[x] = {x:float, y:float, ...}
+            # or dict of paired tuples, where min_dist[(x,y)] = float
+            keys = list(min_dist.keys())
+            match keys[0]:
+                case tuple():
+                    # check directly against combinations for pair uniqueuness
+                    for k in min_dist:
+                        i, j = order[k[0]], order[k[1]]
+                        res[i, j] = min_dist[k]
+                        res[j, i] = min_dist[k]
+                case int():
+                    # construct pairs and then check for uniqueness
+                    for k in min_dist:
+                        for kk, vv in min_dist[k].items():
+                            res[order[k], order[kk]] = vv
+                            res[order[kk], order[k]] = vv
+                case _:
+                    raise KeyError(
+                        f"min_dist dictionary should have keys as int or tuple[int,int] but has invalid key format {keys[0]}"
+                    )
+        case np.ndarray():
+            # Verify symmetry or that lower-tri - diag == 0
+            pass
+        case _:
+            raise TypeError(
+                f"Pairwise minimum distances should be dict or np.ndarray, but {type(min_dist)} was passed."
+            )
+
+    return res
+
+
+def gen_multielement_random_block(
+    dims: List[float], min_dist: float = 1.4, density=0.1103075, print_progress=False, rng=None
+):
+    raise NotImplementedError()
 
 
 def gen_p_substrate_batched(

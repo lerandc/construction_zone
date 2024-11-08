@@ -2,6 +2,7 @@ import numpy as np
 from pymatgen.core import Lattice, Structure
 
 from czone.generator import AmorphousGenerator, Generator, NullGenerator
+from czone.generator.amorphous_algorithms import _parse_min_distance_arg
 from czone.transform import (
     ChemicalSubstitution,
     HStrain,
@@ -146,3 +147,39 @@ class Test_AmorphousGenerator(czone_TestCase):
         for _ in range(self.N_trials):
             G = get_random_amorphous_generator()
             self.assertReprEqual(G)
+
+    def test_multielement_mindist_parse(self):
+        species = [1, 2, 3]
+        ref_res = np.zeros((3, 3))
+        ref_res[0, :] = [1, 2, 3]
+        ref_res[1, 1:] = [4, 5]
+        ref_res[2, 2] = 6
+        ref_res += np.triu(ref_res).T - np.diag(np.diag(ref_res))
+
+        dist_as_nested_dict = {
+            1: {1: 1.0, 2: 2.0, 3: 3.0},
+            2: {2: 4.0, 3: 5.0},
+            3: {3: 6.0},
+        }
+
+        self.assertArrayEqual(
+            ref_res,
+            (test_res := _parse_min_distance_arg(species, dist_as_nested_dict)),
+            f"Parsed answer:\n {test_res}. \n Should be:\n {ref_res}",
+        )
+
+
+        dist_as_pair_dict = {
+            (1,1):1.0,
+            (1,2):2.0,
+            (1,3):3.0,
+            (2,2):4.0,
+            (2,3):5.0,
+            (3,3):6.0
+        }
+        self.assertArrayEqual(
+            ref_res,
+            (test_res := _parse_min_distance_arg(species, dist_as_pair_dict)),
+            f"Parsed answer:\n {test_res}. \n Should be:\n {ref_res}",
+        )
+
