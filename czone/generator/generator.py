@@ -14,7 +14,7 @@ from czone.transform.transform import BaseTransform
 from czone.types import BaseGenerator
 from czone.util.voxel import Voxel
 
-from .amorphous_algorithms import gen_p_substrate
+from .amorphous_algorithms import gen_multielement_random_block, gen_p_substrate
 
 #####################################
 ########## Generator Classes ########
@@ -344,7 +344,9 @@ class AmorphousGenerator(BaseGenerator):
 
     """
 
-    def __init__(self, origin=None, min_dist=1.4, density=0.1103075, species=6, rng=None):
+    def __init__(
+        self, origin=None, min_dist=1.4, density=0.1103075, species=6, rng=None, fractions=None
+    ):
         self._origin = None
         self._species = None
         self._density = None
@@ -359,6 +361,18 @@ class AmorphousGenerator(BaseGenerator):
         self.density = density
         self.use_old_result = False
         self.rng = np.random.default_rng() if rng is None else rng
+
+        match species:
+            case int():
+                pass
+            case list() | tuple():
+                if fractions is None or len(fractions) != len(species):
+                    f_len = len(fractions) if fractions is not None else 0
+                    raise ValueError(
+                        f"Fractions should be same length as species (N = {len(species)}), but is {fractions} with length {f_len}"
+                    )
+
+                self.fractions = fractions
 
     def __repr__(self) -> str:
         arg_string = f"origin={repr(self.origin)}, min_dist={self.min_dist}, density={self.density}, species={self.species}"
@@ -416,7 +430,14 @@ class AmorphousGenerator(BaseGenerator):
 
     @min_dist.setter
     def min_dist(self, min_dist):
-        assert min_dist > 0
+        match min_dist:
+            case float():
+                if min_dist <= 0:
+                    raise ValueError()
+            case dict():
+                for v in min_dist.values():
+                    if v <= 0:
+                        raise ValueError()
         self._min_dist = min_dist
 
     @property
@@ -445,16 +466,29 @@ class AmorphousGenerator(BaseGenerator):
             return self.old_result
         else:
             # TODO: switch to batching/add a flag to control whether or not to batch generation
-            coords = gen_p_substrate(
-                np.max(bbox, axis=0) - np.min(bbox, axis=0),
-                self.min_dist,
-                self.density,
-                rng=self.rng,
-                **kwargs,
-            )
+            match self.species:
+                case int():
+                    coords = gen_p_substrate(
+                        np.max(bbox, axis=0) - np.min(bbox, axis=0),
+                        self.min_dist,
+                        self.density,
+                        rng=self.rng,
+                        **kwargs,
+                    )
+                    species = np.ones(coords.shape[0]) * self.species
+                case list() | tuple():
+                    coords, species = gen_multielement_random_block(
+                        np.max(bbox, axis=0) - np.min(bbox, axis=0),
+                        self.species,
+                        self.fractions,
+                        self.min_dist,
+                        self.density,
+                        rng=self.rng,
+                    )
+
             self._old_result = (
                 coords + np.min(bbox, axis=0),
-                np.ones(coords.shape[0]) * self.species,
+                species,
             )
             return self.old_result
 

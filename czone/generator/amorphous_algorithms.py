@@ -165,17 +165,16 @@ def _parse_min_distance_arg(species: List[int], min_dist: dict | np.ndarray) -> 
         min_dist: Pairwise minimum distances.
 
     Returns:
-        np.ndarray: Symmetric NxN array of minimum distances, in Angstroms.
+        np.ndarray: Pairwise minimum distance as dict mapping
 
     """
 
     # TODO: check that only unique pairs are here, utilizing itertools combinations
     # TODO: check that species has no copies
-    N_species = len(species)
     order = {Z: i for i, Z in enumerate(species)}
 
     # initialize result
-    res = np.eye(N_species)
+    res = {}
     match min_dist:
         case dict():
             # Expects either dict of dicts, where min_dist[x] = {x:float, y:float, ...}
@@ -184,10 +183,13 @@ def _parse_min_distance_arg(species: List[int], min_dist: dict | np.ndarray) -> 
             match keys[0]:
                 case tuple():
                     # check directly against combinations for pair uniqueuness
+                    # for k in min_dist:
+                    #     i, j = order[k[0]], order[k[1]]
+                    #     res[i, j] = min_dist[k]
+                    #     res[j, i] = min_dist[k]
                     for k in min_dist:
-                        i, j = order[k[0]], order[k[1]]
-                        res[i, j] = min_dist[k]
-                        res[j, i] = min_dist[k]
+                        res[k] = min_dist[k] ** 2.0
+                        res[(k[1], k[0])] = min_dist[k] ** 2.0
                 case int():
                     # construct pairs and then check for uniqueness
                     for k in min_dist:
@@ -200,7 +202,7 @@ def _parse_min_distance_arg(species: List[int], min_dist: dict | np.ndarray) -> 
                     )
         case np.ndarray():
             # Verify symmetry or that lower-tri - diag == 0
-            pass
+            raise NotImplementedError()
         case _:
             raise TypeError(
                 f"Pairwise minimum distances should be dict or np.ndarray, but {type(min_dist)} was passed."
@@ -210,9 +212,99 @@ def _parse_min_distance_arg(species: List[int], min_dist: dict | np.ndarray) -> 
 
 
 def gen_multielement_random_block(
-    dims: List[float], min_dist: float = 1.4, density=0.1103075, print_progress=False, rng=None
+    dims: List[float],
+    species,
+    fractions,
+    min_dist,
+    density=0.1103075,
+    voxel_scale=2.0,
+    print_progress=False,
+    rng=None,
 ):
-    raise NotImplementedError()
+    # set up pairwise distance mapping and species MC bin sampler
+    pairwise_distances = _parse_min_distance_arg(species, min_dist)
+
+    max_min_dist = np.sqrt(np.max([v for v in pairwise_distances.values()]))
+    fractions = np.array(fractions)
+    f_norm = np.sum(fractions)
+    species_bins = np.cumsum(fractions / f_norm)
+
+    def get_species_index(x):
+        return np.min(np.where(species_bins > x))
+
+    # initialize RNG
+    rng = np.random.default_rng() if rng is None else rng
+
+    # get number of atoms to generate
+    dims = np.array(dims)
+    dim_x = dims[0]
+    dim_y = dims[1]
+    dim_z = dims[2]
+    total_volume = dim_x * dim_y * dim_z
+    num_atoms = np.round(total_volume * density).astype(int)
+
+    # initialize result arrays
+    res_coords = np.zeros((num_atoms, 3))
+    res_species = np.zeros((num_atoms))
+
+    # get voxel grid and list of local voxel neighbors
+    dims = np.array([dim_x, dim_y, dim_z])
+    voxel_size = max_min_dist * voxel_scale
+    num_blocks = np.ceil(dims / (voxel_size)).astype(int)
+    tot_blocks = np.prod(num_blocks)
+    Nt = np.array(
+        [1, num_blocks[0], num_blocks[0] * num_blocks[1]]
+    )  # to simply conversion of 3D -> 1D voxel indices
+
+    voxels = [[] for i in range(tot_blocks)]
+    neighbors = get_voxel_grid(num_blocks, True, True, False)
+
+    if print_progress:
+        print("Starting particle loop for %i particles" % num_atoms)
+
+    # begin particle generation
+    for i in range(num_atoms):
+        # use a for loop here, so that we can respect the number fraction simply
+        # sample next species
+        new_species = species[get_species_index(rng.uniform())]
+
+        successful = False
+        while not successful:
+            # generate trial coordinate
+            new_coord = rng.uniform(size=(1, 3)) * dims
+
+            # find its voxel and neighboring voxels
+            block = ((np.floor(new_coord / voxel_size)) @ Nt).astype(int)[0]
+
+            # grab atoms in neighboring voxels
+            tlist = neighbors[block]
+            parts = reduce(lambda x, y: x + y, [voxels[t] for t in tlist])
+
+            compare_coords = res_coords[parts, :]
+            compare_species = res_species[parts]
+
+            # check pairwise minimum distances
+            distance_check = True
+            for Z in species:
+                Z_filter = compare_species == Z
+
+                p_dist = get_p_dist(compare_coords[Z_filter, :], new_coord, dims)
+                if len(p_dist > 0):
+                    distance_check = distance_check and (
+                        p_dist.min() >= pairwise_distances[(new_species, Z)]
+                    )
+                if not distance_check:
+                    break
+
+            successful = distance_check
+
+        # new corodinate satisfies all minimmum distance constraints
+        # update voxel and result arrays
+        voxels[block].append(i)
+        res_coords[i, :] = new_coord
+        res_species[i] = new_species
+
+    return res_coords, res_species
 
 
 def gen_p_substrate_batched(
