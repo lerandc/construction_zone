@@ -343,6 +343,10 @@ def rot_v(v, theta):
     return scRotation.from_rotvec(v).as_matrix()
 
 
+def is_collinear(a, b):
+    cos_theta = np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+    return np.isclose(cos_theta, 1.0)
+
 def rot_vtv(v: np.ndarray, vt: np.ndarray) -> np.ndarray:
     """Calculate rotation to align one vector to another.
 
@@ -361,12 +365,17 @@ def rot_vtv(v: np.ndarray, vt: np.ndarray) -> np.ndarray:
     In short, use cross product to get axis of rotation, then develop matrix form of
     Rodrigues rotation of formula and return rotation matrix.
     """
+
     v = np.array(v).reshape(
         3,
     )
     vt = np.array(vt).reshape(
         3,
     )
+
+    if is_collinear(v, vt):
+        return np.eye(3)
+    
     eps = np.finfo(float).eps  # get machine epsilon for collinearity check
     theta = np.arccos(np.dot(v, vt) / (np.linalg.norm(v) * np.linalg.norm(vt)))
     if theta < eps:
