@@ -13,7 +13,7 @@ First, let's import the classes we'll need.
     import numpy as np
     from cz.volume import MultiVolume, Volume, Sphere, Plane, snap_plane_near_point, makeRectPrism
     from cz.generator import Generator, AmorphousGenerator
-    from cz.transform import Rotation, Reflection, Translation, rot_vtv
+    from cz.transform import Rotation, Reflection, Translation, rot_vtv, s2s_alignment
     from cz.scene import Scene
 
 Let's start with making the substrate. We first will create an AmorphousGenerator object,
