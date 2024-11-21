@@ -14,7 +14,7 @@ First, let's import the routines we need.
     from pymatgen.core import Structure
     from cz.volume import Volume, MultiVolume, Plane, snap_plane_near_point
     from cz.generator import Generator, AmorphousGenerator
-    from cz.transform import Rotation, Reflection, Translation, rot_vtv
+    from cz.transform import Rotation, Reflection, Translation, rot_vtv, rot_v
     from cz.scene import Scene
 
 We downloaded `cif` files from the [Materials Project](https://materialsproject.org/) database 
