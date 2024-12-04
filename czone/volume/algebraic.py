@@ -146,8 +146,10 @@ class Plane(BaseAlgebraic):
     @normal.setter
     def normal(self, normal: np.ndarray):
         normal = np.array(normal)  # cast to np array if not already
-        assert normal.size == 3, "normal must be a vector in 3D space"
-        normal = np.reshape(normal, (3,))  # make a consistent shape
+        try:
+            normal = normal.reshape((3,))
+        except ValueError as e:
+            raise ValueError(f"Normal must be a 3D vector, but has shape {normal.shape}")
         if np.linalg.norm(normal) > np.finfo(float).eps:
             self._normal = normal / np.linalg.norm(normal)
         else:
