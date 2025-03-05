@@ -13,8 +13,8 @@ from czone.util.eset import EqualSet, array_set_equal
 from .algebraic import Cylinder, Plane, Sphere
 from .algebraic import get_bounding_box as get_bounding_box_planes
 
-if TYPE_CHECKING:
-    from czone.transform.transform import BaseTransform
+# if TYPE_CHECKING:
+from czone.transform.transform import BaseTransform
 ############################
 ###### Volume Classes ######
 ############################
