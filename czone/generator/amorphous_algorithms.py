@@ -2,7 +2,6 @@ from functools import reduce
 from typing import List
 
 import numpy as np
-
 from czone.util.measure import get_voxel_grid
 
 ############################
@@ -210,6 +209,10 @@ def _parse_min_distance_arg(species: List[int], min_dist: dict | np.ndarray) -> 
 
     return res
 
+from itertools import chain
+
+from tqdm import tqdm
+
 
 def gen_multielement_random_block(
     dims: List[float],
@@ -263,7 +266,7 @@ def gen_multielement_random_block(
         print("Starting particle loop for %i particles" % num_atoms)
 
     # begin particle generation
-    for i in range(num_atoms):
+    for i in tqdm(range(num_atoms)):
         # use a for loop here, so that we can respect the number fraction simply
         # sample next species
         new_species = species[get_species_index(rng.uniform())]
@@ -278,25 +281,40 @@ def gen_multielement_random_block(
 
             # grab atoms in neighboring voxels
             tlist = neighbors[block]
-            parts = reduce(lambda x, y: x + y, [voxels[t] for t in tlist])
+            # parts = reduce(lambda x, y: x + y, [voxels[t] for t in tlist])
+            parts = list(chain(*(voxels[t] for t in tlist)))
 
             compare_coords = res_coords[parts, :]
             compare_species = res_species[parts]
 
             # check pairwise minimum distances
             distance_check = True
-            for Z in species:
-                Z_filter = compare_species == Z
 
-                p_dist = get_p_dist(compare_coords[Z_filter, :], new_coord, dims)
-                if len(p_dist > 0):
-                    distance_check = distance_check and (
-                        p_dist.min() >= pairwise_distances[(new_species, Z)]
-                    )
-                if not distance_check:
-                    break
+            if len(compare_coords) > 0:
+                p_dists = get_p_dist(compare_coords, new_coord, dims)
+                # Zs = np.unique(compare_species)
+                distance_check = reduce(lambda x, y: x and y,
+                    (p_dists[compare_species==Z].min() >= pairwise_distances[(new_species, Z)] for Z in np.unique(compare_species))
+                )
+                # distance_check = reduce(lambda x, y: x and y,
+                #     (get_p_dist(compare_coords[compare_species==Z], new_coord, dims).min() >= pairwise_distances[(new_species, Z)] for Z in np.unique(compare_species))
+                # )
 
-            successful = distance_check
+
+            # for Z in species:
+            #     Z_filter = compare_species == Z
+
+            #     p_dist = get_p_dist(compare_coords[Z_filter, :], new_coord, dims)
+            #     if len(p_dist > 0):
+            #         distance_check = distance_check and (
+            #             p_dist.min() >= pairwise_distances[(new_species, Z)]
+            #         )
+            #     if not distance_check:
+            #         break
+
+                successful = distance_check
+            else:
+                successful= True
 
         # new corodinate satisfies all minimmum distance constraints
         # update voxel and result arrays
